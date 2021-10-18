@@ -131,3 +131,24 @@ function SS.Player.Create(permID, source)
 		end
 	end
 end
+
+function SS.Player.GetData(source)
+	local player = source
+	if type(player) == 'number' then 
+		return PLACEHOLDER
+	end
+end
+
+function SS.Player.Save(source)
+    local ped = GetPlayerPed(source)
+	local plyCoords = GetEntityCoords(ped)
+end
+
+function SS.Player.CreatePermID()
+	local unique = false 
+	local id = false 
+
+	while not unique do 
+		
+	end
+end
