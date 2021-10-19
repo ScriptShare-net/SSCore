@@ -1,8 +1,8 @@
-SSCore = exports['SSCore']:getSharedObject()
+SS = exports['SSCore']:getSharedObject()
 
 if GetCurrentResourceName() == 'SSCore' then 
     function getSharedObject()
-        return SSCore
+        return SS
     end
 
     exports('getSharedObject', getSharedObject())

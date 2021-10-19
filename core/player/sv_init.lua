@@ -1,3 +1,5 @@
+SS.Player = {}
+
 function SS.Player.Create(permID, source)
 	SS.Players[source] = {}
 	local self = {}
@@ -15,6 +17,14 @@ function SS.Player.Create(permID, source)
 		btc = 0,
 		eth = 0,
 	}
+
+	self.job = "unemployed"
+
+	self.firstname = "Unknown"
+	self.lastname = "Unknown" 
+	self.name = self.firstname .. " " .. self.lastname
+	self.pay = 0 
+	self.coords = vector3(0,0,0)
 	
 	-- Bank Functions --
 	self.GetBank = function()
@@ -130,16 +140,76 @@ function SS.Player.Create(permID, source)
 			self.crypto.eth = self.crypto.eth - amount
 		end
 	end
+
+	self.GetJob = function()
+		return self.job
+	end
+
+	self.SetJob = function(job)
+		self.job = job
+	end
+
+	self.GetName = function()
+		return self.name
+	end
+
+	self.GetFirstname = function()
+		return self.firstname
+	end
+
+	self.SetFirstname = function(firstname)
+		self.firstname = firstname
+		self.name = self.firstname .. " " .. self.lastname
+	end
+
+	self.GetLastname = function()
+		return self.lastname
+	end
+
+	self.SetLastname = function(lastname)
+		self.lastname = lastname 
+		self.name = self.firstname .. " " .. self.lastname
+	end	
+
+	SS.Players[source] = self
 end
 
-function SS.Player.GetData(source)
+function SS.Player.GetPlayerFromSource(source)
 	local player = source
 	if type(player) == 'number' then 
-		return PLACEHOLDER
+		return SS.Players[source]
+	end
+end
+
+function SS.Player.GetPlayerFromId(id)
+	local player = id
+
+	for source, player in pairs(SS.Players) do
+		if player.permID == id then  
+			return player
+		end
 	end
 end
 
 function SS.Player.Save(source)
     local ped = GetPlayerPed(source)
 	local plyCoords = GetEntityCoords(ped)
+end
+
+function SS.Player.GetAll()
+	local players = {}
+
+	for source, player in pairs(SS.Players) do 
+		players[#players+1]
+	end
+
+	return players, #players
+end
+
+function SS.Player.SaveAll()
+	local players = SS.Player.GetAll()
+
+	for #players > 0 do 
+		print("Stuff")
+	end
 end

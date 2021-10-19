@@ -8,6 +8,6 @@ SSCore Database
     - inventory(FK identifier, FK characterSlot, items, weapons, accounts)
         foreign key (identifier) references Users.identifier
         foreign key (characterSlot) references Users.characterSlot
-    - businesses(PK businessesName, businessLabel, accounts (DEFUALT NIL))
+    - businesses(PK businessesName, businessLabel, accounts (DEFUALT NIL), whitelisted, enabled)
     - bussinessRoles(FK businessesName, roleName, roleLabel, pay, outfit)
         foreign key (businessesName) references business.businessesName

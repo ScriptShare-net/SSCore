@@ -1,3 +1,5 @@
+SS.Function = {}
+
 function SS.Function.RemoveProp()
     for k, v in pairs(GetGamePool('CObject')) do
         if IsEntityAttachedToEntity(PlayerPedId(), v) then
@@ -8,7 +10,7 @@ function SS.Function.RemoveProp()
     end
 end
 
-function SS.Function.DrawText(coords, text)
+function SS.Function.DrawText3D(coords, text)
     SetTextScale(0.35, 0.35)
     SetTextFont(4)
     SetTextProportional(1)
