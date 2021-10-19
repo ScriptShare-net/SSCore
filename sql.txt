@@ -1,11 +1,12 @@
 SSCore Database
-    - Users(PK discord, permid, groups)
-    - Character(FK discord, characterSlot, firstname, lastname, skin, age, job, group, position, status)
-        foreign key (discord) references Users.discord
-    - bans(FK discord, time, reason, bannedBy)
-        foreign key (discord) references Users.discord
-    - inventory(FK discord, FK characterSlot, items, weapons, accounts)
-        foreign key (discord) references Users.discord
+    - Users(PK identifier, permid, groups)
+    - Character(FK identifier, characterSlot, firstname, lastname, skin, age, job, group, position, status)
+        foreign key (identifier) references Users.identifier
+    - identifiers(identifier, discords, steams, licenses, tokens, lives, xboxs, ips, fivems, gta2s)
+    - bans(FK identifier, time, reason, bannedBy)
+        foreign key (identifier) references Users.identifier
+    - inventory(FK identifier, FK characterSlot, items, weapons, accounts)
+        foreign key (identifier) references Users.identifier
         foreign key (characterSlot) references Users.characterSlot
     - businesses(PK businessesName, businessLabel, accounts (DEFUALT NIL))
     - bussinessRoles(FK businessesName, roleName, roleLabel, pay, outfit)
