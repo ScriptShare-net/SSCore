@@ -1,4 +1,4 @@
-SSCore = exports['ss_framework']:getSharedObject()
+SSCore = exports['SSCore']:getSharedObject()
 
 if GetCurrentResourceName() == 'ss_framework' then 
     function getSharedObject()
