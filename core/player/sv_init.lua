@@ -143,12 +143,3 @@ function SS.Player.Save(source)
     local ped = GetPlayerPed(source)
 	local plyCoords = GetEntityCoords(ped)
 end
-
-function SS.Player.CreatePermID()
-	local unique = false 
-	local id = false 
-
-	while not unique do 
-		
-	end
-end

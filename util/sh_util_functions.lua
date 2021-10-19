@@ -6,7 +6,7 @@ function SS.Math.GenerateRandomNumber(min, max)
 end
 
 function SS.Math.Round(number)
-    local result = round(number)
+    local result = math.round(number)
 
     return result
 end
