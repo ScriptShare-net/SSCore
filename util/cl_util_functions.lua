@@ -22,3 +22,11 @@ function SS.Function.DrawText(coords, text)
     DrawRect(0.0, 0.0+0.0125, 0.017+ factor, 0.03, 0, 0, 0, 0)
     ClearDrawOrigin()
 end
+
+function SS.Function.spawnVehicle(hash, coords, veh)
+    local ply = PlayerPedId()
+    
+    local vehicle = CreateVehicle(hash, coords, GetEntityHeading(ply), true, false)
+    TaskWarpPedIntoVehicle(ply, vehicle, -1)
+    SetModelAsNoLongerNeeded(vehicle) -- Unsure if this will effect distance checking with onesync infinity
+end
