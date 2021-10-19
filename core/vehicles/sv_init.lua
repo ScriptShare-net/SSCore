@@ -5,9 +5,7 @@ function SS.Vehicle.Create()
     self.vehicleCoords = vector3(0,0,0)
 
     self.GetVehicleCoords = function(vehicle)
-        local coords = GetEntityCoords(vehicle)
-
-        return coords 
+        return self.vehicleCoords
     end
 
     self.SetVehicleCoords = function(vehicle, coords)
