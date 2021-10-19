@@ -1,3 +1,29 @@
+local whitelistCard = {
+    ["type"] = "AdaptiveCard",
+    ["body"] = {
+        {
+            ["type"] = "TextBlock",
+            ["size"] = "Medium",
+            ["weight"] = "Bolder",
+            ["text"] = "Welcome to " .. SS.ServerName
+        },
+        {
+            ["type"] = "TextBlock",
+            ["text"] = "Thanks for joining. Sorry to be a bother but our server is currently discord whitelist. Basically all you need to do is join the discord and you can play. We have made it super simple. All you need to do is click the button below and join.",
+            ["wrap"] = true
+        }
+    },
+    ["actions"] = {
+        {
+            ["type"] = "Action.OpenUrl",
+            ["title"] = "Join Discord",
+            ["url"] = SS.Queue.Discord
+        }
+    },
+    ["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
+    ["version"] = "1.3"
+}
+
 local function plyId(source)
     local identifiers = {
         ["source"] = source,
@@ -35,7 +61,7 @@ local function plyId(source)
     end
 
     for i = 0, GetNumPlayerTokens(source) do
-        identifers.tokens[i] = GetPlayerToken(source, i)
+        identifiers.tokens[i] = GetPlayerToken(source, i)
     end
 
     exports.oxmysql:execute("SELECT permid FROM users WHERE discord = @discord", {
@@ -49,7 +75,7 @@ local function plyId(source)
     return identifiers
 end
 
-function createUser(identifiers)
+local function createUser(identifiers)
     local idError = false
     local userError = false
 
@@ -68,7 +94,7 @@ function createUser(identifiers)
 		idError = not (rows >= 1)
 	end)
 
-    exports.oxmysql:execute("INSERT INTO users (identifier) VALUES (@identifer)", {
+    exports.oxmysql:execute("INSERT INTO users (identifier) VALUES (@identifier)", {
         ["@identifier"] = identifiers[SS.Identifier]
     }, function(result)
         userError = not (result >= 1)
@@ -77,7 +103,45 @@ function createUser(identifiers)
     return idError, userError
 end
 
-AddEventHandler('playerConnecting', function()
+local function updateIdentifiers(identifiers)
+	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
+		["@identifier"] = identifiers[SS.Identifier]
+	}, function(result)
+		if result then
+			local idtable = result
+			for k,v in pairs(idtable) do
+				idtable[k] = json.decode(v)
+				if identifiers[string.sub(k, 1, -2)] then
+					local skip = false
+					for k2,v2 in pairs(v) do
+						if v2 == identifiers[string.sub(k, 1, -2)] then
+							skip = true
+						end
+					end
+					if not skip then
+						idtable[k][#idtable[k] + 1] = identifiers[string.sub(k, 1, -2)]
+					end
+				end
+				idtable[k] = json.encode(idtable[k])
+			end
+		end
+	end)
+	exports.oxmysql:execute("UPDATE identifiers SET discord", {}, function()
+
+	end)
+end
+
+local function isBanned(identifier)
+	exports.oxmysql:execute("SELECT * FROM bans", {}, function(result)
+		if result then
+			for 
+		end
+	end)
+end
+
+AddEventHandler('playerConnecting', function(name, setReason, deferrals)
+	deferrals.defer()
+
     local src = source
     local identifiers = plyId(src)
     
@@ -88,11 +152,9 @@ AddEventHandler('playerConnecting', function()
 
         if idError or userError then 
             DropPlayer(src, t['connectionError'])
-        else 
-            
+        else
+            updateIdentifiers(identifiers)
         end
-
     end
-
 end)
 
