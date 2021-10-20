@@ -330,6 +330,11 @@ function SS.Player.Create(permID, source)
 		end
 	end
 
+	-- Player clothing 
+	self.GetOutfits = function()
+		return self.outfits
+	end
+
 	SS.Players[source] = self
 end
 

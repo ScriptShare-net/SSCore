@@ -21,12 +21,5 @@ SS.Queue.Ranks = { -- ["Rank Name"] = Weight, Higher weight means slower queue. 
 SS.Identifier = 'discord' -- Primary identifer (discord, license)
 
 SS.Player.bloodtypes = { -- Not used
-1 = "A+",
-2 = "B+",
-3 = "AB+",
-4 = "A-",
-5 = "B-",
-6 = "AB-",
-7 = "O+",
-8 = "O-"
+"A+", "B+", "AB+", "A-", "B-", "AB-", "O+", "O-"
 }
