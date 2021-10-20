@@ -19,6 +19,7 @@ function SS.Player.Create(permID, source)
 	}
 
 	self.job = "unemployed" -- Job
+	self.grade = "unemployed" -- Job Grade
 
 	self.firstname = "Unknown" -- Firstname
 	self.lastname = "Unknown" -- Last name
@@ -26,7 +27,27 @@ function SS.Player.Create(permID, source)
 	self.pay = 0 -- Pay
 	self.coords = vector3(0,0,0) -- Player Coords
 	self.weight = 0 -- Player weight (how much they're holding)
-	
+
+	-- Medical
+	-- Blood Type, addiction level, fingerprints, skills
+	self.bloodtype = "O-"
+	self.addictionlevel = 0 
+	self.fingerprint = "Unknown"
+	self.skills = {
+		driving = 0, 
+		running = 0, 
+		shooting = 0,
+		flying = 0
+	}
+
+	self.skin = {
+		eyes = "blue", 
+		hair = "black", 
+		chin = "normal"
+	}
+
+	self.outfits = {}
+
 	-- Bank Functions --
 	self.GetBank = function()
 		return self.accounts.bank
@@ -149,7 +170,7 @@ function SS.Player.Create(permID, source)
 			self.crypto.eth = self.crypto.eth - amount
 		end
 	end
-
+	-- Job Functions  --
 	self.GetJob = function()
 		return self.job
 	end
@@ -158,6 +179,15 @@ function SS.Player.Create(permID, source)
 		self.job = job
 	end
 
+	self.GetGrade = function()
+		return self.grade
+	end
+
+	self.SetGrade = function(grade)
+		self.grade = str(grade)
+	end
+	
+	-- Name Functions -- 
 	self.GetName = function()
 		return self.name
 	end
@@ -180,8 +210,124 @@ function SS.Player.Create(permID, source)
 		self.name = self.firstname .. " " .. self.lastname
 	end	
 
+	-- Perm ID Functions --
+	self.GetPermID = function()
+		return self.permID
+	end
+
+	-- Weight Functions -- 
 	self.GetWeight = function()
 		return self.weight 
+	end
+
+	-- Medical things
+	self.GetBloodtype = function()
+		return self.bloodtype
+	end
+
+	self.SetBloodtype = function(blood)
+		for index, bloodtypes in pairs(SS.Player.bloodtypes) do
+			if bloodtypes == blood then  
+				self.bloodtype = blood
+			else
+				return
+			end 
+		end
+	end
+
+	-- Addiction levels
+	self.GetAddictionLevel = function()
+		return self.addictionlevel
+	end
+
+	self.SetAddictionLevel = function(level)
+		if type(level) == "number" then 
+			if level >= 0 then 
+				self.addictionlevel = level
+			end
+		end
+	end
+
+	self.AddAddictionLevel = function(level)
+		if type(level) == "number" then 
+			if level >= 0 then 
+				self.addictionlevel = self.addictionlevel + level
+			end	
+		end
+	end
+
+	-- Fingerprints
+	self.GetFingerprint = function()
+		return self.fingerprint
+	end
+
+	self.SetFingerprint = function(type)
+		self.fingerprint = str(type)
+	end
+
+	-- Skills
+	self.AddDrivingSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.driving = self.skills.driving + amount
+			end
+		end
+	end
+
+	self.AddShootingSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.shooting = self.skills.shooting + amount
+			end
+		end
+	end
+
+	self.AddRunningSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.running = self.skills.running + amount
+			end
+		end
+	end
+
+	self.AddFlyingSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.flying = self.skills.flying + amount
+			end
+		end
+	end
+
+	self.RemoveDrivingSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.driving = self.skills.driving - amount
+			end
+		end
+	end
+
+	self.RemoveShootingSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.shooting = self.skills.shooting - amount
+			end
+		end
+	end
+
+	self.RemoveRunningSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.running = self.skills.running - amount
+			end
+		end
+	end
+
+	self.RemoveFlyingSkill = function(amount)
+		if type(amount) == "number" then 
+			if amount > 0 then 
+				self.skills.flying = self.skills.flying - amount
+			end
+		end
 	end
 
 	SS.Players[source] = self
@@ -213,7 +359,7 @@ function SS.Player.GetAll()
 	local players = {}
 
 	for source, player in pairs(SS.Players) do 
-		players[#players+1]
+		players[#players+1] = source
 	end
 
 	return players, #players

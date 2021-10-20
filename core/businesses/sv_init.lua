@@ -9,6 +9,7 @@ function SS.Business.Create()
     }
 
     self.employees = {}
+    self.grades = {}
 
     self.GetName = function()
         return name
@@ -45,6 +46,28 @@ function SS.Business.Create()
     self.RemoveBusinessMoeny = function(amount)
         if amount > 0 then 
             self.accounts.stored = self.accounts.stored - amount 
+        end
+    end
+
+    self.AddEmployee = function(source, grade)
+        if type(source) == "number" then
+            for grades, label in pairs(self.grades) do  
+                if grade == grades then
+                    local player = SS.Player.GetPlayerFromSource(source)
+                    player.SetJob(self.name)
+                    player.SetGrade(grade)
+                    self.employees[source] = grade
+                end
+            end
+        end
+    end
+
+    self.RemoveEmployee = function(source)
+        if type(source) == "number" then 
+            local player = SS.Player.GetPlayerFromSource(source)
+            player.SetJob("unemployed")
+            player.SetGrade("unemployed")
+            self.employees[source] = nil
         end
     end
 end
