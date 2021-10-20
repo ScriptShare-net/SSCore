@@ -61,14 +61,22 @@ function SS.Player.Create(permID, source)
 	end
 	
 	self.AddCash = function(amount)
-		if amount > 0 then
-			self.accounts.cash = self.accounts.cash + amount
+		if type(amount) == "number" then 
+			if amount > 0 then
+				self.accounts.cash = self.accounts.cash + amount
+			else 
+				return
+			end
 		end
 	end
 	
 	self.RemoveCash = function(amount)
-		if amount > 0 then
-			self.accounts.cash = self.accounts.cash - amount
+		if type(amount) == "number" then 
+			if amount > 0 then
+				self.accounts.cash = self.accounts.cash - amount
+			else
+				return
+			end
 		end
 	end
 	
