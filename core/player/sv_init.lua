@@ -18,13 +18,14 @@ function SS.Player.Create(permID, source)
 		eth = 0,
 	}
 
-	self.job = "unemployed"
+	self.job = "unemployed" -- Job
 
-	self.firstname = "Unknown"
-	self.lastname = "Unknown" 
-	self.name = self.firstname .. " " .. self.lastname
-	self.pay = 0 
-	self.coords = vector3(0,0,0)
+	self.firstname = "Unknown" -- Firstname
+	self.lastname = "Unknown" -- Last name
+	self.name = self.firstname .. " " .. self.lastname -- First + Lastname
+	self.pay = 0 -- Pay
+	self.coords = vector3(0,0,0) -- Player Coords
+	self.weight = 0 -- Player weight (how much they're holding)
 	
 	-- Bank Functions --
 	self.GetBank = function()
@@ -178,6 +179,10 @@ function SS.Player.Create(permID, source)
 		self.lastname = lastname 
 		self.name = self.firstname .. " " .. self.lastname
 	end	
+
+	self.GetWeight = function()
+		return self.weight 
+	end
 
 	SS.Players[source] = self
 end
