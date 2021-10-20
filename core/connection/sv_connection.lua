@@ -104,6 +104,7 @@ local function createUser(identifiers)
 end
 
 local function updateIdentifiers(identifiers)
+	local updateError = false
 	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
 		["@identifier"] = identifiers[SS.Identifier]
 	}, function(result)
@@ -126,17 +127,104 @@ local function updateIdentifiers(identifiers)
 			end
 		end
 	end)
-	exports.oxmysql:execute("UPDATE identifiers SET discord", {}, function()
-
+	exports.oxmysql:execute("UPDATE identifiers SET discords = @discords, steams = @steams, gta5s = @gta5s, tokens = @tokens, lives = @lives, xboxs = @xboxs, ips = @ips, fivems = @fivems, gta2s = @gta2s WHERE identifier = @identifier", {
+		["@identifier"] = identifiers[SS.Identifier],
+		["@discords"] = idtable.discords,
+		["@steams"] = idtable.steams,
+		["@gta5s"] = idtable.gta5s,
+		["@tokens"] = idtable.tokens,
+		["@lives"] = idtable.lives,
+		["@xboxs"] = idtable.xboxs,
+		["@ips"] = idtable.ips,
+		["@fivems"] = idtable.fivems,
+		["@gta2s"] = idtable.gta2s
+	}, function(rows)
+		updateError = not (rows >= 1)
 	end)
+	return updateError
+end
+
+local function findDuplicateIdentifier(identifier, identifiers)
+	local idtbl = json.encode(identifiers)
+	return string.match(idtbl, identifier)
+end
+
+local function mergeIdentifiers(identifiers1, identifiers2)
+	local identifiers = {}
+	for type, idtable in pairs(identifiers1) do
+		for _, id in pairs(idtable) do
+			if not findDuplicateIdentifier(id, identifiers2[type]) then
+				identifiers[type] = identifiers[type] or {}
+				identifiers[type][#identifiers[type] + 1] = id
+			end
+		end
+	end
+	return identifiers
+end
+
+local function isIdentifiersBanned(identifiers)
+	for identifier, player in pairs(SS.Bans) do
+		for type, idtable in pairs(identifiers) do
+			for _, id in pairs(idtable) do
+				return findDuplicateIdentifier(id, player), 
+			end
+		end
+	end
 end
 
 local function isBanned(identifier)
-	exports.oxmysql:execute("SELECT * FROM bans", {}, function(result)
-		if result then
-			for 
+	local banned = {}
+	local identifiers = {}
+	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
+		["@identifier"] = identifier
+	}, function(result)
+		for k,v in pairs(result) do
+			identifiers[k] = json.decode(v)
 		end
 	end)
+	for _, player in pairs(SS.Bans) do -- Cycle through all bans
+		for type, ids in pairs(player.identifiers) do -- Go through each type of identifier
+			for _, id in pairs(ids) do -- Go through each id in the type
+				for _, id2 in pairs(identifiers[type]) do -- Go through each of my id in the type
+					if id == id2 then -- Check if one of the matches
+						banned[player.identifier] = mergeIdentifiers(player.identifiers, identifiers)
+						break
+					end
+				end
+			end
+		end
+	end
+	if #banned >= 1 then
+		local bannedids = {}
+		if #banned > 1 then
+			for iden, idtable in pairs(banned) do -- Go through all the banned accounts linked
+				for type, ids in pairs(idtable) do -- Go through each type of identifier
+					if not bannedids[type] then bannedids[type] = {} end
+					for _, id in pairs(ids) do -- Go through each id in the type
+						local skip = false
+						for _, id2 in pairs(bannedids[type]) do
+							if id == id2 then
+								skip = true
+							end
+						end
+						bannedids[type][#bannedids[type] + 1] = id
+					end
+				end
+			end
+		end
+		for iden, idtable in pairs(banned) do
+			exports.oxmysql:execute("UPDATE bans SET identifiers = @identifiers, time = @time, reason = @reason, bannedBy = @bannedBy WHERE identifier = @identifier", {
+				["@identifier"] = iden,
+				["@identifiers"] = json.encode(idtable),
+				["@time"] = 0,
+				["@reason"] = "Ban Evasion",
+				["@bannedBy"] = "Ban System"
+			}, function()
+			
+			end)
+		end
+	end
+	return (#banned >= 1)
 end
 
 AddEventHandler('playerConnecting', function(name, setReason, deferrals)
