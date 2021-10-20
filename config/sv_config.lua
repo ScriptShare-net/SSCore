@@ -23,3 +23,10 @@ SS.Identifier = 'discord' -- Primary identifer (discord, license)
 SS.Player.bloodtypes = { -- Not used
 "A+", "B+", "AB+", "A-", "B-", "AB-", "O+", "O-"
 }
+
+SS.Logs.DiscordWebhook = ""
+SS.Logs.CommunityName = "ScriptShare.net"
+SS.Logs.IconURL = "" -- URL
+SS.Logs.FooterText = "Powered by ScriptShare.net"
+SS.Logs.FooterIcon = "" -- URL
+SS.Logo.Avatar = "" -- Avatar
