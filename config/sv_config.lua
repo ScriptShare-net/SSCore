@@ -2,6 +2,8 @@ SS = SS or {}
 
 SS.ServerName = "ScriptShare.net"
 
+SS.TimeZone = 10 -- UTC +
+
 SS.Queue = {}
 SS.Queue.Slots = 60 -- Set how many not reserved slots you want. So if you have 64 server slots but want 4 reserved put 60.
 SS.Queue.Discord = "https://discord.gg/CBTtWXQE6Q" -- Discord Link
