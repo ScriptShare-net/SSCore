@@ -21,7 +21,3 @@ function SS.Entity.GetCoords(entity)
     
     return vec
 end
-
-function SS.RegisterServerCallback()
-    
-end

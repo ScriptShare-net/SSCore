@@ -31,7 +31,7 @@ function SS.Business.Create()
         return self.accounts.stored
     end
 
-    self.SetBusinessMoney = function()
+    self.SetBusinessMoney = function(amount)
         if type(amount) == "number" then 
             self.accounts.stored = amount 
         end
@@ -61,7 +61,7 @@ function SS.Business.Create()
             end
         end
     end
-
+    
     self.RemoveEmployee = function(source)
         if type(source) == "number" then 
             local player = SS.Player.GetPlayerFromSource(source)
