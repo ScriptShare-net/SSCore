@@ -144,17 +144,22 @@ local function updateIdentifiers(identifiers)
 	return updateError
 end
 
-local function findDuplicateIdentifier(identifier, identifiers)
-	local idtbl = json.encode(identifiers)
-	return string.match(idtbl, identifier)
+local function findDuplicateIdentifiers(identifiers1, identifiers2)
+	local encodeIdentifiers = json.encode(identifiers2)
+	for _, id in pairs(identifiers1) do
+		if string.match(encodeIdentifiers, id) then
+			return true
+		end
+	end
+	return false
 end
 
 local function mergeIdentifiers(identifiers1, identifiers2)
 	local identifiers = {}
 	for type, idtable in pairs(identifiers1) do
+		identifiers[type] = identifiers[type] or {}
 		for _, id in pairs(idtable) do
-			if not findDuplicateIdentifier(id, identifiers2[type]) then
-				identifiers[type] = identifiers[type] or {}
+			if not string.match(json.encode(identifiers2[type]), id) then
 				identifiers[type][#identifiers[type] + 1] = id
 			end
 		end
@@ -163,16 +168,18 @@ local function mergeIdentifiers(identifiers1, identifiers2)
 end
 
 local function isIdentifiersBanned(identifiers)
+	local banList = {}
 	for identifier, player in pairs(SS.Bans) do
 		for type, idtable in pairs(identifiers) do
-			for _, id in pairs(idtable) do
-				return findDuplicateIdentifier(id, player), 
+			if findDuplicateIdentifiers(idtable, player) then
+				banList[identifier] = player
 			end
 		end
 	end
+	return (#banList >= 1), banList
 end
 
-local function isBanned(identifier)
+local function isBanned(identifier, permid)
 	local banned = {}
 	local identifiers = {}
 	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
@@ -182,49 +189,204 @@ local function isBanned(identifier)
 			identifiers[k] = json.decode(v)
 		end
 	end)
-	for _, player in pairs(SS.Bans) do -- Cycle through all bans
-		for type, ids in pairs(player.identifiers) do -- Go through each type of identifier
-			for _, id in pairs(ids) do -- Go through each id in the type
-				for _, id2 in pairs(identifiers[type]) do -- Go through each of my id in the type
-					if id == id2 then -- Check if one of the matches
-						banned[player.identifier] = mergeIdentifiers(player.identifiers, identifiers)
-						break
-					end
-				end
-			end
-		end
-	end
-	if #banned >= 1 then
-		local bannedids = {}
-		if #banned > 1 then
-			for iden, idtable in pairs(banned) do -- Go through all the banned accounts linked
-				for type, ids in pairs(idtable) do -- Go through each type of identifier
-					if not bannedids[type] then bannedids[type] = {} end
-					for _, id in pairs(ids) do -- Go through each id in the type
-						local skip = false
-						for _, id2 in pairs(bannedids[type]) do
-							if id == id2 then
-								skip = true
-							end
-						end
-						bannedids[type][#bannedids[type] + 1] = id
-					end
-				end
-			end
-		end
-		for iden, idtable in pairs(banned) do
+	local identifiersBanned, banList = isIdentifiersBanned(identifiers)
+	if #banList > 1 then
+		for bannedIdentifier, bannedIdentifiers in pairs(banList) do
 			exports.oxmysql:execute("UPDATE bans SET identifiers = @identifiers, time = @time, reason = @reason, bannedBy = @bannedBy WHERE identifier = @identifier", {
-				["@identifier"] = iden,
-				["@identifiers"] = json.encode(idtable),
+				["@identifier"] = bannedIdentifier,
+				["@identifiers"] = json.encode(mergeIdentifiers(bannedIdentifiers, identifiers)),
 				["@time"] = 0,
-				["@reason"] = "Ban Evasion",
+				["@reason"] = "Attempting to ban evade",
 				["@bannedBy"] = "Ban System"
-			}, function()
-			
-			end)
+			})
+			SS.Bans[bannedIdentifier] = {
+				identifier = bannedIdentifier,
+				identifiers = bannedIdentifiers,
+				time = 0,
+				reason = "Attempting to ban evade",
+				bannedBy = "Ban System"
+			}
 		end
 	end
-	return (#banned >= 1)
+	local unbanTime
+	local banLength
+	if SS.Bans[identifier].time == 0 then
+		unbanTime = "Never"
+		banLength = "Forever"
+	else
+		unbanTime = os.date('%H:%M:%S %d-%m-%y', SS.Bans[identifier].time + (SS.TimeZone * 60 * 60))
+		banLength = SS.Bans[identifier].time - os.time()
+	end
+	local banCard = {
+		["type"] = "AdaptiveCard",
+		["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
+		["version"] = "1.3",
+		["body"] = {
+			{
+				["type"] = "Image",
+				["url"] = SS.Queue.Banner
+			},
+			{
+				["type"] = "TextBlock",
+				["text"] = "You have been banned",
+				["wrap"] = true,
+				["weight"] = "Bolder"
+			},
+			{
+				["type"] = "ColumnSet",
+				["columns"] = {
+					{
+						["type"] = "Column",
+						["width"] = "90px",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = "Reason",
+								["wrap"] = true,
+								["weight"] = "Bolder"
+							}
+						}
+					},
+					{
+						["type"] = "Column",
+						["width"] = "stretch",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = SS.Bans[identifier].reason,
+								["wrap"] = true
+							}
+						}
+					}
+				}
+			},
+			{
+				["type"] = "ColumnSet",
+				["columns"] = {
+					{
+						["type"] = "Column",
+						["width"] = "90px",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = "Unban Time",
+								["wrap"] = true,
+								["weight"] = "Bolder"
+							}
+						},
+						["horizontalAlignment"] = "Center"
+					},
+					{
+						["type"] = "Column",
+						["width"] = "stretch",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = unbanTime,
+								["wrap"] = true
+							}
+						}
+					}
+				}
+			},
+			{
+				["type"] = "ColumnSet",
+				["columns"] = {
+					{
+						["type"] = "Column",
+						["width"] = "90px",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = "Length",
+								["wrap"] = true,
+								["weight"] = "Bolder"
+							}
+						}
+					},
+					{
+						["type"] = "Column",
+						["width"] = "stretch",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = banLength,
+								["wrap"] = true
+							}
+						}
+					}
+				}
+			},
+			{
+				["type"] = "ColumnSet",
+				["columns"] = {
+					{
+						["type"] = "Column",
+						["width"] = "90px",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = "Banned By",
+								["wrap"] = true,
+								["weight"] = "Bolder"
+							}
+						}
+					},
+					{
+						["type"] = "Column",
+						["width"] = "stretch",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = SS.Bans[identifier].bannedBy,
+								["wrap"] = true
+							}
+						}
+					}
+				}
+			},
+			{
+				["type"] = "ColumnSet",
+				["columns"] = {
+					{
+						["type"] = "Column",
+						["width"] = "90px",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = "Account ID",
+								["wrap"] = true,
+								["weight"] = "Bolder"
+							}
+						}
+					},
+					{
+						["type"] = "Column",
+						["width"] = "stretch",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = permid,
+								["wrap"] = true
+							}
+						}
+					}
+				}
+			},
+			{
+				["type"] = "ActionSet",
+				["actions"] = {
+					{
+						["type"] = "Action.OpenUrl",
+						["title"] = "Ban Appeal",
+						["url"] = SS.Queue.Appeal
+					}
+				}
+			}
+		}
+	}
+
+	return identifiersBanned, banCard
 end
 
 AddEventHandler('playerConnecting', function(name, setReason, deferrals)
@@ -239,9 +401,21 @@ AddEventHandler('playerConnecting', function(name, setReason, deferrals)
         local idError, userError = createUser(identifiers)
 
         if idError or userError then 
-            DropPlayer(src, t['connectionError'])
+            DropPlayer(src, t["connectionError"])
         else
-            updateIdentifiers(identifiers)
+            local updateError = updateIdentifiers(identifiers)
+
+			if updateError then
+				DropPlayer(src, t["connectionError"])
+			end
+			
+			local banned, banCard = isBanned(identifiers.identifier, identifiers.permid)
+			
+			if banned then
+				deferrals.presentCard(banCard, function(data, rawData) end)
+				Wait(6000)
+				setReason("Banned")
+			end
         end
     end
 end)

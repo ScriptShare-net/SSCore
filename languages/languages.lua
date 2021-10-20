@@ -1,5 +1,5 @@
 Languages = {
-  ['en'] = {
-      ['connectionError'] = "There was an error whilst connecting to the server."
-  }  
+	["en"] = {
+		["connectionError"] = "There was an error whilst connecting to the server.",
+	}  
 }
