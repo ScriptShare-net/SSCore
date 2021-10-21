@@ -11,6 +11,7 @@ SS.Queue.Forum = "https://discord.gg/CBTtWXQE6Q" -- Forum Link
 SS.Queue.Banner = "https://media.discordapp.net/attachments/717607043443458070/788276497139236894/Fivem-Banner.png?width=1260&height=138" -- Banner PNG 1260 * 138
 SS.Queue.Appeal = "https://discord.gg/CBTtWXQE6Q" -- Appeal Link
 SS.Queue.SkipPlayer = true -- Enable the Skip_Player command
+SS.Queue.RemovePlayer = true -- Enable the Remove_Player command
 SS.Queue.Whitelist = false -- Enable Group Whitelist
 SS.Queue.Ranks = { -- ["Rank Name"] = Weight, Higher weight means slower queue. 0 means skip queue. You will need to have the amount of reserved slots available to skip queue.
 	["Member"] = 100,

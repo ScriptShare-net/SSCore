@@ -690,3 +690,20 @@ CreateThread(function()
 		end
 	end
 end)
+
+if SS.Queue.SkipPlayer then
+	RegisterCommand("Skip_Player", function(r, args, s)
+		if args[1] then
+			connectPlayer(args[1], deferralsList[args[1]], false)
+		end
+	end)
+end
+
+if SS.Queue.RemovePlayer then
+	RegisterCommand("Remove_Player", function(r, args, s)
+		if args[1] then
+			deferralsList[args[1]].done(t["removePlayer"])
+			removeFromQueue(args[1])
+		end
+	end)
+end
