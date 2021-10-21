@@ -1,3 +1,8 @@
+local next = next
+local slotsFilled = 0
+local Queue = {}
+local deferralsList = {}
+
 local whitelistCard = {
     ["type"] = "AdaptiveCard",
     ["body"] = {
@@ -69,79 +74,32 @@ local function plyId(source)
     }, function(result)
         if result then
             identifiers.permid = result
+			return identifiers
+		else
+			return false
         end
     end)
-
-    return identifiers
 end
 
 local function createUser(identifiers)
-    local idError = false
-    local userError = false
-
-    exports.oxmysql:execute("INSERT INTO identifiers (identifier, licences, steams, lives, xbls, fivems, ips, discords, licences2, tokens) VALUES (@identifier, @licences, @steams, @lives, @xbls, @fivems, @ips, @discords, @licences2, @tokens)", {
-		["@licences"] = identifiers.licences,
+    exports.oxmysql:execute("INSERT INTO identifiers (identifier, gtas, steams, lives, xboxs, fivems, ips, discords, gta2s, tokens) VALUES (@identifier, @licences, @steams, @lives, @xboxs, @fivems, @ips, @discords, @gta2s, @tokens)", {
 		["@identifier"] = identifiers[SS.Identifier],
-		["@steams"] = identifiers.steams,
-		["@xbls"] = identifiers.xbls,
-		["@ips"] = identifiers.ips,
-		["@lives"] = identifiers.lives,
-		["@fivems"] = identifiers.fivems,
-		["@discords"] = identifiers.discords,
-		["@licences2"] = identifiers.licences2,
-		["@tokens"] = identifiers.tokens,
+		["@gtas"] = json.encode({identifiers.gta}),
+		["@steams"] = json.encode({identifiers.steam}),
+		["@xboxs"] = json.encode({identifiers.xbox}),
+		["@ips"] = json.encode({identifiers.ip}),
+		["@lives"] = json.encode({identifiers.live}),
+		["@fivems"] = json.encode({identifiers.fivem}),
+		["@discords"] = json.encode({identifiers.discord}),
+		["@gta2s"] = json.encode({identifiers.gta2}),
+		["@tokens"] = json.encode({identifiers.tokens}),
 	}, function(rows)
-		idError = not (rows >= 1)
+		exports.oxmysql:execute("INSERT INTO users (identifier) VALUES (@identifier)", {
+			["@identifier"] = identifiers[SS.Identifier]
+		}, function(result)
+			return not (rows >= 1), not (result >= 1)
+		end)
 	end)
-
-    exports.oxmysql:execute("INSERT INTO users (identifier) VALUES (@identifier)", {
-        ["@identifier"] = identifiers[SS.Identifier]
-    }, function(result)
-        userError = not (result >= 1)
-    end)
-
-    return idError, userError
-end
-
-local function updateIdentifiers(identifiers)
-	local updateError = false
-	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
-		["@identifier"] = identifiers[SS.Identifier]
-	}, function(result)
-		if result then
-			local idtable = result
-			for k,v in pairs(idtable) do
-				idtable[k] = json.decode(v)
-				if identifiers[string.sub(k, 1, -2)] then
-					local skip = false
-					for k2,v2 in pairs(v) do
-						if v2 == identifiers[string.sub(k, 1, -2)] then
-							skip = true
-						end
-					end
-					if not skip then
-						idtable[k][#idtable[k] + 1] = identifiers[string.sub(k, 1, -2)]
-					end
-				end
-				idtable[k] = json.encode(idtable[k])
-			end
-		end
-	end)
-	exports.oxmysql:execute("UPDATE identifiers SET discords = @discords, steams = @steams, gta5s = @gta5s, tokens = @tokens, lives = @lives, xboxs = @xboxs, ips = @ips, fivems = @fivems, gta2s = @gta2s WHERE identifier = @identifier", {
-		["@identifier"] = identifiers[SS.Identifier],
-		["@discords"] = idtable.discords,
-		["@steams"] = idtable.steams,
-		["@gta5s"] = idtable.gta5s,
-		["@tokens"] = idtable.tokens,
-		["@lives"] = idtable.lives,
-		["@xboxs"] = idtable.xboxs,
-		["@ips"] = idtable.ips,
-		["@fivems"] = idtable.fivems,
-		["@gta2s"] = idtable.gta2s
-	}, function(rows)
-		updateError = not (rows >= 1)
-	end)
-	return updateError
 end
 
 local function findDuplicateIdentifiers(identifiers1, identifiers2)
@@ -167,6 +125,42 @@ local function mergeIdentifiers(identifiers1, identifiers2)
 	return identifiers
 end
 
+local function addIdentifiers(idtable, identifiers)
+	local identifierstable = idtable
+	for type, idtbl in pairs(idtable) do
+		if not string.match(json.encode(idtable), identifiers[string.match(type, 1, -2)]) then
+			identifierstable[type][#identifierstable[type] + 1] = identifiers[string.match(type, 1, -2)]
+		end
+	end
+	return identifierstable
+end
+
+local function updateIdentifiers(identifiers)
+	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
+		["@identifier"] = identifiers[SS.Identifier]
+	}, function(result)
+		if result then
+			local idtable = json.encode(addIdentifiers(result, identifiers))
+			exports.oxmysql:execute("UPDATE identifiers SET discords = @discords, steams = @steams, gta5s = @gta5s, tokens = @tokens, lives = @lives, xboxs = @xboxs, ips = @ips, fivems = @fivems, gta2s = @gta2s WHERE identifier = @identifier", {
+				["@identifier"] = identifiers[SS.Identifier],
+				["@discords"] = idtable.discords,
+				["@steams"] = idtable.steams,
+				["@gta5s"] = idtable.gta5s,
+				["@tokens"] = idtable.tokens,
+				["@lives"] = idtable.lives,
+				["@xboxs"] = idtable.xboxs,
+				["@ips"] = idtable.ips,
+				["@fivems"] = idtable.fivems,
+				["@gta2s"] = idtable.gta2s
+			}, function(rows)
+				return not (rows >= 1)
+			end)
+		else
+			return false
+		end
+	end)
+end
+
 local function isIdentifiersBanned(identifiers)
 	local banList = {}
 	for identifier, player in pairs(SS.Bans) do
@@ -185,10 +179,14 @@ local function isBanned(identifier, permid)
 	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(result)
+		if not result then return false end
 		for k,v in pairs(result) do
 			identifiers[k] = json.decode(v)
 		end
 	end)
+	while not next(identifiers) do
+		Wait(500)
+	end
 	local identifiersBanned, banList = isIdentifiersBanned(identifiers)
 	if #banList > 1 then
 		for bannedIdentifier, bannedIdentifiers in pairs(banList) do
@@ -389,6 +387,272 @@ local function isBanned(identifier, permid)
 	return identifiersBanned, banCard
 end
 
+function getRank(identifier)
+	local highestRank
+	local priority
+	exports.oxmysql:execute("SELECT groups FROM users WHERE identifier = @identifier", {
+		["@identifier"] = identifier
+	}, function(groups)
+		for _, name in pairs(json.decode(groups)) do
+			for name2, prio in pairs(SS.Queue.Ranks) do
+				if name == name2 then
+					if highestRank then
+						if SS.Queue.Ranks[highestRank] then
+							if SS.Queue.Ranks[highestRank] > prio then
+								highestRank = name2
+							end
+						end
+					else
+						highestRank = name2
+					end
+				end
+			end
+		end
+		if not highestRank and not SS.Queue.Whitelist then
+			highestRank = "none"
+		end
+		return highestRank
+	end)
+end
+
+local function inQueue(identifier)
+	return string.match(json.encode(Queue), identifier)
+end
+
+local function positionInQueue(identifier)
+	local position = 0
+	local length = 0
+	for prio, queue in pairs(Queue) do
+		length = length + #queue
+		if string.match(json.encode(queue), identifier) then
+			for pos, playertbl in pairs(queue) do
+				position = position + 1
+				for id, rank in pairs(playertbl) do
+					if id == identifier then
+						return position, length, rank, pos
+					end
+				end
+			end
+		else
+			position = position + #queue
+		end
+	end
+end
+
+local function getFirstInQueue()
+	for prio, queue in pairs(Queue) do
+		for pos, playertbl in pairs(queue) do
+			for id, rank in pairs(playertbl) do
+				return id
+			end
+		end
+	end
+end
+
+local function removeFromQueue(identifier)
+	local _, _, queue, pos = positionInQueue
+	for i = pos + 1, #Queue[SS.Queue.Ranks[queue]], 1 do
+		Queue[SS.Queue.Ranks[queue]][i - 1] = Queue[SS.Queue.Ranks[queue]][i]
+	end
+	Queue[SS.Queue.Ranks[queue]][#Queue[SS.Queue.Ranks[queue]]] = nil
+	if not #Queue[SS.Queue.Ranks[queue]] then
+		Queue[SS.Queue.Ranks[queue]] = nil
+	end
+	deferralsList[identifer] = nil
+end
+
+local function addToQueue(identifier, rank, deferrals)
+	Queue[SS.Queue.Ranks[rank]] = Queue[SS.Queue.Ranks[rank]] or {}
+	Queue[SS.Queue.Ranks[rank]][#Queue[SS.Queue.Ranks[rank]] + 1][identifier] = rank
+	deferralsList[identifer] = deferrals
+end
+
+local function connectPlayer(identifier, deferrals, noSlot)
+	deferrals.done()
+	if not noSlot then
+		slotsFilled = slotsFilled + 1
+	end
+
+	if inQueue(identifier) then
+		removeFromQueue(identifier)
+	end
+end
+
+local function updateQueue(identifier)
+	local currentQueue, lengthQueue, _, _ = positionInQueue(identifier)
+	local queueCard = {
+		["type"] = "AdaptiveCard",
+		["body"] = {
+			{
+				["type"] = "Image",
+				["url"] = SS.Queue.Banner
+			},
+			{
+				["type"] = "TextBlock",
+				["size"] = "Medium",
+				["weight"] = "Bolder",
+				["text"] = "Supremacy FiveM",
+				["horizontalAlignment"] = "Center"
+			},
+			{
+				["type"] = "TextBlock",
+				["text"] = "Welcome to Supremacy FiveM.",
+				["wrap"] = true,
+				["horizontalAlignment"] = "Center"
+			},
+			{
+				["type"] = "TextBlock",
+				["text"] = "Thank you for choosing our server.",
+				["wrap"] = true,
+				["horizontalAlignment"] = "Center"
+			},
+			{
+				["type"] = "ColumnSet",
+				["columns"] = {
+					{
+						["type"] = "Column",
+						["width"] = "auto",
+						["items"] = {
+							{
+								["type"] = "TextBlock",
+								["text"] = "Current Queue:",
+								["wrap"] = true,
+								["horizontalAlignment"] = "Center"
+							}
+						}
+					},
+					{
+						["type"] = "Column",
+						["width"] = "auto",
+						["items"] = {
+							{
+								["type"] = "ColumnSet",
+								["columns"] = {
+									{
+										["type"] = "Column",
+										["width"] = "auto",
+										["items"] = {
+											{
+												["type"] = "TextBlock",
+												["text"] = tostring(currentQueue),
+												["wrap"] = true,
+												["horizontalAlignment"] = "Center"
+											}
+										}
+									},
+									{
+										["type"] = "Column",
+										["width"] = "auto",
+										["items"] = {
+											{
+												["type"] = "TextBlock",
+												["text"] = "/",
+												["wrap"] = true,
+												["horizontalAlignment"] = "Center",
+												["separator"] = true,
+												["height"] = "stretch"
+											}
+										}
+									},
+									{
+										["type"] = "Column",
+										["width"] = "auto",
+										["items"] = {
+											{
+												["type"] = "TextBlock",
+												["text"] = tostring(lengthQueue),
+												["wrap"] = true,
+												["horizontalAlignment"] = "Center",
+												["height"] = "stretch"
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				},
+				["horizontalAlignment"] = "Center"
+			},
+			{
+				["type"] = "ColumnSet",
+				["columns"] = {
+					{
+						["type"] = "Column",
+						["width"] = "auto",
+						["items"] = {
+							{
+								["type"] = "ActionSet",
+								["actions"] = {
+									{
+										["type"] = "Action.OpenUrl",
+										["title"] = "Forum",
+										["url"] = SS.Queue.Forum
+									}
+								}
+							}
+						}
+					},
+					{
+						["type"] = "Column",
+						["width"] = "auto",
+						["items"] = {
+							{
+								["type"] = "ActionSet",
+								["actions"] = {
+									{
+										["type"] = "Action.OpenUrl",
+										["title"] = "Discord",
+										["url"] = SS.Queue.Discord
+									}
+								}
+							}
+						}
+					}
+				},
+				["horizontalAlignment"] = "Center"
+			}
+		},
+		["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
+		["version"] = "1.3"
+	}
+	deferrals.presentCard(queueCard, function(data, rawData) end)
+end
+
+local function startConnection(identifiers, setReason, deferrals)
+	local updateError = updateIdentifiers(identifiers)
+
+	if updateError then
+		DropPlayer(src, t["connectionError"])
+		return
+	end
+	
+	local banned, banCard = isBanned(identifiers.identifier, identifiers.permid)
+	
+	if banned then
+		deferrals.presentCard(banCard, function(data, rawData) end)
+		Wait(6000)
+		setReason(t["banned"])
+		return
+	end
+
+	local highestRank = getRank(identifiers.identifier)
+
+	if not highestRank then
+		deferrals.presentCard(whitelistCard, function(data, rawData) end)
+		Wait(6000)
+		setReason(t["whitelist"])
+		return
+	end
+
+	if SS.Queue.Ranks[highestRank] == 0 then
+		connectPlayer(identifiers.identifier, deferrals, true)
+		return
+	end
+
+	addToQueue(identifiers.identifier, highestRank, deferrals)
+end
+
 AddEventHandler('playerConnecting', function(name, setReason, deferrals)
 	deferrals.defer()
 
@@ -396,27 +660,33 @@ AddEventHandler('playerConnecting', function(name, setReason, deferrals)
     local identifiers = plyId(src)
     
     if identifiers.permid then 
-        startConnection()
+        startConnection(identifiers, setReason, deferrals)
     else
         local idError, userError = createUser(identifiers)
 
         if idError or userError then 
             DropPlayer(src, t["connectionError"])
-        else
-            local updateError = updateIdentifiers(identifiers)
-
-			if updateError then
-				DropPlayer(src, t["connectionError"])
-			end
-			
-			local banned, banCard = isBanned(identifiers.identifier, identifiers.permid)
-			
-			if banned then
-				deferrals.presentCard(banCard, function(data, rawData) end)
-				Wait(6000)
-				setReason("Banned")
-			end
+			return
         end
+
+		startConnection(identifiers, setReason, deferrals)
     end
 end)
 
+AddEventHandler('playerDropped', function()
+	slotsFilled = slotsFilled - 1
+end)
+
+CreateThread(function()
+	while true do
+		Wait(500)
+		if slotsFilled < SS.Queue.Slots then
+			connectPlayer(getFirstInQueue(), deferralsList[getFirstInQueue()], false)
+			for identifier, deferrals in pairs(deferralsList) do
+				updateQueue(identifer)
+			end
+		else
+			Wait(5000)
+		end
+	end
+end)
