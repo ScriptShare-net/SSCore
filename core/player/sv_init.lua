@@ -374,6 +374,6 @@ function SS.Player.SaveAll()
 	local players = SS.Player.GetAll()
 
 	for #players > 0 do 
-		print("Stuff")
+		SS.Player.Save(#players)
 	end
 end
