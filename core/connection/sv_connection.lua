@@ -2,6 +2,7 @@ local next = next
 local slotsFilled = 0
 local Queue = {}
 local deferralsList = {}
+local sourceList = {}
 
 local whitelistCard = {
     ["type"] = "AdaptiveCard",
@@ -387,9 +388,8 @@ local function isBanned(identifier, permid)
 	return identifiersBanned, banCard
 end
 
-function getRank(identifier)
+local function getRank(identifier)
 	local highestRank
-	local priority
 	exports.oxmysql:execute("SELECT groups FROM users WHERE identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(groups)
@@ -458,13 +458,15 @@ local function removeFromQueue(identifier)
 	if not #Queue[SS.Queue.Ranks[queue]] then
 		Queue[SS.Queue.Ranks[queue]] = nil
 	end
-	deferralsList[identifer] = nil
+	deferralsList[identifier] = nil
+	sourceList[identifier] = nil
 end
 
-local function addToQueue(identifier, rank, deferrals)
+local function addToQueue(identifier, rank, deferrals, src)
 	Queue[SS.Queue.Ranks[rank]] = Queue[SS.Queue.Ranks[rank]] or {}
 	Queue[SS.Queue.Ranks[rank]][#Queue[SS.Queue.Ranks[rank]] + 1][identifier] = rank
-	deferralsList[identifer] = deferrals
+	deferralsList[identifier] = deferrals
+	sourceList[identifier] = src
 end
 
 local function connectPlayer(identifier, deferrals, noSlot)
@@ -476,6 +478,8 @@ local function connectPlayer(identifier, deferrals, noSlot)
 	if inQueue(identifier) then
 		removeFromQueue(identifier)
 	end
+
+	SS.Selector.Initiate(identifier, sourceList[identifier])
 end
 
 local function updateQueue(identifier)
@@ -619,11 +623,11 @@ local function updateQueue(identifier)
 	deferrals.presentCard(queueCard, function(data, rawData) end)
 end
 
-local function startConnection(identifiers, setReason, deferrals)
+local function startConnection(identifiers, deferrals)
 	local updateError = updateIdentifiers(identifiers)
 
 	if updateError then
-		DropPlayer(src, t["connectionError"])
+		deferrals.done(t["connectionError"])
 		return
 	end
 	
@@ -632,7 +636,7 @@ local function startConnection(identifiers, setReason, deferrals)
 	if banned then
 		deferrals.presentCard(banCard, function(data, rawData) end)
 		Wait(6000)
-		setReason(t["banned"])
+		deferrals.done(t["banned"])
 		return
 	end
 
@@ -641,7 +645,7 @@ local function startConnection(identifiers, setReason, deferrals)
 	if not highestRank then
 		deferrals.presentCard(whitelistCard, function(data, rawData) end)
 		Wait(6000)
-		setReason(t["whitelist"])
+		deferrals.done(t["whitelist"])
 		return
 	end
 
@@ -650,7 +654,7 @@ local function startConnection(identifiers, setReason, deferrals)
 		return
 	end
 
-	addToQueue(identifiers.identifier, highestRank, deferrals)
+	addToQueue(identifiers.identifier, highestRank, deferrals, identifiers.source)
 end
 
 AddEventHandler('playerConnecting', function(name, setReason, deferrals)
@@ -660,16 +664,16 @@ AddEventHandler('playerConnecting', function(name, setReason, deferrals)
     local identifiers = plyId(src)
     
     if identifiers.permid then 
-        startConnection(identifiers, setReason, deferrals)
+        startConnection(identifiers, deferrals)
     else
         local idError, userError = createUser(identifiers)
 
         if idError or userError then 
-            DropPlayer(src, t["connectionError"])
+            deferrals.done(t["connectionError"])
 			return
         end
 
-		startConnection(identifiers, setReason, deferrals)
+		startConnection(identifiers, deferrals)
     end
 end)
 
@@ -683,7 +687,7 @@ CreateThread(function()
 		if slotsFilled < SS.Queue.Slots then
 			connectPlayer(getFirstInQueue(), deferralsList[getFirstInQueue()], false)
 			for identifier, deferrals in pairs(deferralsList) do
-				updateQueue(identifer)
+				updateQueue(identifier)
 			end
 		else
 			Wait(5000)

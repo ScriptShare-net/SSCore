@@ -33,3 +33,9 @@ SS.Logs.IconURL = "" -- URL
 SS.Logs.FooterText = "Powered by ScriptShare.net"
 SS.Logs.FooterIcon = "" -- URL
 SS.Logo.Avatar = "" -- Avatar
+
+SS.Selector.Limit = 3 -- Set how many characters max
+SS.Selector.Ranks = {
+	["Twitch"] = 4,
+	["Donator"] = 5,
+}
