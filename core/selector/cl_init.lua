@@ -1,10 +1,14 @@
 SS.Selector = {}
-SS.Selector.Characters = {}
 
+local characters = {}
 local camera
 
 local function loadSkin(skin)
-
+	exports["SSCore"].applyModel(skin.model)
+	exports["SSCore"].applySkin(skin.skin)
+	exports["SSCore"].applyTattoos(skin.tattoos)
+	exports["SSCore"].applyClothing(skin.clothing)
+	exports["SSCore"].applyCosmetics(skin.cosmetics)
 end
 
 local function pedgoto(ped, x, y, z)
@@ -28,11 +32,11 @@ local function turntohead(ped, heading, timeout)
 	Wait(timeout)
 end
 
-local function loadCharacter(charID)
+local function loadFirstCharacter()
 	local player = PlayerPedId()
 	Wait(500)
 	DoScreenFadeOut(10)
-	loadSkin(SS.Selector.Characters[charID].skin)
+	loadSkin(characters[characters.favourite].skin)
 	Wait(500)
 	SetEntityCoords(player, -78.07911682129, -836.62414550782, 221.9912109375)
 	DoScreenFadeOut(10)
@@ -54,11 +58,12 @@ local function loadCharacter(charID)
 	pedgoto(player, -83.538459777832, -835.75384521484, 221.9912109375)
 	turntohead(player, 340.15747070312, 1000)
 	FreezeEntityPosition(player, true)
+	exports["SSCore"].uiEnable("Selector")
 end
 
-RegisterNetEvent("ss:Client:Initiate", function(characters)
+RegisterNetEvent("ss:Client:Initiate", function(characterData)
+	characters = characterData
 	exports["SSCore"].uiDisableAll()
-	exports["SSCore"].uiEnable("Selector")
 	SetNuiFocus(true, true)
-	loadCharacter(1)
+	loadFirstCharacter()
 end)

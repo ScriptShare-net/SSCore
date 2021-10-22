@@ -1,6 +1,6 @@
 SSCore Database
     - users(PK identifier, permid, groups)
-    - character(FK identifier, characterSlot, firstname, lastname, skin, age, job, group, position, status)
+    - characters(FK identifier, characterSlot, firstname, lastname, skin, age, job, group, position, status)
         foreign key (identifier) references Users.identifier
     - identifiers(identifier, discords, steams, gtas, tokens, lives, xboxs, ips, fivems, gta2s)
     - bans(FK identifier, identifiers, time, reason, bannedBy)

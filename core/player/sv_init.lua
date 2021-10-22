@@ -1,11 +1,12 @@
 SS.Player = {}
 
-function SS.Player.Create(permID, source)
+function SS.Player.Create(identifier, permID, source)
 	SS.Players[source] = {}
 	local self = {}
 	
 	self.permID = permID
 	self.source = source
+	self.identifier = identifier
 	
 	-- Money --
 	self.accounts = {
@@ -373,7 +374,7 @@ end
 function SS.Player.SaveAll()
 	local players = SS.Player.GetAll()
 
-	for #players > 0 do 
-		SS.Player.Save(#players)
+	for src = 1, #players do 
+		SS.Player.Save(src)
 	end
 end

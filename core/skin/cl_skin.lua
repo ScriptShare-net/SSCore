@@ -1,7 +1,155 @@
 local hiddenClothing = {}
+local currentSkin = {}
+local savedSkin = {}
+
+local CLOTHING_TOGGLES = {
+    [0] = {
+        helmet = -1,
+        ears = -1,
+        glasses = 0,
+        mask = 0,
+        chain = 0,
+        watch = -1,
+        bracelet = -1,
+        tshirt = 15,
+        torso = 15,
+        arms = 15,
+        shoes = 34,
+        pants = 61,
+        bproof = 0,
+        decals = 0,
+		bag = 0,
+    },
+
+    [1] = {
+        helmet = -1,
+        ears = -1,
+        glasses = 5,
+        mask = 0,
+        chain = 0,
+        watch = -1,
+        bracelet = -1,
+        tshirt = 14,
+        torso = 15,
+        arms = 15,
+        shoes = 35,
+        pants = 15,
+        bproof = 0,
+        decals = 0,
+		bag = 0,
+    }
+}
+
+exports("getCurrentSkin", function()
+    return currentSkin
+end)
+
+exports("getSavedSkin", function()
+    return savedSkin
+end)
+
+exports("saveCurrentSkin", function()
+	savedSkin = currentSkin
+	TriggerServerEvent("ss:Server:SaveSkin", savedSkin)
+end)
+
+exports("loadSavedSkin", function()
+	exports["SSCore"].applyModel(savedSkin.model)
+	exports["SSCore"].applySkin(savedSkin.skin)
+	exports["SSCore"].applyTattoos(savedSkin.tattoos)
+	exports["SSCore"].applyClothing(savedSkin.clothing)
+	exports["SSCore"].applyCosmetics(savedSkin.cosmetics)
+end)
+
+exports("skinGetDefaults", function()
+    return {
+        model = "mp_m_freemode_01",
+        sex = 0,
+
+        skin = exports["SSCore"].getDefaultSkin(),
+        cosmetics = exports["SSCore"].getDefaultCosmetics(),
+        clothing = exports["SSCore"].getDefaultClothing(0),
+        tattoos = {}
+    }
+end)
+
+exports("getDefaultSkin", function()
+    return {
+        mother = 0,
+        father = 0,
+        shapemix = 50,
+        colour = 0,
+        lip_thickness = 0,
+        neck_thickness = 0,
+
+        freckles = {texture = 0, opacity = 0},
+        age = {texture = 0, opacity = 0},
+        damage = {texture = 0, opacity = 0},
+        complexion = {texture = 0, opacity = 0},
+        blemish = {texture = 0, opacity = 0},
+
+        nose = {width = 0, heigh = 0, twist = 0, peak_height = 0, peak_length = 0, peak_lowering = 0},
+        cheeks = {width = 0, height = 0, chub = 0},
+        eyes = {size = 0, colour = 0, brow_height = 0, brow_forward = 0},
+        jaw = {width = 0, length = 0},
+        chin = {lower = 0, length = 0, width = 0, tip = 0}
+    }
+end)
+
+exports("getDefaultCosmetics", function()
+    return {
+        head = {style = 1, thickness = 100, colour = 0, highlights = 0},
+        beard = {style = 0, thickness = 0, colour = 0, highlights = 0},
+        chest = {style = 0, thickness = 0, colour = 0, highlights = 0},
+        eyebrows = {style = 0, thickness = 0, colour = 0, highlights = 0},
+        lipstick = {style = 0, thickness = 0, colour = 0, highlights = 0},
+        makeup = {style = 0, thickness = 0, colour = 0, highlights = 0},
+        blush = {style = 0, thickness = 0, colour = 0, highlights = 0},
+    }
+end)
+
+exports("getDefaultClothing", function(gender)
+	if not gender then
+		return {
+			helmet = {model = -1, texture = 0},
+			glasses = {model = 0, texture = 0},
+			ears = {model = -1, texture = 0},
+			mask = {model = 0, texture = 0},
+			torso = {model = 0, texture = 0},
+			tshirt = {model = 0, texture = 0},
+			arms = {model = 0, texture = 0},
+			chain = {model = 0, texture = 0},
+			watch = {model = -1, texture = 0},
+			bracelet = {model = -1, texture = 0},
+			pants = {model = 0, texture = 0},
+			shoes = {model = 0, texture = 0},
+			decals = {model = 0, texture = 0},
+			bproof = {model = 0, texture = 0},
+			bag = {model = 0, texture = 0},
+		}
+	else
+		return {
+			helmet = {model = -1, texture = 0},
+			glasses = {model = 5, texture = 0},
+			ears = {model = -1, texture = 0},
+			mask = {model = 0, texture = 0},
+			torso = {model = 0, texture = 0},
+			tshirt = {model = 0, texture = 0},
+			arms = {model = 0, texture = 0},
+			chain = {model = 0, texture = 0},
+			watch = {model = -1, texture = 0},
+			bracelet = {model = -1, texture = 0},
+			pants = {model = 0, texture = 0},
+			shoes = {model = 0, texture = 0},
+			decals = {model = 0, texture = 0},
+			bproof = {model = 0, texture = 0},
+			bag = {model = 0, texture = 0},
+		}
+	end
+end)
 
 exports("applyModel", function(model, entity)
-    local ped = entity or PlayerId()
+    local ped = entity or PlayerPedId()
     local modelHash = GetHashKey(model)
 
     if not IsModelValid(modelHash) then
@@ -17,6 +165,15 @@ exports("applyModel", function(model, entity)
 
 	SetPlayerModel(ped, modelHash)
 	SetPedDefaultComponentVariation(ped)
+
+	if not entity then
+		currentSkin.model = model
+		if model == "mp_f_freemode_01" then
+			currentSkin.sex = 1
+		elseif model == "mp_m_freemode_01" then
+			currentSkin.sex = 0
+		end
+	end
 end)
 
 exports("applySkin", function(skin, entity)
@@ -79,21 +236,25 @@ exports("applySkin", function(skin, entity)
     SetPedHeadOverlay(ped, 6, skin.complexion.texture, (skin.complexion.opacity or 0.0)/100.0) -- Complexion
     SetPedHeadOverlay(ped, 7, skin.damage.texture, (skin.damage.opacity or 0.0)/100.0) -- Sun Damage
     SetPedHeadOverlay(ped, 9, skin.freckles.texture, (skin.freckles.opacity or 0.0)/100.0) -- Moles-Freckles
+	
+	if not entity then
+		currentSkin.skin = skin
+	end
 end)
 
-exports("applyClothing", function(clothing, sex, entity)
+exports("applyClothing", function(clothing, entity)
     local ped = entity or PlayerPedId()
     local clothing = clothing
 
-    for k, state in pairs(hiddenClothing) do
-		if state then
-			if sex == 0 then
-				clothing[k].model = CLOTHING_TOGGLES[0][k]
-			else
-				clothing[k].model = CLOTHING_TOGGLES[1][k]
+	if not entity then
+		for k, state in pairs(hiddenClothing) do
+			if state then
+				clothing[k].model = CLOTHING_TOGGLES[currentSkin.sex][k]
 			end
-        end
-    end
+		end
+
+		currentSkin.clothing = clothing
+	end
 
     -- Clothing Props
     if clothing.helmet.model == -1 then
@@ -133,4 +294,67 @@ exports("applyClothing", function(clothing, sex, entity)
     SetPedComponentVariation(ped, 9,  clothing.bproof.model, clothing.bproof.texture, 2) -- bulletproof
     SetPedComponentVariation(ped, 7,  clothing.chain.model,  clothing.chain.texture, 2)  -- chain
     SetPedComponentVariation(ped, 5,  clothing.bag.model,    clothing.bag.texture, 2)   -- Bag
+end)
+
+exports("applyTattoos", function(tattoos, entity)
+    local ped = entity or PlayerPedId()
+
+    ClearPedDecorations(ped)
+
+    for i, tattoo in ipairs(tattoos) do
+        SetPedDecoration(ped, GetHashKey(tattoo.collection), GetHashKey(tattoo.hash))
+    end
+
+	if not entity then
+		currentSkin.tattos = tattoos
+	end
+end)
+
+exports("applyCosmetics", function(cosmetics, entity)
+    local ped = entity or PlayerPedId()
+
+    if cosmetics.head then
+        SetPedComponentVariation(ped, 2, cosmetics.head.style, 0, 2)
+        SetPedHairColor(ped, cosmetics.head.colour, cosmetics.head.highlights)
+    end
+
+    -- Eyebrows
+    if cosmetics.eyebrows then
+        SetPedHeadOverlay(ped, 2, cosmetics.eyebrows.style, (cosmetics.eyebrows.thickness/100) + 0.0)
+        SetPedHeadOverlayColor(ped, 2, 1, cosmetics.eyebrows.colour, cosmetics.eyebrows.highlights)
+    end
+
+    -- Beard
+    if cosmetics.beard then
+        SetPedHeadOverlay(ped, 1, cosmetics.beard.style, (cosmetics.beard.thickness/100) + 0.0)
+        SetPedHeadOverlayColor(ped, 1, 1, cosmetics.beard.colour, cosmetics.beard.highlights)
+    end
+
+    -- Chest Hair
+    if cosmetics.chest then
+        SetPedHeadOverlay(ped, 10, cosmetics.chest.style, (cosmetics.chest.thickness/100) + 0.0)
+        SetPedHeadOverlayColor(ped, 10, 1, cosmetics.chest.colour, cosmetics.chest.highlights)
+    end
+
+    -- Makeup
+    if cosmetics.makeup then
+        SetPedHeadOverlay(ped, 4, cosmetics.makeup.style, (cosmetics.makeup.thickness/100) + 0.0)
+        SetPedHeadOverlayColor(ped, 4, 1, cosmetics.makeup.colour, cosmetics.makeup.highlights)
+    end
+
+    -- Lipstick
+    if cosmetics.lipstick then
+        SetPedHeadOverlay(ped, 8, cosmetics.lipstick.style, (cosmetics.lipstick.thickness/100) + 0.0)
+        SetPedHeadOverlayColor(ped, 8, 2, cosmetics.lipstick.colour, cosmetics.lipstick.highlights)
+    end
+
+    -- Blush
+    if cosmetics.blush then
+        SetPedHeadOverlay(ped, 5, cosmetics.blush.style, (cosmetics.blush.thickness/100) + 0.0)
+        SetPedHeadOverlayColor(ped, 5, 2, cosmetics.blush.colour, cosmetics.blush.highlights)
+    end
+	
+	if not entity then
+		currentSkin.cosmetics = cosmetics
+	end
 end)

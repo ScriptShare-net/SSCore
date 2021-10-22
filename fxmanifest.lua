@@ -16,3 +16,7 @@ server_scripts {
 client_scripts {
     '**/**/cl_*.lua'
 }
+
+dependencies {
+	'bob74_ipl'
+}
