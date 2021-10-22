@@ -6,17 +6,49 @@ version '1.00'
 author 'ScriptShare.net'
 
 shared_scripts {
-    '**/**/sh_*.lua'
+	'languages/languages.lua',
+	'**/sh_*.lua',
+	'**/**/sh_*.lua',
+	'**/sh_*.js',
+	'**/**/sh_*.js',
 }
 
 server_scripts {
-    '**/**/sv_*.lua',
+	'**/sv_*.lua',
+	'**/**/sv_*.lua',
+	'**/sv_*.js',
+	'**/**/sv_*.js',
 }
 
 client_scripts {
-    '**/**/cl_*.lua'
+	'**/cl_*.lua',
+	'**/**/cl_*.lua',
+	'**/cl_*.js',
+	'**/**/cl_*.js',
+
+}
+
+files {
+	'**/f_*.png',
+	'**/**/f_*.png',
+	'**/**/**/f_*.png',
+	'**/f_*.jpg',
+	'**/**/f_*.jpg',
+	'**/**/**/f_*.jpg',
+	'**/f_*.css',
+	'**/**/f_*.css',
+	'**/**/**/f_*.css',
+	'**/f_*.js',
+	'**/**/f_*.js',
+	'**/**/**/f_*.js',
+	'**/f_*.ogg',
+	'**/**/f_*.ogg',
+	'**/**/**/f_*.ogg',
+	'**/*.html',
+	'**/**/*.html',
+	'**/**/**/*.html',
 }
 
 dependencies {
-	'bob74_ipl'
+	'bob74_ipl',
 }

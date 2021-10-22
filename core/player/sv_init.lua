@@ -1,4 +1,5 @@
-SS.Player = {}
+SS.Player = SS.Player or {}
+SS.Players = {}
 
 function SS.Player.Create(identifier, permID, source)
 	SS.Players[source] = {}
@@ -227,7 +228,7 @@ function SS.Player.Create(identifier, permID, source)
 	end
 
 	self.SetBloodtype = function(blood)
-		for index, bloodtypes in pairs(SS.Player.bloodtypes) do
+		for index, bloodtypes in pairs(SS.Player.Bloodtypes) do
 			if bloodtypes == blood then  
 				self.bloodtype = blood
 			else

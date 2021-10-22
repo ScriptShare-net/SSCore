@@ -2,7 +2,6 @@ local next = next
 local slotsFilled = 0
 local Queue = {}
 local deferralsList = {}
-local sourceList = {}
 
 local whitelistCard = {
     ["type"] = "AdaptiveCard",
@@ -30,7 +29,7 @@ local whitelistCard = {
     ["version"] = "1.3"
 }
 
-local function plyId(source)
+local function plyId(source, cb)
     local identifiers = {
         ["source"] = source,
         ["gta"] = "nil",
@@ -70,20 +69,18 @@ local function plyId(source)
         identifiers.tokens[i] = GetPlayerToken(source, i)
     end
 
-    exports.oxmysql:execute("SELECT permid FROM users WHERE discord = @discord", {
-        ["@discord"] = identifiers.discord
+    exports.oxmysql:execute("SELECT permid FROM users WHERE identifier = @identifier", {
+        ["@identifier"] = identifiers[SS.Identifier]
     }, function(result)
-        if result then
+        if next(result) then
             identifiers.permid = result
-			return identifiers
-		else
-			return false
         end
+		cb(identifiers)
     end)
 end
 
-local function createUser(identifiers)
-    exports.oxmysql:execute("INSERT INTO identifiers (identifier, gtas, steams, lives, xboxs, fivems, ips, discords, gta2s, tokens) VALUES (@identifier, @licences, @steams, @lives, @xboxs, @fivems, @ips, @discords, @gta2s, @tokens)", {
+local function createUser(identifiers, cb)
+    exports.oxmysql:execute("INSERT INTO identifiers (identifier, gtas, steams, lives, xboxs, fivems, ips, discords, gta2s, tokens) VALUES (@identifier, @gtas, @steams, @lives, @xboxs, @fivems, @ips, @discords, @gta2s, @tokens)", {
 		["@identifier"] = identifiers[SS.Identifier],
 		["@gtas"] = json.encode({identifiers.gta}),
 		["@steams"] = json.encode({identifiers.steam}),
@@ -98,7 +95,7 @@ local function createUser(identifiers)
 		exports.oxmysql:execute("INSERT INTO users (identifier) VALUES (@identifier)", {
 			["@identifier"] = identifiers[SS.Identifier]
 		}, function(result)
-			return not (rows >= 1), not (result >= 1)
+			cb(not (rows.affectedRows >= 1), not (result.affectedRows >= 1))
 		end)
 	end)
 end
@@ -106,58 +103,55 @@ end
 local function findDuplicateIdentifiers(identifiers1, identifiers2)
 	local encodeIdentifiers = json.encode(identifiers2)
 	for _, id in pairs(identifiers1) do
-		if string.match(encodeIdentifiers, id) then
-			return true
+		if id ~= "nil" then
+			if string.match(encodeIdentifiers, id) then
+				return true
+			end
 		end
 	end
 	return false
 end
 
-local function mergeIdentifiers(identifiers1, identifiers2)
-	local identifiers = {}
-	for type, idtable in pairs(identifiers1) do
-		identifiers[type] = identifiers[type] or {}
-		for _, id in pairs(idtable) do
-			if not string.match(json.encode(identifiers2[type]), id) then
-				identifiers[type][#identifiers[type] + 1] = id
-			end
-		end
-	end
-	return identifiers
-end
-
 local function addIdentifiers(idtable, identifiers)
 	local identifierstable = idtable
 	for type, idtbl in pairs(idtable) do
-		if not string.match(json.encode(idtable), identifiers[string.match(type, 1, -2)]) then
-			identifierstable[type][#identifierstable[type] + 1] = identifiers[string.match(type, 1, -2)]
+		if type ~= "identifier" and type ~= "tokens" and identifiers[string.sub(type, 1, -2)] then
+			if not string.match(json.encode(idtable), identifiers[string.sub(type, 1, -2)]) then
+				identifierstable[type][#identifierstable[type] + 1] = identifiers[string.sub(type, 1, -2)]
+			end
+		elseif type == "tokens" then
+			for k, v in pairs(identifiers.tokens) do
+				if not string.match(json.encode(idtable.tokens), v) then
+					identifierstable.tokens[k][#identifierstable.tokens[k] + 1] = v
+				end
+			end
 		end
 	end
 	return identifierstable
 end
 
-local function updateIdentifiers(identifiers)
+local function updateIdentifiers(identifiers, cb)
 	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
 		["@identifier"] = identifiers[SS.Identifier]
 	}, function(result)
-		if result then
-			local idtable = json.encode(addIdentifiers(result, identifiers))
-			exports.oxmysql:execute("UPDATE identifiers SET discords = @discords, steams = @steams, gta5s = @gta5s, tokens = @tokens, lives = @lives, xboxs = @xboxs, ips = @ips, fivems = @fivems, gta2s = @gta2s WHERE identifier = @identifier", {
+		if result[1] then
+			local idtable = addIdentifiers(result[1], identifiers)
+			exports.oxmysql:execute("UPDATE identifiers SET discords = @discords, steams = @steams, gtas = @gtas, tokens = @tokens, lives = @lives, xboxs = @xboxs, ips = @ips, fivems = @fivems, gta2s = @gta2s WHERE identifier = @identifier", {
 				["@identifier"] = identifiers[SS.Identifier],
 				["@discords"] = idtable.discords,
 				["@steams"] = idtable.steams,
-				["@gta5s"] = idtable.gta5s,
+				["@gtas"] = idtable.gtas,
 				["@tokens"] = idtable.tokens,
 				["@lives"] = idtable.lives,
 				["@xboxs"] = idtable.xboxs,
 				["@ips"] = idtable.ips,
 				["@fivems"] = idtable.fivems,
-				["@gta2s"] = idtable.gta2s
+				["@gta2s"] = idtable.gta2s,
 			}, function(rows)
-				return not (rows >= 1)
+				cb(not (rows.affectedRows >= 1))
 			end)
 		else
-			return false
+			cb(false)
 		end
 	end)
 end
@@ -174,7 +168,7 @@ local function isIdentifiersBanned(identifiers)
 	return (#banList >= 1), banList
 end
 
-local function isBanned(identifier, permid)
+local function isBanned(identifier, permid, cb)
 	local banned = {}
 	local identifiers = {}
 	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
@@ -182,218 +176,217 @@ local function isBanned(identifier, permid)
 	}, function(result)
 		if not result then return false end
 		for k,v in pairs(result) do
-			identifiers[k] = json.decode(v)
+			identifiers[k] = v
+		end
+
+		local identifiersBanned, banList = isIdentifiersBanned(identifiers)
+		if identifiersBanned then
+			if #banList > 1 then
+				for bannedIdentifier, bannedIdentifiers in pairs(banList) do
+					exports.oxmysql:execute("UPDATE bans SET identifiers = @identifiers, time = @time, reason = @reason, bannedBy = @bannedBy WHERE identifier = @identifier", {
+						["@identifier"] = bannedIdentifier,
+						["@identifiers"] = json.encode(addIdentifiers(bannedIdentifiers, identifiers)),
+						["@time"] = 0,
+						["@reason"] = "Attempting to ban evade",
+						["@bannedBy"] = "Ban System"
+					})
+					SS.Bans[bannedIdentifier] = {
+						identifier = bannedIdentifier,
+						identifiers = bannedIdentifiers,
+						time = 0,
+						reason = "Attempting to ban evade",
+						bannedBy = "Ban System"
+					}
+				end
+			end
+			local unbanTime
+			local banLength
+			if SS.Bans[identifier].time == 0 then
+				unbanTime = "Never"
+				banLength = "Forever"
+			else
+				unbanTime = os.date('%H:%M:%S %d-%m-%y', SS.Bans[identifier].time + (SS.TimeZone * 60 * 60))
+				banLength = SS.Bans[identifier].time - os.time()
+			end
+			local banCard = {
+				["type"] = "AdaptiveCard",
+				["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
+				["version"] = "1.3",
+				["body"] = {
+					{
+						["type"] = "Image",
+						["url"] = SS.Queue.Banner
+					},
+					{
+						["type"] = "TextBlock",
+						["text"] = "You have been banned",
+						["wrap"] = true,
+						["weight"] = "Bolder"
+					},
+					{
+						["type"] = "ColumnSet",
+						["columns"] = {
+							{
+								["type"] = "Column",
+								["width"] = "90px",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = "Reason",
+										["wrap"] = true,
+										["weight"] = "Bolder"
+									}
+								}
+							},
+							{
+								["type"] = "Column",
+								["width"] = "stretch",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = SS.Bans[identifier].reason,
+										["wrap"] = true
+									}
+								}
+							}
+						}
+					},
+					{
+						["type"] = "ColumnSet",
+						["columns"] = {
+							{
+								["type"] = "Column",
+								["width"] = "90px",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = "Unban Time",
+										["wrap"] = true,
+										["weight"] = "Bolder"
+									}
+								},
+								["horizontalAlignment"] = "Center"
+							},
+							{
+								["type"] = "Column",
+								["width"] = "stretch",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = unbanTime,
+										["wrap"] = true
+									}
+								}
+							}
+						}
+					},
+					{
+						["type"] = "ColumnSet",
+						["columns"] = {
+							{
+								["type"] = "Column",
+								["width"] = "90px",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = "Length",
+										["wrap"] = true,
+										["weight"] = "Bolder"
+									}
+								}
+							},
+							{
+								["type"] = "Column",
+								["width"] = "stretch",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = banLength,
+										["wrap"] = true
+									}
+								}
+							}
+						}
+					},
+					{
+						["type"] = "ColumnSet",
+						["columns"] = {
+							{
+								["type"] = "Column",
+								["width"] = "90px",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = "Banned By",
+										["wrap"] = true,
+										["weight"] = "Bolder"
+									}
+								}
+							},
+							{
+								["type"] = "Column",
+								["width"] = "stretch",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = SS.Bans[identifier].bannedBy,
+										["wrap"] = true
+									}
+								}
+							}
+						}
+					},
+					{
+						["type"] = "ColumnSet",
+						["columns"] = {
+							{
+								["type"] = "Column",
+								["width"] = "90px",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = "Account ID",
+										["wrap"] = true,
+										["weight"] = "Bolder"
+									}
+								}
+							},
+							{
+								["type"] = "Column",
+								["width"] = "stretch",
+								["items"] = {
+									{
+										["type"] = "TextBlock",
+										["text"] = permid,
+										["wrap"] = true
+									}
+								}
+							}
+						}
+					},
+					{
+						["type"] = "ActionSet",
+						["actions"] = {
+							{
+								["type"] = "Action.OpenUrl",
+								["title"] = "Ban Appeal",
+								["url"] = SS.Queue.Appeal
+							}
+						}
+					}
+				}
+			}
 		end
 	end)
-	while not next(identifiers) do
-		Wait(500)
-	end
-	local identifiersBanned, banList = isIdentifiersBanned(identifiers)
-	if #banList > 1 then
-		for bannedIdentifier, bannedIdentifiers in pairs(banList) do
-			exports.oxmysql:execute("UPDATE bans SET identifiers = @identifiers, time = @time, reason = @reason, bannedBy = @bannedBy WHERE identifier = @identifier", {
-				["@identifier"] = bannedIdentifier,
-				["@identifiers"] = json.encode(mergeIdentifiers(bannedIdentifiers, identifiers)),
-				["@time"] = 0,
-				["@reason"] = "Attempting to ban evade",
-				["@bannedBy"] = "Ban System"
-			})
-			SS.Bans[bannedIdentifier] = {
-				identifier = bannedIdentifier,
-				identifiers = bannedIdentifiers,
-				time = 0,
-				reason = "Attempting to ban evade",
-				bannedBy = "Ban System"
-			}
-		end
-	end
-	local unbanTime
-	local banLength
-	if SS.Bans[identifier].time == 0 then
-		unbanTime = "Never"
-		banLength = "Forever"
-	else
-		unbanTime = os.date('%H:%M:%S %d-%m-%y', SS.Bans[identifier].time + (SS.TimeZone * 60 * 60))
-		banLength = SS.Bans[identifier].time - os.time()
-	end
-	local banCard = {
-		["type"] = "AdaptiveCard",
-		["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
-		["version"] = "1.3",
-		["body"] = {
-			{
-				["type"] = "Image",
-				["url"] = SS.Queue.Banner
-			},
-			{
-				["type"] = "TextBlock",
-				["text"] = "You have been banned",
-				["wrap"] = true,
-				["weight"] = "Bolder"
-			},
-			{
-				["type"] = "ColumnSet",
-				["columns"] = {
-					{
-						["type"] = "Column",
-						["width"] = "90px",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = "Reason",
-								["wrap"] = true,
-								["weight"] = "Bolder"
-							}
-						}
-					},
-					{
-						["type"] = "Column",
-						["width"] = "stretch",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = SS.Bans[identifier].reason,
-								["wrap"] = true
-							}
-						}
-					}
-				}
-			},
-			{
-				["type"] = "ColumnSet",
-				["columns"] = {
-					{
-						["type"] = "Column",
-						["width"] = "90px",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = "Unban Time",
-								["wrap"] = true,
-								["weight"] = "Bolder"
-							}
-						},
-						["horizontalAlignment"] = "Center"
-					},
-					{
-						["type"] = "Column",
-						["width"] = "stretch",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = unbanTime,
-								["wrap"] = true
-							}
-						}
-					}
-				}
-			},
-			{
-				["type"] = "ColumnSet",
-				["columns"] = {
-					{
-						["type"] = "Column",
-						["width"] = "90px",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = "Length",
-								["wrap"] = true,
-								["weight"] = "Bolder"
-							}
-						}
-					},
-					{
-						["type"] = "Column",
-						["width"] = "stretch",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = banLength,
-								["wrap"] = true
-							}
-						}
-					}
-				}
-			},
-			{
-				["type"] = "ColumnSet",
-				["columns"] = {
-					{
-						["type"] = "Column",
-						["width"] = "90px",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = "Banned By",
-								["wrap"] = true,
-								["weight"] = "Bolder"
-							}
-						}
-					},
-					{
-						["type"] = "Column",
-						["width"] = "stretch",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = SS.Bans[identifier].bannedBy,
-								["wrap"] = true
-							}
-						}
-					}
-				}
-			},
-			{
-				["type"] = "ColumnSet",
-				["columns"] = {
-					{
-						["type"] = "Column",
-						["width"] = "90px",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = "Account ID",
-								["wrap"] = true,
-								["weight"] = "Bolder"
-							}
-						}
-					},
-					{
-						["type"] = "Column",
-						["width"] = "stretch",
-						["items"] = {
-							{
-								["type"] = "TextBlock",
-								["text"] = permid,
-								["wrap"] = true
-							}
-						}
-					}
-				}
-			},
-			{
-				["type"] = "ActionSet",
-				["actions"] = {
-					{
-						["type"] = "Action.OpenUrl",
-						["title"] = "Ban Appeal",
-						["url"] = SS.Queue.Appeal
-					}
-				}
-			}
-		}
-	}
-
-	return identifiersBanned, banCard
+	cb(identifiersBanned, banCard)
 end
 
-local function getRank(identifier)
+local function getRank(identifier, cb)
 	local highestRank
 	exports.oxmysql:execute("SELECT groups FROM users WHERE identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(groups)
-		for _, name in pairs(json.decode(groups)) do
+		for _, name in pairs(groups) do
 			for name2, prio in pairs(SS.Queue.Ranks) do
 				if name == name2 then
 					if highestRank then
@@ -411,7 +404,7 @@ local function getRank(identifier)
 		if not highestRank and not SS.Queue.Whitelist then
 			highestRank = "none"
 		end
-		return highestRank
+		cb(highestRank)
 	end)
 end
 
@@ -450,23 +443,25 @@ local function getFirstInQueue()
 end
 
 local function removeFromQueue(identifier)
-	local _, _, queue, pos = positionInQueue
-	for i = pos + 1, #Queue[SS.Queue.Ranks[queue]], 1 do
-		Queue[SS.Queue.Ranks[queue]][i - 1] = Queue[SS.Queue.Ranks[queue]][i]
+	local _, _, queue, pos = positionInQueue(identifier)
+	local rank = SS.Queue.Ranks[queue] or 10000
+	for i = pos + 1, #Queue[rank], 1 do
+		Queue[rank][i - 1] = Queue[rank][i]
 	end
-	Queue[SS.Queue.Ranks[queue]][#Queue[SS.Queue.Ranks[queue]]] = nil
-	if not #Queue[SS.Queue.Ranks[queue]] then
-		Queue[SS.Queue.Ranks[queue]] = nil
+	Queue[rank][#Queue[rank]] = nil
+	if not #Queue[rank] then
+		Queue[rank] = nil
 	end
 	deferralsList[identifier] = nil
-	sourceList[identifier] = nil
 end
 
 local function addToQueue(identifier, rank, deferrals, src)
-	Queue[SS.Queue.Ranks[rank]] = Queue[SS.Queue.Ranks[rank]] or {}
-	Queue[SS.Queue.Ranks[rank]][#Queue[SS.Queue.Ranks[rank]] + 1][identifier] = rank
+	local queue = SS.Queue.Ranks[rank] or 10000
+	Queue[queue] = Queue[queue] or {}
+	local position = #Queue[queue] + 1
+	Queue[queue][position] = Queue[queue][position] or {}
+	Queue[queue][position][identifier] = rank
 	deferralsList[identifier] = deferrals
-	sourceList[identifier] = src
 end
 
 local function connectPlayer(identifier, deferrals, noSlot)
@@ -478,8 +473,6 @@ local function connectPlayer(identifier, deferrals, noSlot)
 	if inQueue(identifier) then
 		removeFromQueue(identifier)
 	end
-
-	SS.Selector.Initiate(identifier, sourceList[identifier])
 end
 
 local function updateQueue(identifier)
@@ -620,61 +613,69 @@ local function updateQueue(identifier)
 		["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
 		["version"] = "1.3"
 	}
-	deferrals.presentCard(queueCard, function(data, rawData) end)
+	deferralsList[identifier].presentCard(queueCard, function(data, rawData) end)
 end
 
 local function startConnection(identifiers, deferrals)
-	local updateError = updateIdentifiers(identifiers)
+	updateIdentifiers(identifiers, function(updateError)
+		if updateError then
+			deferrals.done("connectionError")
+			return
+		end
+		deferrals.update("Checking Ban Status.")
+		isBanned(identifiers[SS.Identifier], identifiers.permid, function(banned, banCard)
+			if banned then
+				deferrals.presentCard(banCard, function(data, rawData) end)
+				Wait(6000)
+				deferrals.done("banned")
+				return
+			end
 
-	if updateError then
-		deferrals.done(t["connectionError"])
-		return
-	end
-	
-	local banned, banCard = isBanned(identifiers.identifier, identifiers.permid)
-	
-	if banned then
-		deferrals.presentCard(banCard, function(data, rawData) end)
-		Wait(6000)
-		deferrals.done(t["banned"])
-		return
-	end
+			deferrals.update("Not Banned. Checking Rank.")
+			getRank(identifiers[SS.Identifier], function(highestRank)
+				if not highestRank then
+					deferrals.presentCard(whitelistCard, function(data, rawData) end)
+					Wait(6000)
+					deferrals.done("whitelist")
+					return
+				end
 
-	local highestRank = getRank(identifiers.identifier)
-
-	if not highestRank then
-		deferrals.presentCard(whitelistCard, function(data, rawData) end)
-		Wait(6000)
-		deferrals.done(t["whitelist"])
-		return
-	end
-
-	if SS.Queue.Ranks[highestRank] == 0 then
-		connectPlayer(identifiers.identifier, deferrals, true)
-		return
-	end
-
-	addToQueue(identifiers.identifier, highestRank, deferrals, identifiers.source)
+				if SS.Queue.Ranks[highestRank] == 0 then
+					deferrals.update("Connecting.")
+					connectPlayer(identifiers[SS.Identifier], deferrals, true)
+					return
+				end
+				
+				deferrals.update("Adding To Queue.")
+				addToQueue(identifiers[SS.Identifier], highestRank, deferrals, identifiers.source)
+			end)
+		end)
+	end)
 end
 
 AddEventHandler('playerConnecting', function(name, setReason, deferrals)
 	deferrals.defer()
 
     local src = source
-    local identifiers = plyId(src)
-    
-    if identifiers.permid then 
-        startConnection(identifiers, deferrals)
-    else
-        local idError, userError = createUser(identifiers)
 
-        if idError or userError then 
-            deferrals.done(t["connectionError"])
-			return
-        end
+	deferrals.update("Checking Identifiers.")
+    plyId(src, function(identifiers)
+		if identifiers.permid then
+			deferrals.update("Found Identifiers. Starting Connection.")
+			startConnection(identifiers, deferrals)
+		else
+			deferrals.update("No Identifiers Found. Creating User.")
+			createUser(identifiers, function(idError, userError)
+				if idError or userError then 
+					deferrals.done("connect error")
+					return
+				end
 
-		startConnection(identifiers, deferrals)
-    end
+				deferrals.update("User Created. Starting Connection.")
+				startConnection(identifiers, deferrals)
+			end)
+		end
+	end)
 end)
 
 AddEventHandler('playerDropped', function()
@@ -684,13 +685,17 @@ end)
 CreateThread(function()
 	while true do
 		Wait(500)
-		if slotsFilled < SS.Queue.Slots then
-			connectPlayer(getFirstInQueue(), deferralsList[getFirstInQueue()], false)
+		if getFirstInQueue() then
+			if slotsFilled < SS.Queue.Slots then
+				connectPlayer(getFirstInQueue(), deferralsList[getFirstInQueue()], false)
+			else
+				Wait(2000)
+			end
 			for identifier, deferrals in pairs(deferralsList) do
 				updateQueue(identifier)
 			end
 		else
-			Wait(5000)
+			Wait(10000)
 		end
 	end
 end)
@@ -706,7 +711,7 @@ end
 if SS.Queue.RemovePlayer then
 	RegisterCommand("Remove_Player", function(r, args, s)
 		if args[1] then
-			deferralsList[args[1]].done(t["removePlayer"])
+			deferralsList[args[1]].done("removePlayer")
 			removeFromQueue(args[1])
 		end
 	end)

@@ -1,7 +1,14 @@
+exports["ui-wrapper"]:uiCreateCustom("Selector", "SSCore", "core/selector/ui/index.html")
+
 SS.Selector = {}
 
 local characters = {}
 local camera
+
+CreateThread(function()
+	print("initiate1")
+	TriggerServerEvent("ss:Server:Initiate")
+end)
 
 local function loadSkin(skin)
 	exports["SSCore"].applyModel(skin.model)
@@ -58,12 +65,13 @@ local function loadFirstCharacter()
 	pedgoto(player, -83.538459777832, -835.75384521484, 221.9912109375)
 	turntohead(player, 340.15747070312, 1000)
 	FreezeEntityPosition(player, true)
-	exports["SSCore"].uiEnable("Selector")
+	exports["ui-wrapper"].uiEnable("Selector")
 end
 
 RegisterNetEvent("ss:Client:Initiate", function(characterData)
+	print("initiate")
 	characters = characterData
-	exports["SSCore"].uiDisableAll()
+	exports["ui-wrapper"].uiDisableAll()
 	SetNuiFocus(true, true)
 	loadFirstCharacter()
 end)

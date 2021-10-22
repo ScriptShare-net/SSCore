@@ -21,19 +21,22 @@ SS.Queue.Ranks = { -- ["Rank Name"] = Weight, Higher weight means slower queue. 
 	["Reserved"] = 0,
 }
 
-SS.Identifier = 'discord' -- Primary identifer (discord, license)
+SS.Identifier = "discord" -- Primary identifer (discord, license)
 
-SS.Player.bloodtypes = { -- Not used
+SS.Player = SS.Player or {}
+SS.Player.Bloodtypes = { -- Not used
 "A+", "B+", "AB+", "A-", "B-", "AB-", "O+", "O-"
 }
 
+SS.Logs = SS.Logs or {}
 SS.Logs.DiscordWebhook = ""
 SS.Logs.CommunityName = "ScriptShare.net"
 SS.Logs.IconURL = "" -- URL
 SS.Logs.FooterText = "Powered by ScriptShare.net"
 SS.Logs.FooterIcon = "" -- URL
-SS.Logo.Avatar = "" -- Avatar
+SS.Logs.Avatar = "" -- Avatar
 
+SS.Selector = SS.Selector or {}
 SS.Selector.Limit = 3 -- Set how many characters max
 SS.Selector.Ranks = {
 	["Twitch"] = 4,
