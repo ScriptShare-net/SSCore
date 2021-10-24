@@ -5,7 +5,10 @@ description 'SSCore - A Framework built by Hayden#6789 and Jones#1913'
 version '1.00'
 author 'ScriptShare.net'
 
+ui_page 'util/ui-wrapper/index.html'
+
 shared_scripts {
+	'util/**/sh_*.lua',
 	'languages/languages.lua',
 	'**/sh_*.lua',
 	'**/**/sh_*.lua',
@@ -14,6 +17,7 @@ shared_scripts {
 }
 
 server_scripts {
+	'util/**/sv_*.lua',
 	'**/sv_*.lua',
 	'**/**/sv_*.lua',
 	'**/sv_*.js',
@@ -21,6 +25,8 @@ server_scripts {
 }
 
 client_scripts {
+	'util/**/cl_*.lua',
+	'core/skin/cl_skin.lua',
 	'**/cl_*.lua',
 	'**/**/cl_*.lua',
 	'**/cl_*.js',
@@ -29,6 +35,12 @@ client_scripts {
 }
 
 files {
+	'util/**/f_*.js',
+	'util/**/f_*.png',
+	'util/**/f_*.jpg',
+	'util/**/f_*.css',
+	'util/**/f_*.ogg',
+	'util/**/f_*.html',
 	'**/f_*.png',
 	'**/**/f_*.png',
 	'**/**/**/f_*.png',

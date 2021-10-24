@@ -120,8 +120,10 @@ local function addIdentifiers(idtable, identifiers)
 				identifierstable[type][#identifierstable[type] + 1] = identifiers[string.sub(type, 1, -2)]
 			end
 		elseif type == "tokens" then
+			identifierstable.tokens = json.decode(identifierstable.tokens) or {}
 			for k, v in pairs(identifiers.tokens) do
 				if not string.match(json.encode(idtable.tokens), v) then
+					identifierstable.tokens[k] = identifierstable.tokens[k] or {}
 					identifierstable.tokens[k][#identifierstable.tokens[k] + 1] = v
 				end
 			end
@@ -141,7 +143,7 @@ local function updateIdentifiers(identifiers, cb)
 				["@discords"] = idtable.discords,
 				["@steams"] = idtable.steams,
 				["@gtas"] = idtable.gtas,
-				["@tokens"] = idtable.tokens,
+				["@tokens"] = json.encode(idtable.tokens),
 				["@lives"] = idtable.lives,
 				["@xboxs"] = idtable.xboxs,
 				["@ips"] = idtable.ips,

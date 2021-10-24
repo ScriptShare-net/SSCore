@@ -6,6 +6,7 @@ CREATE TABLE users (
     permid int NOT NULL AUTO_INCREMENT,
     identifier bigint(99) NOT NULL,
     groups longtext NOT NULL,
+	favchar int NOT NULL DEFAULT 1,
 	PRIMARY KEY (permid, identifier)
 );
 

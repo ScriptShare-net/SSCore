@@ -1,4 +1,4 @@
-exports["ui-wrapper"]:uiCreateCustom("Selector", "SSCore", "core/selector/ui/index.html")
+exports["SSCore"]:uiCreateCustom("Selector", "SSCore", "core/selector/ui/index.html")
 
 SS.Selector = {}
 
@@ -11,11 +11,11 @@ CreateThread(function()
 end)
 
 local function loadSkin(skin)
-	exports["SSCore"].applyModel(skin.model)
-	exports["SSCore"].applySkin(skin.skin)
-	exports["SSCore"].applyTattoos(skin.tattoos)
-	exports["SSCore"].applyClothing(skin.clothing)
-	exports["SSCore"].applyCosmetics(skin.cosmetics)
+	exports["SSCore"].applyModel(PlayerPedId(), skin.model) -- no idea why the second value is the first value
+	exports["SSCore"].applySkin(PlayerPedId(), skin.skin)
+	exports["SSCore"].applyTattoos(PlayerPedId(), skin.tattoos)
+	exports["SSCore"].applyClothing(PlayerPedId(), skin.clothing)
+	exports["SSCore"].applyCosmetics(PlayerPedId(), skin.cosmetics)
 end
 
 local function pedgoto(ped, x, y, z)
@@ -40,8 +40,18 @@ local function turntohead(ped, heading, timeout)
 end
 
 local function loadFirstCharacter()
+	SendNUIMessage({
+		show = true,
+		name = characters[characters.favourite].firstName .. " " .. characters[characters.favourite].lastName,
+		job = characters[characters.favourite].job .. " - " .. (characters[characters.favourite].job_grade or "N/A"),
+		secondaryjob = characters[characters.favourite].secondaryjob or "N/A" .. " - " .. (characters[characters.favourite].secondaryjob_grade or "N/A"),
+		bank = characters[characters.favourite].bank or 0,
+		dob = characters[characters.favourite].dob,
+		sex = characters[characters.favourite].skin.sex,
+		spawn = buttonword,
+	})
+	print("test")
 	local player = PlayerPedId()
-	Wait(500)
 	DoScreenFadeOut(10)
 	loadSkin(characters[characters.favourite].skin)
 	Wait(500)
@@ -65,13 +75,41 @@ local function loadFirstCharacter()
 	pedgoto(player, -83.538459777832, -835.75384521484, 221.9912109375)
 	turntohead(player, 340.15747070312, 1000)
 	FreezeEntityPosition(player, true)
-	exports["ui-wrapper"].uiEnable("Selector")
+	exports["SSCore"].uiEnable("Selector")
+end
+
+local function spawnPlayer()
+	print("spawn player")
+	local pedModel = GetHashKey("mp_m_freemode_01")
+	local ped = PlayerPedId()
+	local spawn = vector4(-78.07911682129, -836.62414550782, 221.9912109375, 0.0)
+
+	RequestModel(pedModel)
+
+	while not HasModelLoaded(pedModel) do
+		RequestModel(pedModel)
+		Wait(0)
+	end
+	ShutdownLoadingScreen()
+	ShutdownLoadingScreenNui()
+	SetCanAttackFriendly(ped, true, false)
+	NetworkSetFriendlyFireOption(true)
+	SetPlayerModel(PlayerId(), pedModel)
+	SetModelAsNoLongerNeeded(pedModel)
+	print("test2")
+	RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
+	SetEntityCoordsNoOffset(ped, spawn.x, spawn.y, spawn.z, false, false, false, true)
+	NetworkResurrectLocalPlayer(spawn.x, spawn.y, spawn.z, spawn.w, true, true, false)
+	ClearPedTasksImmediately(ped)
+    RemoveAllPedWeapons(ped)
+    ClearPlayerWantedLevel(ped)
 end
 
 RegisterNetEvent("ss:Client:Initiate", function(characterData)
 	print("initiate")
 	characters = characterData
-	exports["ui-wrapper"].uiDisableAll()
+	exports["SSCore"].uiDisableAll()
 	SetNuiFocus(true, true)
+	spawnPlayer()
 	loadFirstCharacter()
 end)

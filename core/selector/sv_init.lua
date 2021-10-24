@@ -1,12 +1,14 @@
 SS.Selector = SS.Selector or {}
 SS.Selector.Ranks = SS.Selector.Ranks or {}
 
+local next = next
+
 function SS.Selector.GetLimit(identifier, cb)
 	local characterLimit = SS.Selector.Limit
-	exports.oxmysql:execute("SELECT groups FROM users WHERE identifier = @identifier", {
+	exports.oxmysql:execute("SELECT groups, favchar FROM users WHERE identifier = @identifier", {
 		["@identifier"] = identifier
-	}, function(groups)
-		if groups then
+	}, function(result)
+		if result.groups then
 			for _, name in pairs(groups) do
 				for name2, limit in pairs(SS.Selector.Ranks) do
 					if name == name2 then
@@ -21,7 +23,7 @@ function SS.Selector.GetLimit(identifier, cb)
 				end
 			end
 		end
-		cb(characterLimit)
+		cb(characterLimit, result.favchar or 1)
 	end)
 end
 
@@ -30,11 +32,12 @@ local function getCharacters(identifier, limit, cb)
 	exports.oxmysql:execute("SELECT * FROM characters WHERE identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(result)
-		if result then
+		print(next(result))
+		if next(result) then
 			for i = 1, limit do
 				characters[i] = result[i]
 			end
-			return characters
+			cb(characters)
 		else
 			for i = 1, limit do
 				characters[i] = {
@@ -105,12 +108,17 @@ end
 
 function SS.Selector.Initiate(identifier, src)
 	print("initiate")
-	SS.Selector.GetLimit(identifier, function(characterLimit)
+	SS.Selector.GetLimit(identifier, function(characterLimit, favchar)
+		print("s")
 		getCharacters(identifier, characterLimit, function(characters)
+			local characters = characters
+			characters.favourite = favchar
+			print("a")
 			if characterLimit == 1 then
 				--spawn only character
 				return
 			end
+			print(src)
 			TriggerClientEvent("ss:Client:Initiate", src, characters)
 		end)
 	end)
