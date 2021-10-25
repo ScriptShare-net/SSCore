@@ -1,3 +1,5 @@
+SS = SS or {}
+
 SS.Function = {}
 
 function SS.Function.RemoveProp()

@@ -1,3 +1,4 @@
+SS = SS or {}
 SS.Utility = {}
 
 function SS.Utility.SavePlayerData()

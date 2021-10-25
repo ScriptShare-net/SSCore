@@ -1,3 +1,5 @@
+SS = SS or {}
+
 SS.Math = {}
 SS.Entity = {}
 

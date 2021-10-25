@@ -26,9 +26,9 @@ end)
 local uiRegisterCallback = {}
 
 exports("uiRegisterCallback", function(identifier, name, func)
-	if uiRegisterCallback[identifier] then print("uiRegisterCallback Identifier already in use") return end
+	if uiRegisterCallback[identifier..":"..name] then print("uiRegisterCallback Identifier already in use") return end
 	RegisterNUICallback(identifier..":"..name, func)
-	uiRegisterCallback[identifier] = true
+	uiRegisterCallback[identifier..":"..name] = true
 end)
 
 RegisterNUICallback("post", function(data)

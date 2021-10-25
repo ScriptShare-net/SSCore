@@ -1,4 +1,4 @@
-fx_version 'cerulean'
+fx_version 'bodacious'
 game 'gta5'
 
 description 'SSCore - A Framework built by Hayden#6789 and Jones#1913'

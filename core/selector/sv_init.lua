@@ -113,13 +113,14 @@ function SS.Selector.Initiate(identifier, src)
 		getCharacters(identifier, characterLimit, function(characters)
 			local characters = characters
 			characters.favourite = favchar
+			characters.max = characterLimit
 			print("a")
 			if characterLimit == 1 then
 				--spawn only character
 				return
 			end
 			print(src)
-			TriggerClientEvent("ss:Client:Initiate", src, characters)
+			TriggerClientEvent("SS:Client:Initiate", src, characters)
 		end)
 	end)
 end
@@ -163,7 +164,7 @@ local function plyId(source, cb)
 	cb(identifiers)
 end
 
-RegisterNetEvent("ss:Server:Initiate", function()
+RegisterNetEvent("SS:Server:Initiate", function()
 	print("initiate1")
 	local src = source
 	if not SS.Player.GetPlayerFromSource(src) then

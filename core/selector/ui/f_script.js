@@ -84,15 +84,15 @@ $(function () {
 	toggleDisplay(false);
 
 	$("#left").click(function () {
-		$.post("http://rsg_character/prevchar", JSON.stringify({}));
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "prevchar"}));
 	});
 
 	$("#right").click(function () {
-		$.post("http://rsg_character/nextchar", JSON.stringify({}));
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "nextchar"}));
 	});
 
 	$("#middle").click(function () {
-		$.post("http://rsg_character/spawnsel", JSON.stringify({}));
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "spawnsel"}));
 	})
 
 	$("#middle").hover(function () {
@@ -102,15 +102,15 @@ $(function () {
 	})
 
 	$("#pin").click(function () {
-		$.post("http://rsg_character/confirmspawn", JSON.stringify({}));
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "confirmspawn"}));
 	})
 
 	$("#leftmap").click(function () {
-		$.post("http://rsg_character/prevspawn", JSON.stringify({}));
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "prevspawn"}));
 	});
 
 	$("#rightmap").click(function () {
-		$.post("http://rsg_character/nextspawn", JSON.stringify({}));
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "nextspawn"}));
 	});
 
 	$(".nbutton").click(function (e) {
@@ -130,7 +130,8 @@ $(function () {
 		if ($("#day").val() <= 0 || $("#day").val() >= 32 || $("#month").val() <= 0 || $("#month").val() >= 13 || $("#year").val() <= 1900 || $("#year").val() >= 2003) {
 			return
 		}
-		$.post("http://rsg_character/identity", JSON.stringify({
+		
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "identity", args: {
 			fname: $("#fname").val(),
 			lname: $("#lname").val(),
 			dob: {
@@ -139,12 +140,12 @@ $(function () {
 				y: $("#year").val(),
 			},
 			sex: $("#gender").val(),
-		}));
+		}}));
 	});
 
 	window.addEventListener("message", function (event) {
 		var item = event.data;
-
+		console.log(item.show, event);
 		if (item.show) {
 			toggleDisplay(true);
 			$('.character').html('<h3>' + item.name + '</h3><p><b>Work:</b> ' + item.job + '</h3><p><b>Gang:</b> ' + item.secondaryjob + '</p><p><b>Bank:</b> ' + item.bank + '</p><p><b>Date of brith:</b> ' + item.dob + '</p><p><b>Gender:</b> ' + item.sex + '</p>');
