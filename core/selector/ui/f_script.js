@@ -115,13 +115,13 @@ $(function () {
 
 	$(".nbutton").click(function (e) {
 		e.preventDefault();
-		if ($("#fname").val() == "" || $("#lname").val() == "" || $("#day").val() == "" || $("#month").val() == "" || $("#year").val() == "" || $("#gender").val() == "") {
+		if ($("#fname").val() == "" || $("#lname").val() == "" || $("#day").val() == "" || $("#month").val() == "" || $("#year").val() == "" || $("#gender").val() == "" || $("#fname").val() == "Create" || $("#lname").val() == "Character") {
 			return
 		}
 		if (!$("#fname").val().charAt(0).match(/[a-zA-Z]/) || !$("#lname").val().charAt(0).match(/[a-zA-Z]/)) {
 			return
 		}
-		if ($("#gender").val() != "M" && $("#gender").val() != "F") {
+		if ($("#gender").val() != 0 && $("#gender").val() != 1) {
 			return
 		}
 		if (!$("#day").val().charAt(0).match(/[0-9]/) || !$("#month").val().charAt(0).match(/[0-9]/) || !$("#year").val().charAt(0).match(/[0-9]/)) {
@@ -132,8 +132,8 @@ $(function () {
 		}
 		
 		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "identity", args: {
-			fname: $("#fname").val(),
-			lname: $("#lname").val(),
+			firstName: $("#fname").val(),
+			lastName: $("#lname").val(),
 			dob: {
 				d: $("#day").val(),
 				m: $("#month").val(),
@@ -145,10 +145,9 @@ $(function () {
 
 	window.addEventListener("message", function (event) {
 		var item = event.data;
-		console.log(item.show, event);
 		if (item.show) {
 			toggleDisplay(true);
-			$('.character').html('<h3>' + item.name + '</h3><p><b>Work:</b> ' + item.job + '</h3><p><b>Gang:</b> ' + item.secondaryjob + '</p><p><b>Bank:</b> ' + item.bank + '</p><p><b>Date of brith:</b> ' + item.dob + '</p><p><b>Gender:</b> ' + item.sex + '</p>');
+			$('.character').html('<h3>' + item.name + '</h3><p><b>Work:</b> ' + item.job + '</h3><p><b>group:</b> ' + item.group + '</p><p><b>Date of brith:</b> ' + item.dob + '</p><p><b>Gender:</b> ' + item.sex + '</p>');
 			$(".spawn").html(item.spawn);
 		} else if (item.show == false) {
 			toggleDisplay(false);

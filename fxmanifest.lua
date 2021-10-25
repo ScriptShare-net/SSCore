@@ -8,57 +8,44 @@ author 'ScriptShare.net'
 ui_page 'util/ui-wrapper/index.html'
 
 shared_scripts {
-	'util/**/sh_*.lua',
 	'languages/languages.lua',
-	'**/sh_*.lua',
-	'**/**/sh_*.lua',
-	'**/sh_*.js',
-	'**/**/sh_*.js',
+	'config/sh_*.lua',
+	'util/func/sh_*.lua',
+	'util/ui-wrapper/sh_*.lua',
+	'core/skin/sh_*.lua',
+	'core/functions/sh_*.lua',
+	'core/player/sh_*.lua',
+	'core/selector/sh_*.lua',
 }
 
 server_scripts {
-	'util/**/sv_*.lua',
-	'**/sv_*.lua',
-	'**/**/sv_*.lua',
-	'**/sv_*.js',
-	'**/**/sv_*.js',
+	'config/sv_*.lua',
+	'util/func/sv_*.lua',
+	'util/ui-wrapper/sv_*.lua',
+	'core/skin/sv_*.lua',
+	'core/functions/sv_*.lua',
+	'core/player/sv_*.lua',
+	'core/selector/sv_*.lua',
 }
 
 client_scripts {
-	'util/**/cl_*.lua',
-	'core/skin/cl_skin.lua',
-	'**/cl_*.lua',
-	'**/**/cl_*.lua',
-	'**/cl_*.js',
-	'**/**/cl_*.js',
+	'config/cl_*.lua',
+	'util/func/cl_*.lua',
+	'util/ui-wrapper/cl_*.lua',
+	'core/skin/cl_*.lua',
+	'core/functions/cl_*.lua',
+	'core/player/cl_*.lua',
+	'core/selector/cl_*.lua',
 
 }
 
 files {
-	'util/**/f_*.js',
-	'util/**/f_*.png',
-	'util/**/f_*.jpg',
-	'util/**/f_*.css',
-	'util/**/f_*.ogg',
-	'util/**/f_*.html',
-	'**/f_*.png',
-	'**/**/f_*.png',
-	'**/**/**/f_*.png',
-	'**/f_*.jpg',
-	'**/**/f_*.jpg',
-	'**/**/**/f_*.jpg',
-	'**/f_*.css',
-	'**/**/f_*.css',
-	'**/**/**/f_*.css',
 	'**/f_*.js',
-	'**/**/f_*.js',
-	'**/**/**/f_*.js',
+	'**/f_*.png',
+	'**/f_*.jpg',
+	'**/f_*.css',
 	'**/f_*.ogg',
-	'**/**/f_*.ogg',
-	'**/**/**/f_*.ogg',
 	'**/*.html',
-	'**/**/*.html',
-	'**/**/**/*.html',
 }
 
 dependencies {

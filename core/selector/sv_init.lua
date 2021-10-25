@@ -3,6 +3,73 @@ SS.Selector.Ranks = SS.Selector.Ranks or {}
 
 local next = next
 
+local createCharacter = {
+	firstName = "Create",
+	lastName = "Character",
+	dob = "",
+	job = {
+		nameLabel = "Unemployeed",
+		gradeLabel = "Unemployeed",
+	},
+	group = {
+		nameLabel = "Unemployeed",
+		gradeLabel = "Unemployeed",
+	},
+	coords = "",
+	health = "",
+	skin = {
+		model = "mp_m_freemode_01",
+		sex = 0,
+		skin = {
+			mother = 0,
+			father = 0,
+			shapemix = 50,
+			colour = 0,
+			lip_thickness = 0,
+			neck_thickness = 0,
+
+			freckles = {texture = 0, opacity = 0},
+			age = {texture = 0, opacity = 0},
+			damage = {texture = 0, opacity = 0},
+			complexion = {texture = 0, opacity = 0},
+			blemish = {texture = 0, opacity = 0},
+
+			nose = {width = 0, heigh = 0, twist = 0, peak_height = 0, peak_length = 0, peak_lowering = 0},
+			cheeks = {width = 0, height = 0, chub = 0},
+			eyes = {size = 0, colour = 0, brow_height = 0, brow_forward = 0},
+			jaw = {width = 0, length = 0},
+			chin = {lower = 0, length = 0, width = 0, tip = 0}
+		},
+		cosmetics = {
+			head = {style = 1, thickness = 100, colour = 0, highlights = 0},
+			beard = {style = 0, thickness = 0, colour = 0, highlights = 0},
+			chest = {style = 0, thickness = 0, colour = 0, highlights = 0},
+			eyebrows = {style = 0, thickness = 0, colour = 0, highlights = 0},
+			lipstick = {style = 0, thickness = 0, colour = 0, highlights = 0},
+			makeup = {style = 0, thickness = 0, colour = 0, highlights = 0},
+			blush = {style = 0, thickness = 0, colour = 0, highlights = 0},
+		},
+		clothing = {
+			helmet = {model = -1, texture = 0},
+			glasses = {model = 0, texture = 0},
+			ears = {model = -1, texture = 0},
+			mask = {model = 0, texture = 0},
+			torso = {model = 0, texture = 0},
+			tshirt = {model = 0, texture = 0},
+			arms = {model = 0, texture = 0},
+			chain = {model = 0, texture = 0},
+			watch = {model = -1, texture = 0},
+			bracelet = {model = -1, texture = 0},
+			pants = {model = 0, texture = 0},
+			shoes = {model = 0, texture = 0},
+			decals = {model = 0, texture = 0},
+			bproof = {model = 0, texture = 0},
+			bag = {model = 0, texture = 0},
+		},
+		tattoos = {},
+	}
+}
+
 function SS.Selector.GetLimit(identifier, cb)
 	local characterLimit = SS.Selector.Limit
 	exports.oxmysql:execute("SELECT groups, favchar FROM users WHERE identifier = @identifier", {
@@ -32,74 +99,21 @@ local function getCharacters(identifier, limit, cb)
 	exports.oxmysql:execute("SELECT * FROM characters WHERE identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(result)
-		print(next(result))
 		if next(result) then
 			for i = 1, limit do
-				characters[i] = result[i]
+				if result[i] then
+					result[i].skin = json.decode(result[i].skin)
+					result[i].job = json.decode(result[i].job)
+					result[i].group = json.decode(result[i].group)
+					characters[i] = result[i]
+				else
+					characters[i] = createCharacter
+				end
 			end
 			cb(characters)
 		else
 			for i = 1, limit do
-				characters[i] = {
-					firstName = "Create",
-					lastName = "Character",
-					dob = "",
-					job = "",
-					group = "",
-					coords = "",
-					health = "",
-					skin = {
-						model = "mp_m_freemode_01",
-						sex = 0,
-						skin = {
-							mother = 0,
-							father = 0,
-							shapemix = 50,
-							colour = 0,
-							lip_thickness = 0,
-							neck_thickness = 0,
-
-							freckles = {texture = 0, opacity = 0},
-							age = {texture = 0, opacity = 0},
-							damage = {texture = 0, opacity = 0},
-							complexion = {texture = 0, opacity = 0},
-							blemish = {texture = 0, opacity = 0},
-
-							nose = {width = 0, heigh = 0, twist = 0, peak_height = 0, peak_length = 0, peak_lowering = 0},
-							cheeks = {width = 0, height = 0, chub = 0},
-							eyes = {size = 0, colour = 0, brow_height = 0, brow_forward = 0},
-							jaw = {width = 0, length = 0},
-							chin = {lower = 0, length = 0, width = 0, tip = 0}
-						},
-						cosmetics = {
-							head = {style = 1, thickness = 100, colour = 0, highlights = 0},
-							beard = {style = 0, thickness = 0, colour = 0, highlights = 0},
-							chest = {style = 0, thickness = 0, colour = 0, highlights = 0},
-							eyebrows = {style = 0, thickness = 0, colour = 0, highlights = 0},
-							lipstick = {style = 0, thickness = 0, colour = 0, highlights = 0},
-							makeup = {style = 0, thickness = 0, colour = 0, highlights = 0},
-							blush = {style = 0, thickness = 0, colour = 0, highlights = 0},
-						},
-						clothing = {
-							helmet = {model = -1, texture = 0},
-							glasses = {model = 0, texture = 0},
-							ears = {model = -1, texture = 0},
-							mask = {model = 0, texture = 0},
-							torso = {model = 0, texture = 0},
-							tshirt = {model = 0, texture = 0},
-							arms = {model = 0, texture = 0},
-							chain = {model = 0, texture = 0},
-							watch = {model = -1, texture = 0},
-							bracelet = {model = -1, texture = 0},
-							pants = {model = 0, texture = 0},
-							shoes = {model = 0, texture = 0},
-							decals = {model = 0, texture = 0},
-							bproof = {model = 0, texture = 0},
-							bag = {model = 0, texture = 0},
-						},
-						tattoos = {},
-					}
-				}
+				characters[i] = createCharacter
 			end
 			cb(characters)
 		end
@@ -107,19 +121,15 @@ local function getCharacters(identifier, limit, cb)
 end
 
 function SS.Selector.Initiate(identifier, src)
-	print("initiate")
 	SS.Selector.GetLimit(identifier, function(characterLimit, favchar)
-		print("s")
 		getCharacters(identifier, characterLimit, function(characters)
 			local characters = characters
 			characters.favourite = favchar
 			characters.max = characterLimit
-			print("a")
 			if characterLimit == 1 then
 				--spawn only character
 				return
 			end
-			print(src)
 			TriggerClientEvent("SS:Client:Initiate", src, characters)
 		end)
 	end)
@@ -164,8 +174,38 @@ local function plyId(source, cb)
 	cb(identifiers)
 end
 
+function CreateIdentity(identifier, characterid, data, callback)
+	local skin = createCharacter.skin
+	skin.sex = data.sex
+	if skin.sex then skin.model = "mp_f_freemode_01" end
+	exports.oxmysql:execute("SELECT characterSlot FROM characters WHERE identifier = @identifier AND characterSlot = @characterSlot", {
+		["@identifier"] = identifier,
+		["@characterSlot"] = characterid,
+	}, function(result)
+		print(json.encode(result))
+		if not next(result) then
+			exports.oxmysql:execute("INSERT INTO characters (identifier, characterSlot, firstName, lastName, skin, dob, job) VALUES (@identifier, @characterSlot, @firstName, @lastName, @skin, @dob, @job)", {
+				['@identifier'] = identifier,
+				['@characterSlot'] = characterid,
+				['@firstName'] = data.firstName,
+				['@lastName'] = data.lastName,
+				["@skin"] = json.encode(skin),
+				['@dob'] = data.dob.d .. "/" .. data.dob.m .. "/" .. data.dob.y,
+				['@job'] = json.encode({
+					nameLabel = "Unemployeed",
+					gradeLabel = "Unemployeed",
+				}),
+			},
+			function(done)
+				if callback then
+					callback(true)
+				end
+			end)
+		end
+	end)
+end
+
 RegisterNetEvent("SS:Server:Initiate", function()
-	print("initiate1")
 	local src = source
 	if not SS.Player.GetPlayerFromSource(src) then
 		plyId(src, function(identifiers)
@@ -174,4 +214,40 @@ RegisterNetEvent("SS:Server:Initiate", function()
 	else
 		DropPlayer(src, "cheater")
 	end
+end)
+
+RegisterNetEvent("SS:Server:RegisterIdentity", function(data, charid)
+	if data.firstName == "Create" then return end
+	local src = source
+	plyId(src, function(identifiers)
+		CreateIdentity(identifiers[SS.Identifier], charid, data, function(created)
+			if created then
+				TriggerClientEvent("SS:Client:CreateSkin", src)
+			end
+		end)
+	end)
+end)
+
+SS.RegisterServerCallback("SS:Server:GetRandomFemale", function(source, cb)
+	local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
+	exports.oxmysql:execute("SELECT * FROM characters WHERE LOCATE('mp_f_freemode_01', skin)", {}, function(result)
+		local characternum = SS.Math.GenerateRandomNumber(1, #result)
+		if result[characternum].skin then
+			callback(result[characternum].skin, result[characternum].cosmetics, result[characternum].clothing, result[characternum].tattoos)
+		else
+			callback(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
+		end
+	end)
+end)
+
+SS.RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
+	local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
+	exports.oxmysql:execute("SELECT * FROM characters WHERE LOCATE('mp_m_freemode_01', skin)", {}, function(result)
+		local characternum = SS.Math.GenerateRandomNumber(1, #result)
+		if result[characternum].skin then
+			callback(result[characternum].skin, result[characternum].cosmetics, result[characternum].clothing, result[characternum].tattoos)
+		else
+			callback(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
+		end
+	end)
 end)

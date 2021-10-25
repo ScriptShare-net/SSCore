@@ -3,7 +3,6 @@ $(function () {
 	window.addEventListener('message', event => {
 		var data = event.data
 		var skip = false
-		console.log(data.addon, data.addon != null);
 		if (data.addon == "ui") {
 			if (data.table.identifier != null) {
 				uiList.forEach(function(item, index) {
@@ -39,7 +38,6 @@ $(function () {
 				})
 			}
 		} else if (data.addon != null) {
-			console.log($("#" + data.addon));
 			try {
 				$("#" + data.addon)[0].contentWindow.postMessage(data.table, "*");
 			} catch(err) {
