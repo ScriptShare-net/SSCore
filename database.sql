@@ -18,7 +18,7 @@ CREATE TABLE characters (
 	skin longtext NOT NULL,
 	dob varchar(99) NOT NULL,
 	job longtext NOT NUll,
-	group longtext NOT NULL,
+	`group` longtext NOT NULL,
 	coords longtext NOT NULL,
 	health longtext NOT NULL,
 	PRIMARY KEY (identifier, characterSlot)
@@ -53,5 +53,5 @@ CREATE TABLE inventory (
 	items longtext NOT NULL,
 	accounts longtext NOT NULL,
 	`weight` int NOT NULL,
-	PRIMARY KEY (identifier, characterSlot),
+	PRIMARY KEY (identifier, characterSlot)
 );
