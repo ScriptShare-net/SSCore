@@ -29,7 +29,7 @@ server_scripts {
 	'core/functions/sv_*.lua',
 	'core/player/sv_*.lua',
 	'core/selector/sv_*.lua',
-	'core/ui/scoreboard/sv_*.lua',
+	--'core/ui/scoreboard/sv_*.lua',
 }
 
 client_scripts {
@@ -41,8 +41,8 @@ client_scripts {
 	'core/functions/cl_*.lua',
 	'core/player/cl_*.lua',
 	'core/selector/cl_*.lua',
-	'core/ui/hud/cl_*.lua',
-	'core/ui/scoreboard/cl_*.lua',
+	--'core/ui/hud/cl_*.lua',
+	--'core/ui/scoreboard/cl_*.lua',
 }
 
 files {
