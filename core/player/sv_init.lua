@@ -1,13 +1,14 @@
 SS.Player = SS.Player or {}
 SS.Players = {}
 
-function SS.Player.Create(identifier, permID, source)
+function SS.Player.Create(identifier, permID, source, characterID)
 	SS.Players[source] = {}
 	local self = {}
 	
 	self.permID = permID
 	self.source = source
 	self.identifier = identifier
+	self.charID = characterID
 	
 	-- Money --
 	self.accounts = {

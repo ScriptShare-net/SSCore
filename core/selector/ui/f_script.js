@@ -9,6 +9,8 @@ $(function () {
 	var middlecreator = $(".middlecreator");
 	var rightcreator = $(".rightcreator");
 
+	var spawnLocation = "";
+
 	function toggleDisplay(input) {
 		if (input) {
 			left.show();
@@ -102,7 +104,9 @@ $(function () {
 	})
 
 	$("#pin").click(function () {
-		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "confirmspawn"}));
+		$.post("http://SSCore/post", JSON.stringify({identifier: "Selector", name: "confirmspawn", args: {
+			spawn: spawnLocation
+		}}));
 	})
 
 	$("#leftmap").click(function () {
@@ -155,6 +159,7 @@ $(function () {
 
 		if (item.map) {
 			toggleMap(true);
+			spawnLocation = item.spawnname;
 			$(".infospawns").html("<h3 class='spawns'>" + item.spawnname + "</h3><p><b>Coords:</b> " + item.x + ", " + item.y + ", " + item.z + "</p><p>When ready click the pin</p>")
 		} else if (item.map == false) {
 			toggleMap(false);

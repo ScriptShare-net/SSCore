@@ -129,10 +129,15 @@ end)
 
 local function spawnPlayer(spawn)
 	local ped = PlayerPedId()
+	RenderScriptCams(false, true, 500, true, true)
+	SetCamActive(camera, false)
 	SetCanAttackFriendly(ped, true, false)
 	NetworkSetFriendlyFireOption(true)
+	ClearPedTasks(ped)
+	FreezeEntityPosition(ped, false)
 	RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
 	SetEntityCoordsNoOffset(ped, spawn.x, spawn.y, spawn.z, false, false, false, true)
+	SetEntityHeading(ped, spawn.w)
 	ClearPedTasksImmediately(ped)
 	RemoveAllPedWeapons(ped)
 	ClearPlayerWantedLevel(ped)
@@ -170,22 +175,49 @@ exports["SSCore"]:uiRegisterCallback("Selector", "spawnsel", function(data, cb)
 	end
 end)
 
+local function getSpawn(spawnID)
+	local i = 1
+	for k,v in pairs(SS.Spawns) do
+		if i == spawnID then
+			return k, v
+		end
+		i = i + 1
+	end
+end
+
 exports["SSCore"]:uiRegisterCallback("Selector", "nextspawn", function(data, cb)
-	
+	spawnNumber = spawnNumber + 1
+	if spawnNumber > #SS.Spawns + 1 then spawnNumber = 1 end
+	local spawnName, coords = getSpawn(spawnNumber)
+	exports["SSCore"]:uiSendMessage("Selector", {
+		map = true,
+		spawnname = spawnName,
+		x = coords.x,
+		y = coords.y,
+		z = coords.z,
+	})
+	SetCamCoord(camera, coords.x, coords.y, coords.z + 1321 - coords.z)
+	PointCamAtCoord(camera, coords.x, coords.y, coords.z)
 end)
 
 exports["SSCore"]:uiRegisterCallback("Selector", "prevspawn", function(data, cb)
-	
+	spawnNumber = spawnNumber - 1
+	if spawnNumber < 1 then spawnNumber = 1 end
+	local spawnName, coords = getSpawn(spawnNumber)
+	exports["SSCore"]:uiSendMessage("Selector", {
+		map = true,
+		spawnname = spawnName,
+		x = coords.x,
+		y = coords.y,
+		z = coords.z,
+	})
+	SetCamCoord(camera, coords.x, coords.y, coords.z + 1321 - coords.z)
+	PointCamAtCoord(camera, coords.x, coords.y, coords.z)
 end)
 
 exports["SSCore"]:uiRegisterCallback("Selector", "confirmspawn", function(data, cb)
-	spawnpos = vector3(-1045.1604003906, -2750.3999023438, 21.360473632812)
-	ped = PlayerPedId()
-	FreezeEntityPosition(ped, false)
-	ClearPedTasks(ped)
-	SetEntityCoords(ped, spawnpos.x, spawnpos.y, spawnpos.z)
-	RenderScriptCams(false, true, 500, true, true)
-	SetCamActive(camera, false)
+	TriggerServerEvent("SS:Server:CreatePlayer", characterNumber)
+	spawnPlayer(SS.Spawns[data.spawn])
 	exports["SSCore"]:uiSendMessage("Selector", {
 		show = false,
 	})

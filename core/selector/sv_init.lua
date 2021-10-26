@@ -171,7 +171,14 @@ local function plyId(source, cb)
         end
     end
 
-	cb(identifiers)
+	exports.oxmysql:execute("SELECT permid FROM users WHERE identifier = @identifier", {
+        ["@identifier"] = identifiers[SS.Identifier]
+    }, function(result)
+        if next(result) then
+            identifiers.permid = result
+        end
+		cb(identifiers)
+    end)
 end
 
 function CreateIdentity(identifier, characterid, data, callback)
@@ -207,6 +214,7 @@ end
 
 RegisterNetEvent("SS:Server:Initiate", function()
 	local src = source
+	SS.Players[src] = nil
 	if not SS.Player.GetPlayerFromSource(src) then
 		plyId(src, function(identifiers)
 			SS.Selector.Initiate(identifiers[SS.Identifier], src)
@@ -250,4 +258,16 @@ SS.RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
 			callback(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
 		end
 	end)
+end)
+
+RegisterNetEvent("SS:Server:CreatePlayer", function(charID)
+	local src = source
+	plyId(src, function(identifiers)
+		if SS.Players[src] then
+			DropPlayer(src, "Cheater")
+		else
+			SS.Player.Create(identifiers[SS.Identifier], identifiers.permid, src, charID)
+		end
+	end)
+	
 end)
