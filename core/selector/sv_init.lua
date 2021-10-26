@@ -266,7 +266,7 @@ RegisterNetEvent("SS:Server:CreatePlayer", function(charID)
 		if SS.Players[src] then
 			DropPlayer(src, "Cheater")
 		else
-			SS.Player.Create(identifiers[SS.Identifier], identifiers.permid, src, charID)
+			SS.Player.Create(identifiers, src, charID)
 		end
 	end)
 	

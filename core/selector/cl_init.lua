@@ -35,6 +35,25 @@ local function pedgoto(ped, x, y, z)
 	end
 end
 
+local function spawnAmount()
+	local length = 0
+	for k,v in pairs(SS.Spawns) do
+		length = length + 1
+	end
+	return length
+end
+
+local function getSpawn(spawnID)
+	print(spawnID, spawnAmount())
+	local i = 1
+	for k,v in pairs(SS.Spawns) do
+		if i == spawnID then
+			return k, v
+		end
+		i = i + 1
+	end
+end
+
 local function turntohead(ped, heading, timeout)
 	FreezeEntityPosition(ped, false)
 	TaskAchieveHeading(ped, heading, timeout)
@@ -157,16 +176,17 @@ end)
 
 exports["SSCore"]:uiRegisterCallback("Selector", "spawnsel", function(data, cb)
 	if characters[characterNumber].firstName ~= "Create" then
-		spawn = vector3(-1045.1604003906, -2750.3999023438, 21.360473632812)
-		SetCamCoord(camera, spawn.x, spawn.y, spawn.z + 1321 - spawn.z)
-		PointCamAtCoord(camera, spawn.x, spawn.y, spawn.z)
+		local spawnName, coords = getSpawn(spawnNumber)
+		SetCamCoord(camera, coords.x, coords.y, coords.z + 1321 - coords.z)
+		PointCamAtCoord(camera, coords.x, coords.y, coords.z)
 		exports["SSCore"]:uiSendMessage("Selector", {
 			map = true,
-			spawnname = "Spawn",
-			x = spawn.x,
-			y = spawn.y,
-			z = spawn.z,
+			spawnname = spawnName,
+			x = coords.x,
+			y = coords.y,
+			z = coords.z,
 		})
+		SetWeatherTypeNow("CLEAR")
 		SetCloudHatOpacity(0)
 	else
 		exports["SSCore"]:uiSendMessage("Selector", {
@@ -175,19 +195,9 @@ exports["SSCore"]:uiRegisterCallback("Selector", "spawnsel", function(data, cb)
 	end
 end)
 
-local function getSpawn(spawnID)
-	local i = 1
-	for k,v in pairs(SS.Spawns) do
-		if i == spawnID then
-			return k, v
-		end
-		i = i + 1
-	end
-end
-
 exports["SSCore"]:uiRegisterCallback("Selector", "nextspawn", function(data, cb)
 	spawnNumber = spawnNumber + 1
-	if spawnNumber > #SS.Spawns + 1 then spawnNumber = 1 end
+	if spawnNumber > spawnAmount() then spawnNumber = 1 end
 	local spawnName, coords = getSpawn(spawnNumber)
 	exports["SSCore"]:uiSendMessage("Selector", {
 		map = true,
@@ -202,7 +212,7 @@ end)
 
 exports["SSCore"]:uiRegisterCallback("Selector", "prevspawn", function(data, cb)
 	spawnNumber = spawnNumber - 1
-	if spawnNumber < 1 then spawnNumber = 1 end
+	if spawnNumber < 1 then spawnNumber = spawnAmount() end
 	local spawnName, coords = getSpawn(spawnNumber)
 	exports["SSCore"]:uiSendMessage("Selector", {
 		map = true,
