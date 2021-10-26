@@ -53,5 +53,5 @@ CREATE TABLE inventory (
 	items longtext NOT NULL,
 	accounts longtext NOT NULL,
 	`weight` int NOT NULL,
-	PRIMARY KEY (identifier, characterSlot),
+	PRIMARY KEY (identifier, characterSlot)
 );

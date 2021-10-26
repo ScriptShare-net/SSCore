@@ -8,6 +8,7 @@ author 'ScriptShare.net'
 ui_page 'util/ui-wrapper/index.html'
 
 shared_scripts {
+	'core/import.lua',
 	'languages/languages.lua',
 	'config/sh_*.lua',
 	'util/func/sh_*.lua',
