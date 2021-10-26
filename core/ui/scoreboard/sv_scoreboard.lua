@@ -50,10 +50,10 @@ end
 
 function AddPlayersToScoreboard()
 	connectedPlayers = {}
-	local players = ESX.GetPlayers()
+	local players = SS.Players
 	if players == {} then return end
 	for i=1, #players, 1 do
-		local xPlayer = ESX.GetPlayerFromId(players[i])
+		local xPlayer = SS.GetPlayerFromSource(i)
 		AddPlayerToScoreboard(xPlayer)
 	end
 end
