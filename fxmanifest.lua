@@ -55,6 +55,4 @@ files {
 
 dependencies {
 	'bob74_ipl',
-    '/server:4800', -- Node16+
-    'yarn',
 }
