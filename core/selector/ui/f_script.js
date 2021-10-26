@@ -131,7 +131,7 @@ $(function () {
 		if (!$("#day").val().charAt(0).match(/[0-9]/) || !$("#month").val().charAt(0).match(/[0-9]/) || !$("#year").val().charAt(0).match(/[0-9]/)) {
 			return
 		}
-		if ($("#day").val() <= 0 || $("#day").val() >= 32 || $("#month").val() <= 0 || $("#month").val() >= 13 || $("#year").val() <= 1900 || $("#year").val() >= 2003) {
+		if ($("#day").val() <= 0 || $("#day").val() >= 32 || $("#month").val() <= 0 || $("#month").val() >= 13 || $("#year").val() <= 1900 || $("#year").val() >= 2005) {
 			return
 		}
 		

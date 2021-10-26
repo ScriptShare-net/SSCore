@@ -7,7 +7,7 @@ function SS.Player.Create(identifiers, source, characterID)
 	
 	self.permID = identifiers.permid
 	self.source = source
-	self.identifier = identifier[SS.Identifier]
+	self.identifier = identifiers[SS.Identifier]
 	self.identifiers = identifiers
 	self.charID = characterID
 	
