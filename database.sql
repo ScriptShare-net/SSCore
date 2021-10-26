@@ -17,8 +17,8 @@ CREATE TABLE characters (
 	lastName varchar(99) NOT NULL,
 	skin longtext NOT NULL,
 	dob varchar(99) NOT NULL,
-	job longtext NOT NUll,
-	`group` longtext NOT NULL,
+	job longtext NOT NUll DEFAULT '{"gradeLabel":"Unemployeed","nameLabel":"Unemployeed"}',
+	group longtext NOT NULL DEFAULT '{"gradeLabel":"Unemployeed","nameLabel":"Unemployeed"}',
 	coords longtext NOT NULL,
 	health longtext NOT NULL,
 	PRIMARY KEY (identifier, characterSlot)
