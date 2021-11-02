@@ -215,7 +215,7 @@ end
 RegisterNetEvent("SS:Server:Initiate", function()
 	local src = source
 	SS.Players[src] = nil
-	if not SS.Player.GetPlayerFromSource(src) then
+	if not SS.GetPlayerFromSource(src) then
 		plyId(src, function(identifiers)
 			SS.Selector.Initiate(identifiers[SS.Identifier], src)
 		end)

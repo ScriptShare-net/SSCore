@@ -32,7 +32,7 @@ local function GetDiscordName(id)
 	local data = {}
 	PerformHttpRequest("https://discordapp.com/api/users/"..id, function(errorCode, resultData, resultHeaders)
 		data = json.decode(resultData)
-	end, "GET", "", {["Content-Type"] = "application/json", ["Authorization"] = "Bot ODcwNTA2MDc5Nzc0MjEyMDk2.YQNv9g.SRmYQGoPb38U8nMcxZy-S5u9AWo"})
+	end, "GET", "", {["Content-Type"] = "application/json", ["Authorization"] = "Bot ODEyODcxNDI1MjQxMjUxODUw.YDHDgg.4o2p2IAWZRyfQ9l_Q6IUrTatxlo"})
 	while data == nil or json.encode(data) == "[]" do
         Citizen.Wait(0)
 	end

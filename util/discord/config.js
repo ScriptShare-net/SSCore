@@ -14,6 +14,6 @@ const config = {
     // {{invite}} will be replaced with the invite above
     // {{prefix}} will be replaced with the prefix currenting being used from above
     statusMessages: [
-        "{{playercount}} online",
+        "{{playercount}} person developing",
     ],
 }

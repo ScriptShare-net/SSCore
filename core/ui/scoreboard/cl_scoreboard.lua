@@ -1,10 +1,4 @@
 exports["SSCore"]:uiCreateCustom("Scoreboard", "SSCore", "core/ui/scoreboard/scoreboard.html")
-Citizen.CreateThread(function()
-	exports["SSCore"]:uiSendMessage("Scoreboard", {
-		action = "updateServerInfo",
-		maxPlayers = 32,
-	})
-end)
 
 function UpdatePlayerTable(connectedPlayers)
 	local formattedPlayerList, num = {}, 1
@@ -65,6 +59,11 @@ function UpdatePlayerTable(connectedPlayers)
 	exports["SSCore"]:uiSendMessage("Scoreboard", {
 		action = 'updatePlayerJobs',
 		jobs   = {house = house, bank = bank, drugs = drugs, jewellery = jewellery, convenience = convenience, player_count = players}
+	})
+
+	exports["SSCore"]:uiSendMessage("Scoreboard", {
+		action = "updateServerInfo",
+		maxPlayers = 32,
 	})
 end
 

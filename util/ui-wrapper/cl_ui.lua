@@ -38,8 +38,16 @@ RegisterNUICallback("post", function(data)
 	})
 end)
 
-exports("uiSetFocus", function(keyboard, mouse)
+exports("uiSetFocus", function(identifier, keyboard, mouse)
+	print(identifier, keyboard, mouse)
 	SetNuiFocus(keyboard, mouse)
+	SendNUIMessage({
+		addon = "ui-focus",
+		table = {
+			identifier = identifier,
+			focus = mouse
+		},
+	})
 end)
 
 exports("uiDisableAll", function()

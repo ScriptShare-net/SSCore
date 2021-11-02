@@ -342,14 +342,14 @@ function SS.Player.Create(identifiers, source, characterID)
 	SS.Players[source] = self
 end
 
-function SS.Player.GetPlayerFromSource(source)
+function SS.GetPlayerFromSource(source)
 	local player = source
 	if type(player) == 'number' then 
 		return SS.Players[source]
 	end
 end
 
-function SS.Player.GetPlayerFromId(id)
+function SS.GetPlayerFromId(id)
 	local player = id
 
 	for source, player in pairs(SS.Players) do

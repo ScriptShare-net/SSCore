@@ -13,11 +13,11 @@ CreateThread(function()
 end)
 
 local function loadSkin(skin, entity)
-	exports["SSCore"].applyModel(PlayerPedId(), skin.model, entity) -- no idea why the second value is the first value
-	exports["SSCore"].applySkin(PlayerPedId(), skin.skin, entity)
-	exports["SSCore"].applyTattoos(PlayerPedId(), skin.tattoos, entity)
-	exports["SSCore"].applyClothing(PlayerPedId(), skin.clothing, entity)
-	exports["SSCore"].applyCosmetics(PlayerPedId(), skin.cosmetics, entity)
+	exports["SSCore"]:applyModel(skin.model, entity) -- no idea why the second value is the first value
+	exports["SSCore"]:applySkin(skin.skin, entity)
+	exports["SSCore"]:applyTattoos(skin.tattoos, entity)
+	exports["SSCore"]:applyClothing(skin.clothing, entity)
+	exports["SSCore"]:applyCosmetics(skin.cosmetics, entity)
 end
 
 local function pedgoto(ped, x, y, z)
@@ -103,7 +103,7 @@ local function loadFirstCharacter()
 	pedgoto(player, -83.538459777832, -835.75384521484, 221.9912109375)
 	turntohead(player, 340.15747070312, 1000)
 	FreezeEntityPosition(player, true)
-	exports["SSCore"].uiEnable("Selector")
+	exports["SSCore"]:uiEnable("Selector")
 	loadPlayerData(characters.favourite)
 end
 
@@ -140,8 +140,8 @@ end
 
 RegisterNetEvent("SS:Client:Initiate", function(characterData)
 	characters = characterData
-	exports["SSCore"].uiDisableAll()
-	SetNuiFocus(true, true)
+	exports["SSCore"]:uiDisableAll()
+	exports["SSCore"]:uiSetFocus("Selector", true, true)
 	firstSpawnPlayer()
 	loadFirstCharacter()
 end)
@@ -231,12 +231,12 @@ exports["SSCore"]:uiRegisterCallback("Selector", "confirmspawn", function(data, 
 	exports["SSCore"]:uiSendMessage("Selector", {
 		show = false,
 	})
-	SetNuiFocus(false, false)
+	exports["SSCore"]:uiSetFocus("Selector", false, false)
 end)
 
 exports["SSCore"]:uiRegisterCallback("Selector", "identity", function(data, cb)
 	TriggerServerEvent("SS:Server:RegisterIdentity", data, characterNumber)
-	SetNuiFocus(false, false)
+	exports["SSCore"]:uiSetFocus("Selector", false, false)
 	exports["SSCore"]:uiSendMessage("Selector", {
 		create = false,
 	})
@@ -271,10 +271,10 @@ local function loadCutScene()
 			--female peds
 			SS.TriggerServerCallback("SS:Server:GetRandomFemale", function(skin, cosmetics, clothing, tattoos)
 				local femaletable = {}
-				femaletable.skin = skin or exports["SSCore"].getDefaultSkin()
+				femaletable.skin = skin or exports["SSCore"]:getDefaultSkin()
 				femaletable.skin.sex = 1
-				femaletable.cosmetics = cosmetics or exports["SSCore"].getDefaultCosmetics()
-				femaletable.clothing = clothing or exports["SSCore"].getDefaultClothing(femaletable.skin.sex)
+				femaletable.cosmetics = cosmetics or exports["SSCore"]:getDefaultCosmetics()
+				femaletable.clothing = clothing or exports["SSCore"]:getDefaultClothing(femaletable.skin.sex)
 				femaletable.tattoos = tattoos or {}
 				loadSkin(femaletable, otherped)
 			end)
@@ -282,10 +282,10 @@ local function loadCutScene()
             --male peds
 			SS.TriggerServerCallback("SS:Server:GetRandomMale", function(skin, cosmetics, clothing, tattoos)
 				local maletable = {}
-				maletable.skin = skin or exports["SSCore"].getDefaultSkin()
+				maletable.skin = skin or exports["SSCore"]:getDefaultSkin()
 				maletable.skin.sex = 0
-				maletable.cosmetics = cosmetics or exports["SSCore"].getDefaultCosmetics()
-				maletable.clothing = clothing or exports["SSCore"].getDefaultClothing(maletable.skin.sex)
+				maletable.cosmetics = cosmetics or exports["SSCore"]:getDefaultCosmetics()
+				maletable.clothing = clothing or exports["SSCore"]:getDefaultClothing(maletable.skin.sex)
 				maletable.tattoos = tattoos or {}
 				loadSkin(maletable, otherped)
 			end)
