@@ -140,6 +140,7 @@ end
 
 RegisterNetEvent("SS:Client:Initiate", function(characterData)
 	characters = characterData
+	Wait(2000)
 	exports["SSCore"]:uiDisableAll()
 	exports["SSCore"]:uiSetFocus("Selector", true, true)
 	firstSpawnPlayer()
@@ -160,6 +161,7 @@ local function spawnPlayer(spawn)
 	ClearPedTasksImmediately(ped)
 	RemoveAllPedWeapons(ped)
 	ClearPlayerWantedLevel(ped)
+	exports["SSCore"]:uiEnableAll()
 end
 
 exports["SSCore"]:uiRegisterCallback("Selector", "nextchar", function(data, cb)
@@ -305,6 +307,7 @@ local function loadCutScene()
 	RenderScriptCams(false, true, 500, true, true)
 	SetCamActive(camera, false)
 	DoScreenFadeIn(1000)
+	exports["SSCore"]:uiEnableAll()
 end
 
 RegisterNetEvent("SS:Client:CreateSkin", function()

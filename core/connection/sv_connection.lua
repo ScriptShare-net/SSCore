@@ -687,7 +687,9 @@ AddEventHandler('playerConnecting', function(name, setReason, deferrals)
 end)
 
 AddEventHandler('playerDropped', function()
+	local src = source
 	slotsFilled = slotsFilled - 1
+	TriggerEvent("SS:Server:PlayerDisconnect", src)
 end)
 
 CreateThread(function()

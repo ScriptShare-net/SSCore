@@ -175,7 +175,7 @@ local function plyId(source, cb)
         ["@identifier"] = identifiers[SS.Identifier]
     }, function(result)
         if next(result) then
-            identifiers.permid = result
+            identifiers.permid = result[1].permid
         end
 		cb(identifiers)
     end)

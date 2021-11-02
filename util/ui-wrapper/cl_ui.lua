@@ -4,7 +4,7 @@ exports("uiCreateCustom", function(identifier, addon, htmladd)
 	if uiCreateCustom[identifier] then print("uiCreateCustom Identifier already in use") return end
 	uiCreateCustom[identifier] = true
 	Citizen.CreateThread(function()
-		Wait(5000)
+		Wait(2000)
 		SendNUIMessage({
 			addon = "ui",
 			table = {
@@ -39,7 +39,6 @@ RegisterNUICallback("post", function(data)
 end)
 
 exports("uiSetFocus", function(identifier, keyboard, mouse)
-	print(identifier, keyboard, mouse)
 	SetNuiFocus(keyboard, mouse)
 	SendNUIMessage({
 		addon = "ui-focus",

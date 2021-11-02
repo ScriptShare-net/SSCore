@@ -24,9 +24,7 @@ $(function () {
 		} else if (data.addon == "ui-post") {
 			$.post("http://SSCore/" + data.table.identifier + ":" + data.table.name, JSON.stringify(data.table.args));
 		} else if (data.addon == "ui-focus") {
-			console.log(data.table.focus);
 			if (data.table.focus) {
-				console.log($("#" + data.table.identifier).attr("style"));
 				$("#" + data.table.identifier).attr("style", "z-index: 999;");
 			} else {
 				$("#" + data.table.identifier).attr("style", "z-index: 0;");
@@ -49,7 +47,6 @@ $(function () {
 			try {
 				$("#" + data.addon)[0].contentWindow.postMessage(data.table, "*");
 			} catch(err) {
-				console.log(err);
 			}
 		}
 	});

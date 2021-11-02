@@ -41,7 +41,7 @@ client_scripts {
 	'core/functions/cl_*.lua',
 	'core/player/cl_*.lua',
 	'core/selector/cl_*.lua',
-	--'core/ui/hud/cl_*.lua',
+	'core/ui/hud/cl_*.lua',
 	'core/ui/scoreboard/cl_*.lua',
 }
 
