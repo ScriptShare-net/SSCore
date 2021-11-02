@@ -3,6 +3,12 @@ local slotsFilled = 0
 local Queue = {}
 local deferralsList = {}
 
+StopResource("hardcap")
+StopResource("mapmanager")
+StopResource("spawnmanager")
+StopResource("sessionmanager")
+StopResource("basic-gamemode")
+
 local whitelistCard = {
     ["type"] = "AdaptiveCard",
     ["body"] = {
