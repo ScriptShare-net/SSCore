@@ -1,15 +1,25 @@
 SS = SS or {}
 SS.ServerCallbacks = SS.ServerCallbacks or {}
-SS.CurrentRequestId = 0
+
+local function nextFree(tbl)
+	local num = 0
+	for k,v in pairs(tbl) do
+		if num == k then
+			return num
+		end
+		num = num + 1
+	end
+	return num
+end
 
 SS.TriggerServerCallback = function(name, cb, ...)
-	SS.ServerCallbacks[SS.CurrentRequestId] = cb
-
-	TriggerServerEvent('SS:triggerServerCallback', name, SS.CurrentRequestId, ...)
-
-	if SS.CurrentRequestId < 65535 then
-		SS.CurrentRequestId = SS.CurrentRequestId + 1
-	else
-		SS.CurrentRequestId = 0
-	end
+	local requestId = nextFree(SS.ServerCallbacks)
+	SS.ServerCallbacks[requestId] = cb
+	TriggerServerEvent('SS:Server:Callback', name, requestId, ...)
 end
+
+RegisterNetEvent('SS:Client:Callback')
+AddEventHandler('SS:Client:Callback', function(requestId, ...)
+	SS.ServerCallbacks[requestId](...)
+	SS.ServerCallbacks[requestId] = nil
+end)

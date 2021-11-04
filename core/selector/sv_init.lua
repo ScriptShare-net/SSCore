@@ -241,9 +241,9 @@ SS.RegisterServerCallback("SS:Server:GetRandomFemale", function(source, cb)
 	exports.oxmysql:execute("SELECT * FROM characters WHERE LOCATE('mp_f_freemode_01', skin)", {}, function(result)
 		local characternum = SS.Math.GenerateRandomNumber(1, #result)
 		if result[characternum].skin then
-			callback(result[characternum].skin, result[characternum].cosmetics, result[characternum].clothing, result[characternum].tattoos)
+			cb(result[characternum].skin, result[characternum].cosmetics, result[characternum].clothing, result[characternum].tattoos)
 		else
-			callback(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
+			cb(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
 		end
 	end)
 end)
@@ -253,9 +253,9 @@ SS.RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
 	exports.oxmysql:execute("SELECT * FROM characters WHERE LOCATE('mp_m_freemode_01', skin)", {}, function(result)
 		local characternum = SS.Math.GenerateRandomNumber(1, #result)
 		if result[characternum].skin then
-			callback(result[characternum].skin, result[characternum].cosmetics, result[characternum].clothing, result[characternum].tattoos)
+			cb(result[characternum].skin, result[characternum].cosmetics, result[characternum].clothing, result[characternum].tattoos)
 		else
-			callback(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
+			cb(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
 		end
 	end)
 end)

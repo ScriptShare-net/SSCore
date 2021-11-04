@@ -7,11 +7,3 @@ function SS.Utility.SavePlayerData()
         SS.Player.SaveAll()
     end)
 end
-
-function SS.RegisterServerCallback(name, cb)
-
-end
-
-function SS.TriggerServerCallback(name)
-    
-end
