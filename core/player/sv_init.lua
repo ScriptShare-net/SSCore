@@ -181,6 +181,7 @@ function SS.Player.Create(identifiers, source, characterID)
 
 	self.SetJob = function(job)
 		self.job = job
+		TriggerClientEvent("SSCore:Client:jobChange", self.source, self.job)
 	end
 
 	self.GetGrade = function()
