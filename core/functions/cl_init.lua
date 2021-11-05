@@ -4,7 +4,7 @@ SS.ServerCallbacks = SS.ServerCallbacks or {}
 local function nextFree(tbl)
 	local num = 0
 	for k,v in pairs(tbl) do
-		if num == k then
+		if num ~= k then
 			return num
 		end
 		num = num + 1
