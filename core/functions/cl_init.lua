@@ -15,11 +15,12 @@ end
 SS.TriggerServerCallback = function(name, cb, ...)
 	local requestId = nextFree(SS.ServerCallbacks)
 	SS.ServerCallbacks[requestId] = cb
-	TriggerServerEvent('SS:Server:Callback', name, requestId, ...)
+	TriggerServerEvent("SS:Server:Callback", name, requestId, ...)
+	print(requestId)
 end
 
-RegisterNetEvent('SS:Client:Callback')
-AddEventHandler('SS:Client:Callback', function(requestId, ...)
+RegisterNetEvent("SS:Client:Callback", function(requestId, ...)
+	print(requestId)
 	SS.ServerCallbacks[requestId](...)
 	SS.ServerCallbacks[requestId] = nil
 end)

@@ -1,12 +1,11 @@
 SS = SS or {}
 SS.ServerCallbacks = SS.ServerCallbacks or {}
 
-RegisterServerEvent('SS:Server:Callback')
-AddEventHandler('SS:Server:Callback', function(name, requestId, ...)
+RegisterServerEvent("SS:Server:Callback", function(name, requestId, ...)
 	local src = source
 
 	SS.TriggerServerCallback(name, requestId, src, function(...)
-		TriggerClientEvent('SS:Client:Callback', src, requestId, ...)
+		TriggerClientEvent("SS:Client:Callback", src, requestId, ...)
 	end, ...)
 end)
 
