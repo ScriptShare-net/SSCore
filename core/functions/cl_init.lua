@@ -3,7 +3,9 @@ SS.ServerCallbacks = SS.ServerCallbacks or {}
 
 local function nextFree(tbl)
 	local num = 0
+	json.encode(tbl)
 	for k,v in pairs(tbl) do
+		print(num, k)
 		if num ~= k then
 			return num
 		end
