@@ -525,7 +525,7 @@ $(function () {
 			$(".top-container-container").hide();
 			$("body").css("background-color", "rgba(0, 0, 0, 0.0);");
 		}
-			console.log(event.data.hotbar)
+		
 		if (event.data.hotbar) {
 			//$("body").hide();
 			$(".bottom-container-container").show();

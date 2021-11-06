@@ -85,8 +85,9 @@ body {
 
 /* Left Container Start */
 .left-container {
+	top: 8%;
 	position: absolute;
-	height: 960px;
+	height: 775px;
 	width: 630px;
 	background: linear-gradient(
 		0deg,
@@ -100,7 +101,7 @@ body {
 .primary {
 	position: absolute;
 	left: 25px;
-	bottom: 250px;
+	bottom: 225px;
 	width: 400px;
 	height: 150px;
 	border-style: solid;
@@ -115,7 +116,7 @@ body {
 .secondary {
 	position: absolute;
 	left: 25px;
-	bottom: 50px;
+	bottom: 25px;
 	width: 400px;
 	height: 150px;
 	border-style: solid;
@@ -131,7 +132,7 @@ body {
 	position: absolute;
 	float: right;
 	right: 25px;
-	bottom: 250px;
+	bottom: 225px;
 	width: 150px;
 	height: 150px;
 	border-style: solid;
@@ -147,7 +148,7 @@ body {
 	position: absolute;
 	float: right;
 	right: 25px;
-	bottom: 50px;
+	bottom: 25px;
 	width: 150px;
 	height: 150px;
 	border-style: solid;
@@ -163,7 +164,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 25px;
-	top: 375px;
+	top: 205px;
 	width: 150px;
 	height: 150px;
 	border-style: solid;
@@ -179,7 +180,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 240px;
-	top: 375px;
+	top: 205px;
 	width: 150px;
 	height: 150px;
 	border-style: solid;
@@ -195,7 +196,7 @@ body {
 	position: absolute;
 	float: right;
 	right: 25px;
-	top: 375px;
+	top: 205px;
 	width: 150px;
 	height: 150px;
 	border-style: solid;
@@ -211,7 +212,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 25px;
-	top: 200px;
+	top: 25px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -227,7 +228,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 25px;
-	top: 290px;
+	top: 115px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -243,7 +244,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 115px;
-	top: 200px;
+	top: 25px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -259,7 +260,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 115px;
-	top: 290px;
+	top: 115px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -275,7 +276,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 240px;
-	top: 200px;
+	top: 25px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -291,7 +292,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 240px;
-	top: 290px;
+	top: 115px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -307,7 +308,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 330px;
-	top: 200px;
+	top: 25px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -323,7 +324,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 330px;
-	top: 290px;
+	top: 115px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -339,7 +340,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 455px;
-	top: 200px;
+	top: 25px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -355,7 +356,7 @@ body {
 	position: absolute;
 	float: left;
 	left: 455px;
-	top: 290px;
+	top: 115px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -369,8 +370,8 @@ body {
 .wallet {
 	position: absolute;
 	float: left;
-	left: 25px;
-	top: 75px;
+	left: 545px;
+	top: 25px;
 	width: 60px;
 	height: 60px;
 	border-style: solid;
@@ -386,9 +387,10 @@ body {
 
 /* Middle Container Start */
 .middle-container {
+	top: 8%;
 	position: absolute;
-	left: 640px;
-	height: 960px;
+	left: 635px;
+	height: 775px;
 	width: 630px;
 	background: linear-gradient(
 		0deg,
@@ -527,9 +529,10 @@ body {
 /* "Open Sans", sans-serif; */
 /* Right Container Start */
 .right-container {
+	top: 8%;
 	position: absolute;
-	left: 1280px;
-	height: 960px;
+	left: 1270px;
+	height: 775px;
 	width: 630px;
 	background: linear-gradient(
 		0deg,
@@ -544,8 +547,9 @@ body {
 }
 
 .right-container h1 {
+	margin-top: 10px;
 	text-align: center;
-	margin-bottom: 0px;
+	margin-bottom: 5px;
 	color: white;
 	z-index: 2;
 }
@@ -553,11 +557,12 @@ body {
 .stash-container {
 	position: absolute;
 	float: right;
-	right: 0;
+	right: 50%;
+	transform: translate(50%, 0);
 	width: auto;
 	overflow-x: hidden;
 	overflow-y: scroll;
-	max-height: 900px;
+	max-height: 700px;
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -581,7 +586,7 @@ body {
 	position: absolute;
 	height: 110px;
 	width: 1920px;
-	top: 970px;
+	top: 950px;
 }
 
 .hotbar-container {

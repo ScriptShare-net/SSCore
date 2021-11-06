@@ -4,12 +4,21 @@ $(function () {
 	function updateScale() {
 		var scalex = ($("#ui-html").width() / 1920);
 		var scaley = ($("#ui-html").height() / 1080);
-		if (scalex != scaley) {
-			$("#ui-html").css("")
+		$(".ui-body").css({"transform-origin-x": 0, "transform-origin-y": 0});
+		if (scalex > scaley) {
+			scalex = scaley
+			var x = ($("#ui-html").width() / scalex) - 1920;
+			var y = ($("#ui-html").height() / scaley) - 1080;
+			$(".ui-body").css({"transform-origin-x": x, "transform-origin-y": y});
+		} else if (scaley > scalex) {
+			scaley = scalex
+			var x = ($("#ui-html").width() / scalex) - 1920;
+			var y = ($("#ui-html").height() / scaley) - 1080;
+			$(".ui-body").css({"transform-origin-x": x, "transform-origin-y": y});
 		}
 		$(".ui-body").css("transform", "scale("+scalex+", "+scaley+")")
-		.width($("#ui-html")[0].scrollWidth / scalex + "px")
-		.height($("#ui-html")[0].scrollHeight / scaley + "px");
+		.width("1920px")
+		.height("1080px");
 	}
 
 	updateScale();

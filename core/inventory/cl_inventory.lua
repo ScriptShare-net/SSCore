@@ -42,8 +42,8 @@ local function openInventory()
 		name = "Ground",
 		stash = {
 			length = 4,
-			width = 5,
-			height = 5,
+			width = 10,
+			height = 50,
 		},
 	})
 end
