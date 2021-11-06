@@ -1,6 +1,36 @@
 exports["SSCore"]:uiCreateCustom("Inventory", "SSCore", "core/inventory/ui/inventory.html")
 
 local inventoryOpen = false
+local hotbarOpen = false
+
+--[[ contents = {
+	column,
+	row,
+	width,
+	height,
+	name,
+	count,
+	container,
+	image,
+	type,
+	data,
+	rotated,
+	rotatedimage
+},
+stashcontent = {
+	column,
+	row,
+	width,
+	height,
+	name,
+	count,
+	container,
+	image,
+	type,
+	data,
+	rotated,
+	rotatedimage
+}, ]]
 
 local function openInventory()
 	local player = PlayerPedId()
@@ -9,7 +39,12 @@ local function openInventory()
 	exports["SSCore"]:uiSetFocus("Inventory", inventoryOpen, inventoryOpen)
 	exports["SSCore"]:uiSendMessage("Inventory", {
 		show = inventoryOpen,
-		menu = "Ground"
+		name = "Ground",
+		stash = {
+			length = 4,
+			width = 5,
+			height = 5,
+		},
 	})
 end
 
@@ -19,4 +54,22 @@ CreateThread(function()
 			openInventory()
 		end
 	end)
+end)
+
+exports("setHotbar", function(show)
+	print(show)
+	exports["SSCore"]:uiSendMessage("Inventory", {
+		hotbar = show
+	})
+end)
+
+exports("updateHotbar", function(data)
+	exports["SSCore"]:uiSendMessage("Inventory", {
+		hotbardata = data
+	})
+end)
+
+exports["SSCore"]:uiRegisterCallback("Inventory", "closeInventory", function(data, cb)
+	inventoryOpen = false
+	exports["SSCore"]:uiSetFocus("Inventory", inventoryOpen, inventoryOpen)
 end)

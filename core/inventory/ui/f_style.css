@@ -109,8 +109,7 @@ body {
 }
 
 .primary.empty {
-	background-image: url("primary.png"),
-		url("https://assets.codepen.io/5820734/primary.png");
+	background-image: url("images/f_primary.png");
 }
 
 .secondary {
@@ -125,8 +124,7 @@ body {
 }
 
 .secondary.empty {
-	background-image: url("secondary.png"),
-		url("https://assets.codepen.io/5820734/secondary.png");
+	background-image: url("images/f_secondary.png");
 }
 
 .pistol {
@@ -142,8 +140,7 @@ body {
 }
 
 .pistol.empty {
-	background-image: url("pistol.png"),
-		url("https://assets.codepen.io/5820734/pistol.png");
+	background-image: url("images/f_pistol.png");
 }
 
 .knife {
@@ -159,8 +156,7 @@ body {
 }
 
 .knife.empty {
-	background-image: url("knife.png"),
-		url("https://assets.codepen.io/5820734/knife.png");
+	background-image: url("images/f_knife.png");
 }
 
 .helmet {
@@ -176,8 +172,7 @@ body {
 }
 
 .helmet.empty {
-	background-image: url("helmet.png"),
-		url("https://assets.codepen.io/5820734/helmet.png");
+	background-image: url("images/f_helmet.png");
 }
 
 .armor {
@@ -193,8 +188,7 @@ body {
 }
 
 .armor.empty {
-	background-image: url("armour.png"),
-		url("https://assets.codepen.io/5820734/armour.png");
+	background-image: url("images/f_armour.png");
 }
 
 .holster {
@@ -210,8 +204,7 @@ body {
 }
 
 .holster.empty {
-	background-image: url("holster.png"),
-		url("https://assets.codepen.io/5820734/holster.png");
+	background-image: url("images/f_holster.png");
 }
 
 .hat {
@@ -227,8 +220,7 @@ body {
 }
 
 .hat.empty {
-	background-image: url("hat.png"),
-		url("https://assets.codepen.io/5820734/hat.png");
+	background-image: url("images/f_hat.png");
 }
 
 .mask {
@@ -244,8 +236,7 @@ body {
 }
 
 .mask.empty {
-	background-image: url("mask.png"),
-		url("https://assets.codepen.io/5820734/mask.png");
+	background-image: url("images/f_mask.png");
 }
 
 .glasses {
@@ -261,8 +252,7 @@ body {
 }
 
 .glasses.empty {
-	background-image: url("glasses.png"),
-		url("https://assets.codepen.io/5820734/glasses.png");
+	background-image: url("images/f_glasses.png");
 }
 
 .ear {
@@ -278,8 +268,7 @@ body {
 }
 
 .ear.empty {
-	background-image: url("ear.png"),
-		url("https://assets.codepen.io/5820734/ear.png");
+	background-image: url("images/f_ear.png");
 }
 
 .jacket {
@@ -295,8 +284,7 @@ body {
 }
 
 .jacket.empty {
-	background-image: url("jacket.png"),
-		url("https://assets.codepen.io/5820734/jacket.png");
+	background-image: url("images/f_jacket.png");
 }
 
 .shirt {
@@ -312,8 +300,7 @@ body {
 }
 
 .shirt.empty {
-	background-image: url("shirt.png"),
-		url("https://assets.codepen.io/5820734/shirt.png");
+	background-image: url("images/f_shirt.png");
 }
 
 .pants {
@@ -329,8 +316,7 @@ body {
 }
 
 .pants.empty {
-	background-image: url("pants.png"),
-		url("https://assets.codepen.io/5820734/pants.png");
+	background-image: url("images/f_pants.png");
 }
 
 .shoes {
@@ -346,8 +332,7 @@ body {
 }
 
 .shoes.empty {
-	background-image: url("shoes.png"),
-		url("https://assets.codepen.io/5820734/shoes.png");
+	background-image: url("images/f_shoes.png");
 }
 
 .watch {
@@ -363,8 +348,7 @@ body {
 }
 
 .watch.empty {
-	background-image: url("watch.png"),
-		url("https://assets.codepen.io/5820734/watch.png");
+	background-image: url("images/f_watch.png");
 }
 
 .chain {
@@ -380,8 +364,7 @@ body {
 }
 
 .chain.empty {
-	background-image: url("chain.png"),
-		url("https://assets.codepen.io/5820734/chain.png");
+	background-image: url("images/f_chain.png");
 }
 .wallet {
 	position: absolute;
@@ -396,7 +379,7 @@ body {
 }
 
 .wallet.empty {
-	background-image: url("wallet.png"), url("");
+	background-image: url("images/f_wallet.png");
 }
 
 /* Left Container End */
@@ -429,8 +412,7 @@ body {
 }
 
 .vest.empty {
-	background-image: url("vest.png"),
-		url("https://assets.codepen.io/5820734/vest.png");
+	background-image: url("images/f_vest.png");
 }
 
 .vest-a {
@@ -465,7 +447,7 @@ body {
 	top: 200px;
 	width: 60px;
 	height: 120px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -479,7 +461,7 @@ body {
 	top: 200px;
 	width: 60px;
 	height: 120px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -493,7 +475,7 @@ body {
 	top: 200px;
 	width: 60px;
 	height: 120px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -507,7 +489,7 @@ body {
 	top: 200px;
 	width: 60px;
 	height: 120px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -526,8 +508,7 @@ body {
 }
 
 .backpack.empty {
-	background-image: url("backpack.png"),
-		url("https://assets.codepen.io/5820734/backpack.png");
+	background-image: url("images/f_backpack.png");
 }
 
 .backpack-inside {
@@ -536,7 +517,7 @@ body {
 	display: grid;
 	left: 185px;
 	top: 345px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -585,7 +566,7 @@ body {
 
 .stash {
 	display: grid;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	z-index: 3;
 }
 
@@ -705,7 +686,7 @@ body {
 	display: grid;
 	width: 60px;
 	height: 60px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -718,7 +699,7 @@ body {
 	display: grid;
 	width: 60px;
 	height: 60px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -731,7 +712,7 @@ body {
 	display: grid;
 	width: 60px;
 	height: 60px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -744,7 +725,7 @@ body {
 	display: grid;
 	width: 60px;
 	height: 60px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -757,7 +738,7 @@ body {
 	display: grid;
 	width: 60px;
 	height: 60px;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 	border-style: solid;
 	border-color: rgb(104, 104, 104);
 	border-width: 0.5px;
@@ -795,7 +776,7 @@ body {
 	left: 18px;
 	position: relative;
 	display: grid;
-	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	background: url("images/f_item-cell.png");
 }
 
 /* Inspect Menu End */

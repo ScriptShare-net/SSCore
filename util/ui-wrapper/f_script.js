@@ -1,8 +1,23 @@
 $(function () {
 	var uiList = [];
+	
+	function updateScale() {
+		var scalex = ($("#ui-html").width() / 1920);
+		var scaley = ($("#ui-html").height() / 1080);
+		if (scalex != scaley) {
+			$("#ui-html").css("")
+		}
+		$(".ui-body").css("transform", "scale("+scalex+", "+scaley+")")
+		.width($("#ui-html")[0].scrollWidth / scalex + "px")
+		.height($("#ui-html")[0].scrollHeight / scaley + "px");
+	}
+
+	updateScale();
+
 	window.addEventListener("message", event => {
-		var data = event.data
-		var skip = false
+		updateScale();
+		var data = event.data;
+		var skip = false;
 		if (data.addon == "ui") {
 			if (data.table.identifier != null) {
 				uiList.forEach(function(item, index) {
@@ -49,5 +64,13 @@ $(function () {
 			} catch(err) {
 			}
 		}
+	});
+
+	window.addEventListener('keydown', function (event) {
+		uiList.forEach(function(item, index) {
+			$("#" + item)[0].contentWindow.dispatchEvent(
+				new KeyboardEvent('keydown', {key: event.key})
+			);
+		});
 	});
 });

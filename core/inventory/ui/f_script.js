@@ -1,5 +1,4 @@
 $(function () {
-	//$("body").hide();
 	$(".top-container-container").hide();
 	$(".bottom-container-container").hide();
 	
@@ -108,7 +107,7 @@ $(function () {
 				} else if (rotated == "false") {
 					rotated = false;
 				}
-				$.post('http://sup_inventory/moveItem', JSON.stringify({name, container, row, column, newcontainer, y, x, rotated}));
+				$.post("http://SSCore/post", JSON.stringify({identifier: "Inventory", name: "moveItem", args: {name, container, row, column, newcontainer, y, x, rotated}}));
 				$("#" + pickupitem).detach().appendTo("#" + event.target.id);
 				$("#"+event.target.id).removeClass("empty");
 			}
@@ -189,7 +188,7 @@ $(function () {
 					$("#"+pickupitem).find(".itembackground").css({"background-image": "url("+ $("#"+pickupitem).attr("data-img") +")"});
 				}
 				var split = splitnumber;
-				$.post('http://sup_inventory/moveItem', JSON.stringify({name, container, row, column, newcontainer, y, x, rotated, split}));
+				$.post("http://SSCore/post", JSON.stringify({identifier: "Inventory", name: "moveItem", args: {name, container, row, column, newcontainer, y, x, rotated, split}}));
 				splitnumber = 0;
 				$("#" + pickupitem).css({ "grid-row": y + " / span " + height, "grid-column": x + " / span " + width });
 				$("#" + pickupitem).attr("data-x", x);
@@ -282,7 +281,7 @@ $(function () {
 				var stack = true;
 				var split = splitnumber;
 				if (name == $("#"+idnumber).attr("data-name")) {
-					$.post('http://sup_inventory/moveItem', JSON.stringify({name, container, row, column, newcontainer, y, x, rotated, stack, split}));
+					$.post("http://SSCore/post", JSON.stringify({identifier: "Inventory", name: "moveItem", args: {name, container, row, column, newcontainer, y, x, rotated, stack, split}}));
 					splitnumber = 0;
 				}
 			}
@@ -352,7 +351,7 @@ $(function () {
 			} else if (rotated == "false") {
 				rotated = true;
 			}
-			$.post('http://sup_inventory/moveItem', JSON.stringify({name, container, row, column, newcontainer, y, x, rotated}));
+			$.post("http://SSCore/post", JSON.stringify({identifier: "Inventory", name: "moveItem", args: {name, container, row, column, newcontainer, y, x, rotated}}));
 			$("#"+id).attr("data-rotated", rotated);
 		}
 	}
@@ -526,8 +525,8 @@ $(function () {
 			$(".top-container-container").hide();
 			$("body").css("background-color", "rgba(0, 0, 0, 0.0);");
 		}
-
-		if (event.data.hotbar == true) {
+			console.log(event.data.hotbar)
+		if (event.data.hotbar) {
 			//$("body").hide();
 			$(".bottom-container-container").show();
 			if (event.data.hotbardata != null) {
@@ -539,7 +538,7 @@ $(function () {
 					});
 				}
 			}
-		} else {
+		} else if (event.data.hotbar == false) {
 			$(".bottom-container-container").hide();
 		}
 	});
@@ -550,7 +549,7 @@ $(function () {
 		if (event.key == "Escape" || event.key == "Tab") {
 			$(".top-container-container").hide();
 			$("body").css("background-color", "rgba(0, 0, 0, 0.0);");
-			$.post('http://sup_inventory/closeInventory', JSON.stringify({}));
+			$.post("http://SSCore/post", JSON.stringify({identifier: "Inventory", name: "closeInventory", args: {}}));
 		}
 		if (event.key == "i") {
 			if (hoveritem > 0) {

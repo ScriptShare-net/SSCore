@@ -25,12 +25,12 @@ server_scripts {
 	'util/ui-wrapper/sv_*.lua',
 	'util/discord/config.js',
 	'util/discord/app.js',
+	'core/inventory/sv_*.lua',
 	'core/skin/sv_*.lua',
 	'core/functions/sv_*.lua',
 	'core/player/sv_*.lua',
 	'core/selector/sv_*.lua',
 	'core/ui/scoreboard/sv_*.lua',
-	'core/inventory/sv_*.lua',
 }
 
 client_scripts {
@@ -38,6 +38,7 @@ client_scripts {
 	'util/func/cl_*.lua',
 	'util/ui-wrapper/cl_*.lua',
 	'util/discord/client.lua',
+	'core/inventory/cl_*.lua',
 	'core/controls/cl_*.lua',
 	'core/ui/progress/cl_*.lua',
 	'core/skin/cl_*.lua',
@@ -46,7 +47,6 @@ client_scripts {
 	'core/selector/cl_*.lua',
 	'core/ui/hud/cl_*.lua',
 	'core/ui/scoreboard/cl_*.lua',
-	'core/inventory/cl_*.lua',
 }
 
 files {
