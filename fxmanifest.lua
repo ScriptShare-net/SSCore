@@ -37,6 +37,7 @@ client_scripts {
 	'util/func/cl_*.lua',
 	'util/ui-wrapper/cl_*.lua',
 	'util/discord/client.lua',
+	'core/ui/progress/cl_*.lua',
 	'core/skin/cl_*.lua',
 	'core/functions/cl_*.lua',
 	'core/player/cl_*.lua',
