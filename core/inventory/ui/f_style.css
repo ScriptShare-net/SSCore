@@ -1,0 +1,1017 @@
+/* Global Start */
+body {
+	margin: 0;
+	overflow: hidden;
+	user-select: none;
+}
+
+.item-cell {
+	width: 58px;
+	height: 58px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 1px;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+}
+
+.item-cell-hover {
+	width: 58px;
+	height: 58px;
+	background-color: rgba(0, 255, 0, 0.9);
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 1px;
+}
+
+.item-cell-invalid {
+	background-color: rgba(255, 0, 0, 0.4);
+}
+
+.item-cell-drag {
+	width: 58px;
+	height: 58px;
+	background-color: rgba(15, 15, 15, 0.9);
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 1px;
+}
+
+.item {
+	width: 100%;
+	height: 100%;
+	background-color: rgba(15, 15, 15, 0.5);
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	font-size: small;
+	z-index: 999;
+}
+
+.itemname {
+	position: relative;
+	width: calc(100% - 4px);
+	left: 2px;
+	top: 1px;
+	z-index: 1001;
+}
+
+.itembackground {
+	width: 100%;
+	height: 100%;
+	left: 0;
+	top: -16px;
+	position: relative;
+	background-size: 100% 100%;
+	z-index: 1000;
+}
+
+.itemamount {
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	font-size: small;
+	position: relative;
+	float: right;
+	right: 2px;
+	top: -35px;
+	text-align: right;
+	z-index: 1001;
+}
+
+/* Global End */
+
+/* Left Container Start */
+.left-container {
+	position: absolute;
+	height: 960px;
+	width: 630px;
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border-radius: 5px;
+	margin: 10px;
+}
+
+.primary {
+	position: absolute;
+	left: 25px;
+	bottom: 250px;
+	width: 400px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.primary.empty {
+	background-image: url("primary.png"),
+		url("https://assets.codepen.io/5820734/primary.png");
+}
+
+.secondary {
+	position: absolute;
+	left: 25px;
+	bottom: 50px;
+	width: 400px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.secondary.empty {
+	background-image: url("secondary.png"),
+		url("https://assets.codepen.io/5820734/secondary.png");
+}
+
+.pistol {
+	position: absolute;
+	float: right;
+	right: 25px;
+	bottom: 250px;
+	width: 150px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.pistol.empty {
+	background-image: url("pistol.png"),
+		url("https://assets.codepen.io/5820734/pistol.png");
+}
+
+.knife {
+	position: absolute;
+	float: right;
+	right: 25px;
+	bottom: 50px;
+	width: 150px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.knife.empty {
+	background-image: url("knife.png"),
+		url("https://assets.codepen.io/5820734/knife.png");
+}
+
+.helmet {
+	position: absolute;
+	float: left;
+	left: 25px;
+	top: 375px;
+	width: 150px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.helmet.empty {
+	background-image: url("helmet.png"),
+		url("https://assets.codepen.io/5820734/helmet.png");
+}
+
+.armor {
+	position: absolute;
+	float: left;
+	left: 240px;
+	top: 375px;
+	width: 150px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.armor.empty {
+	background-image: url("armour.png"),
+		url("https://assets.codepen.io/5820734/armour.png");
+}
+
+.holster {
+	position: absolute;
+	float: right;
+	right: 25px;
+	top: 375px;
+	width: 150px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.holster.empty {
+	background-image: url("holster.png"),
+		url("https://assets.codepen.io/5820734/holster.png");
+}
+
+.hat {
+	position: absolute;
+	float: left;
+	left: 25px;
+	top: 200px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.hat.empty {
+	background-image: url("hat.png"),
+		url("https://assets.codepen.io/5820734/hat.png");
+}
+
+.mask {
+	position: absolute;
+	float: left;
+	left: 25px;
+	top: 290px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.mask.empty {
+	background-image: url("mask.png"),
+		url("https://assets.codepen.io/5820734/mask.png");
+}
+
+.glasses {
+	position: absolute;
+	float: left;
+	left: 115px;
+	top: 200px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.glasses.empty {
+	background-image: url("glasses.png"),
+		url("https://assets.codepen.io/5820734/glasses.png");
+}
+
+.ear {
+	position: absolute;
+	float: left;
+	left: 115px;
+	top: 290px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.ear.empty {
+	background-image: url("ear.png"),
+		url("https://assets.codepen.io/5820734/ear.png");
+}
+
+.jacket {
+	position: absolute;
+	float: left;
+	left: 240px;
+	top: 200px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.jacket.empty {
+	background-image: url("jacket.png"),
+		url("https://assets.codepen.io/5820734/jacket.png");
+}
+
+.shirt {
+	position: absolute;
+	float: left;
+	left: 240px;
+	top: 290px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.shirt.empty {
+	background-image: url("shirt.png"),
+		url("https://assets.codepen.io/5820734/shirt.png");
+}
+
+.pants {
+	position: absolute;
+	float: left;
+	left: 330px;
+	top: 200px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.pants.empty {
+	background-image: url("pants.png"),
+		url("https://assets.codepen.io/5820734/pants.png");
+}
+
+.shoes {
+	position: absolute;
+	float: left;
+	left: 330px;
+	top: 290px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.shoes.empty {
+	background-image: url("shoes.png"),
+		url("https://assets.codepen.io/5820734/shoes.png");
+}
+
+.watch {
+	position: absolute;
+	float: left;
+	left: 455px;
+	top: 200px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.watch.empty {
+	background-image: url("watch.png"),
+		url("https://assets.codepen.io/5820734/watch.png");
+}
+
+.chain {
+	position: absolute;
+	float: left;
+	left: 455px;
+	top: 290px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.chain.empty {
+	background-image: url("chain.png"),
+		url("https://assets.codepen.io/5820734/chain.png");
+}
+.wallet {
+	position: absolute;
+	float: left;
+	left: 25px;
+	top: 75px;
+	width: 60px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.wallet.empty {
+	background-image: url("wallet.png"), url("");
+}
+
+/* Left Container End */
+
+/* Middle Container Start */
+.middle-container {
+	position: absolute;
+	left: 640px;
+	height: 960px;
+	width: 630px;
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border-radius: 5px;
+	margin: 10px;
+}
+
+.vest {
+	position: absolute;
+	float: left;
+	left: 25px;
+	top: 25px;
+	width: 150px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.vest.empty {
+	background-image: url("vest.png"),
+		url("https://assets.codepen.io/5820734/vest.png");
+}
+
+.vest-a {
+	position: absolute;
+	float: left;
+	left: 200px;
+	top: 40px;
+	width: 60px;
+	height: 120px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.vest-b {
+	position: absolute;
+	float: left;
+	left: 265px;
+	top: 40px;
+	width: 60px;
+	height: 120px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.flpocket {
+	position: absolute;
+	float: left;
+	left: 25px;
+	display: grid;
+	top: 200px;
+	width: 60px;
+	height: 120px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.frpocket {
+	position: absolute;
+	display: grid;
+	float: left;
+	left: 90px;
+	top: 200px;
+	width: 60px;
+	height: 120px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.blpocket {
+	position: absolute;
+	float: left;
+	display: grid;
+	left: 155px;
+	top: 200px;
+	width: 60px;
+	height: 120px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.brpocket {
+	position: absolute;
+	float: left;
+	display: grid;
+	left: 220px;
+	top: 200px;
+	width: 60px;
+	height: 120px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.backpack {
+	position: absolute;
+	float: left;
+	left: 25px;
+	top: 345px;
+	width: 150px;
+	height: 150px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.backpack.empty {
+	background-image: url("backpack.png"),
+		url("https://assets.codepen.io/5820734/backpack.png");
+}
+
+.backpack-inside {
+	position: absolute;
+	float: left;
+	display: grid;
+	left: 185px;
+	top: 345px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+/* Middle Container End */
+/* "Open Sans", sans-serif; */
+/* Right Container Start */
+.right-container {
+	position: absolute;
+	left: 1280px;
+	height: 960px;
+	width: 630px;
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border-radius: 5px;
+	margin: 10px;
+	overflow: hidden;
+	font-family: "Tahoma", sans-serif;
+	z-index: 1;
+}
+
+.right-container h1 {
+	text-align: center;
+	margin-bottom: 0px;
+	color: white;
+	z-index: 2;
+}
+
+.stash-container {
+	position: absolute;
+	float: right;
+	right: 0;
+	width: auto;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	max-height: 900px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+	z-index: 2;
+}
+
+.stash {
+	display: grid;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	z-index: 3;
+}
+
+.stash-container::-webkit-scrollbar {
+	display: none;
+}
+
+/* Right Container End */
+
+/* Bottom Container Container Start */
+.bottom-container-container {
+	position: absolute;
+	height: 110px;
+	width: 1920px;
+	top: 970px;
+}
+
+.hotbar-container {
+	width: auto;
+	height: 85px;
+	display: grid;
+	column-gap: 5px;
+	position: absolute;
+	left: 50%;
+	top: 5px;
+	grid-template-columns: repeat(10, 60px);
+	grid-template-rows: 60px;
+	transform: translate(-50%, 0);
+	/*background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.75) 0%,
+		rgba(6, 6, 6, 0.75) 50%
+	);*/
+	overflow: hidden;
+	vertical-align: top;
+}
+
+/* Bottom Container Container End */
+
+/* Inspect Menu Start */
+
+.inspect-container {
+	display: none;
+	top: 50%;
+	left: 38%;
+	z-index: 9999;
+	position: absolute;
+	width: 500px;
+	height: auto;
+	padding-bottom: 10px;
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+}
+
+.name {
+	margin-top: 1px;
+	margin-left: 15px;
+	float: left;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+}
+
+.item-image {
+	float: left;
+	left: 0;
+	position: absolute;
+	top: 0px;
+	object-fit: contain;
+}
+
+.item-amount {
+	float: right;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: right;
+	margin-top: 5px;
+	right: 5px;
+}
+
+.inspect-content {
+	position: relative;
+	top: 20px;
+	width: 500px;
+	height: 180px;
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+}
+
+.inspect-bar {
+	width: 480px;
+	height: 20px;
+	position: absolute;
+	float: left;
+	left: 0;
+	top: 0;
+}
+
+.inspect-attachments {
+	position: relative;
+	width: 500px;
+	height: 70px;
+	top: 20px;
+	background-color: rgba(50, 50, 48, 0.5);
+}
+
+.inspect-a1 {
+	position: relative;
+	float: left;
+	margin-left: 31.6666px;
+	display: grid;
+	width: 60px;
+	height: 60px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.inspect-a2 {
+	position: relative;
+	float: left;
+	margin-left: 31.6666px;
+	display: grid;
+	width: 60px;
+	height: 60px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.inspect-a3 {
+	position: relative;
+	float: left;
+	margin-left: 31.6666px;
+	display: grid;
+	width: 60px;
+	height: 60px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.inspect-a4 {
+	position: relative;
+	float: left;
+	margin-left: 31.6666px;
+	display: grid;
+	width: 60px;
+	height: 60px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.inspect-a5 {
+	position: relative;
+	float: left;
+	margin-left: 31.6666px;
+	display: grid;
+	width: 60px;
+	height: 60px;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+}
+
+.inspect-close {
+	background-color: rgba(255, 0, 0, 0.5);
+	border: none;
+	float: right;
+	color: white;
+	font-size: 15.2px;
+	height: 19.4999px;
+}
+
+:focus {
+	outline: none;
+}
+
+.inspect-data {
+	position: relative;
+	top: 20px;
+	padding: 5px 0px 5px 0px;
+}
+
+.inspect-list {
+	margin: 0;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+}
+
+.inspect-backpack {
+	border: solid 1px white;
+	top: 25px;
+	float: left;
+	left: 18px;
+	position: relative;
+	display: grid;
+	background: url("https://cdn.discordapp.com/attachments/634645008364077057/818039837445586954/item-cell.png");
+}
+
+/* Inspect Menu End */
+
+/* Text Input Start */
+
+.input-container {
+	position: absolute;
+	top: 540px;
+	left: 960px;
+	transform: translate(-50%, -50%);
+	background-color: rgba(104, 104, 104, 0.5);
+	width: 130px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(255, 255, 255);
+	border-width: 0.5px;
+	z-index: 99999;
+}
+
+#number-amount {
+	background-color: rgba(80, 80, 80, 0.5);
+	width: 120px;
+	height: 30px;
+	position: relative;
+	border: none;
+	float: left;
+	left: 5px;
+	padding: 0;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+	-webkit-appearance: none;
+	margin: 0;
+}
+
+.input-submit {
+	position: relative;
+	background: none;
+	border-style: solid;
+	left: 5px;
+	top: 5px;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+.input-cancel {
+	position: relative;
+	background: none;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 0.5px;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+	left: 10px;
+	top: 5px;
+}
+
+/* Text Input End */
+
+/* Context Menu Start */
+
+.context-menu {
+	position: absolute;
+	z-index: 99999;
+	width: 80px;
+	height: 60px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 1px;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+}
+
+.context-split {
+	width: 100%;
+	height: 20px;
+	position: relative;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border: none;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+.context-inspect {
+	width: 100%;
+	height: 20px;
+	position: relative;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border: none;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+.context-reload {
+	width: 100%;
+	height: 20px;
+	position: relative;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border: none;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+.context-unload {
+	width: 100%;
+	height: 20px;
+	position: relative;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border: none;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+.context-rotate {
+	width: 100%;
+	height: 20px;
+	position: relative;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border: none;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+/* Context Menu End */
+
+/* Hotbar Menu Start */
+
+.hotbar-menu {
+	position: absolute;
+	z-index: 99999;
+	width: 80px;
+	height: 40px;
+	border-style: solid;
+	border-color: rgb(104, 104, 104);
+	border-width: 1px;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+}
+
+.hotbar-remove {
+	width: 100%;
+	height: 20px;
+	position: relative;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border: none;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+.hotbar-emotes {
+	width: 100%;
+	height: 20px;
+	position: relative;
+	background: rgb(50, 50, 48);
+	background: linear-gradient(
+		0deg,
+		rgba(50, 50, 48, 0.5) 0%,
+		rgba(6, 6, 6, 0.5) 50%
+	);
+	border: none;
+	color: white;
+	font-family: "Tahoma", sans-serif;
+	text-align: center;
+}
+
+/* Hotbar Menu End */
