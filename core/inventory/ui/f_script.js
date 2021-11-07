@@ -482,7 +482,7 @@ $(function () {
 			$(".top-container-container").show();
 			$("#backpack-inside").hide();
 			$("#backpack-inside").empty();
-			$("body").css("background-color", "rgba(0, 0, 0, 0.562);");
+			$("html").css("background-color", "rgba(0, 0, 0, 0.562);");
 			
 			for (var k in divlist) {
 				$("."+divlist[k]).empty();
@@ -511,9 +511,9 @@ $(function () {
 				AddItem(item.column, item.row, item.width, item.height, item.name, item.count, item.container, item.image, item.type, item.data, item.rotated, item.rotatedimage);
 				if (item.container == "backpack") {
 					$("#backpack-inside").show();
-					CreateInv("backpack-inside", item.data[0]["width"], item.data[0]["height"]);
-					for (var k2 in item.data[0].items) {
-						var subitem = item.data[0].items[k2];
+					CreateInv("backpack-inside", item.data.width, item.data.height);
+					for (var k2 in item.data.items) {
+						var subitem = item.data.items[k2];
 						AddItem(subitem.column, subitem.row, subitem.width, subitem.height, subitem.name, subitem.count, subitem.container, subitem.image, subitem.type, subitem.data, subitem.rotated, subitem.rotatedimage);
 					}
 				}
@@ -523,7 +523,7 @@ $(function () {
 		if (event.data.hide) {
 			//$("body").hide();
 			$(".top-container-container").hide();
-			$("body").css("background-color", "rgba(0, 0, 0, 0.0);");
+			$("html").css("background-color", "rgba(0, 0, 0, 0.0);");
 		}
 		
 		if (event.data.hotbar) {
@@ -548,7 +548,7 @@ $(function () {
 		$(".hotbar-menu").hide();
 		if (event.key == "Escape" || event.key == "Tab") {
 			$(".top-container-container").hide();
-			$("body").css("background-color", "rgba(0, 0, 0, 0.0);");
+			$("html").css("background-color", "rgba(0, 0, 0, 0.0);");
 			$.post("http://SSCore/post", JSON.stringify({identifier: "Inventory", name: "closeInventory", args: {}}));
 		}
 		if (event.key == "i") {
