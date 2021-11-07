@@ -1,8 +1,32 @@
 $(function () {
 	var uiList = [];
+	
+	function updateScale() {
+		var scalex = ($("#ui-html").width() / 1920);
+		var scaley = ($("#ui-html").height() / 1080);
+		$(".ui-body").css({"transform-origin-x": 0, "transform-origin-y": 0});
+		if (scalex > scaley) {
+			scalex = scaley
+			var x = ($("#ui-html").width() / scalex) - 1920;
+			var y = ($("#ui-html").height() / scaley) - 1080;
+			$(".ui-body").css({"transform-origin-x": x, "transform-origin-y": y});
+		} else if (scaley > scalex) {
+			scaley = scalex
+			var x = ($("#ui-html").width() / scalex) - 1920;
+			var y = ($("#ui-html").height() / scaley) - 1080;
+			$(".ui-body").css({"transform-origin-x": x, "transform-origin-y": y});
+		}
+		$(".ui-body").css("transform", "scale("+scalex+", "+scaley+")")
+		.width("1920px")
+		.height("1080px");
+	}
+
+	updateScale();
+
 	window.addEventListener("message", event => {
-		var data = event.data
-		var skip = false
+		updateScale();
+		var data = event.data;
+		var skip = false;
 		if (data.addon == "ui") {
 			if (data.table.identifier != null) {
 				uiList.forEach(function(item, index) {
@@ -49,5 +73,13 @@ $(function () {
 			} catch(err) {
 			}
 		}
+	});
+
+	window.addEventListener('keydown', function (event) {
+		uiList.forEach(function(item, index) {
+			$("#" + item)[0].contentWindow.dispatchEvent(
+				new KeyboardEvent('keydown', {key: event.key})
+			);
+		});
 	});
 });
