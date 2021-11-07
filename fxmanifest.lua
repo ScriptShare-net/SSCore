@@ -38,6 +38,7 @@ client_scripts {
 	'util/func/cl_*.lua',
 	'util/ui-wrapper/cl_*.lua',
 	'util/discord/client.lua',
+	'core/blips/cl_*.lua',
 	'core/functions/cl_*.lua',
 	'core/inventory/cl_*.lua',
 	'core/controls/cl_*.lua',
@@ -47,7 +48,6 @@ client_scripts {
 	'core/selector/cl_*.lua',
 	'core/ui/hud/cl_*.lua',
 	'core/ui/scoreboard/cl_*.lua',
-	'core/blips/cl_*.lua',
 }
 
 files {
