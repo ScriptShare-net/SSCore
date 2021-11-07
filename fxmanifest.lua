@@ -44,6 +44,7 @@ client_scripts {
 	'core/selector/cl_*.lua',
 	'core/ui/hud/cl_*.lua',
 	'core/ui/scoreboard/cl_*.lua',
+	'core/blips/cl_*.lua',
 }
 
 files {
