@@ -89,7 +89,7 @@ Citizen.CreateThread(function()
         end
 
         if inMarker and closestDist > 1.5 then
-            exports["SSCore"]:uiMenuCloseAll()
+            --exports["SSCore"]:uiMenuCloseAll()
             inMarker = false
         end
     end
