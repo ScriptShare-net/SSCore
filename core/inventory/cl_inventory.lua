@@ -4,7 +4,15 @@ local inventoryOpen = false
 local hotbarOpen = false
 local Inventory = {}
 
-local function openInventory(inventory)
+local stash = {
+	name = "Ground",
+	info = {
+		width = 10,
+		height = 40,
+	}
+}
+
+local function openInventory(inventory, stash)
 	Inventory = inventory
 	local player = PlayerPedId()
 	local inVehicle = IsPedInAnyVehicle(player, false)
@@ -12,10 +20,10 @@ local function openInventory(inventory)
 	exports["SSCore"]:uiSetFocus("Inventory", inventoryOpen, inventoryOpen)
 	exports["SSCore"]:uiSendMessage("Inventory", {
 		show = inventoryOpen,
-		name = inventory.name,
-		stash = inventory.stash,
-		stashcontent = inventory.stashcontent,
-		contents = inventory.contents
+		name = stash.name,
+		stash = stash.info,
+		stashcontent = stash.content,
+		contents = inventory
 	})
 end
 
@@ -67,6 +75,6 @@ RegisterNetEvent("SS:Client:UpdateInventory", function(data)
 	if inventoryOpen then
 		Inventory = data
 		closeInventory()
-		openInventory(data)
+		openInventory(Inventory)
 	end
 end)

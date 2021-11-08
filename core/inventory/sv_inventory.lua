@@ -1,62 +1,14 @@
 local inventory = {}
 
-inventory[1] = {
-	name = "Ground",
-
-	stash = {
-		width = 10,
-		height = 20,
-	},
-
-	stashcontent = {
-		{
-			column = 1,
-			row = 1,
-			width = 2,
-			height = 2,
-			name = "Pistol",
-			count = 1,
-			container = "stash",
-			image = "https://cdn.discordapp.com/attachments/634645008364077057/906706483100651580/ap-pistol-item.png",
-			type = "pistol",
-			data = {},
-			rotated = false,
-			rotatedimage = "https://cdn.discordapp.com/attachments/634645008364077057/906707560961302568/ap-pistol-rotated.png"
-		},
-	},
-
-	contents = {
-		{
-			column = 1,
-			row = 1,
-			width = 4,
-			height = 4,
-			name = "Backpack",
-			count = 1,
-			container = "backpack",
-			image = "",
-			type = "backpack",
-			data = {
-				width = 5,
-				height = 5,
-				items = {
-
-				}
-			},
-			rotated = false,
-			rotatedimage = ""
-		}
-	},
-}
-
 SS.RegisterServerCallback("SS:Server:GetInventory", function(source, cb)
-	
-	local inv = inventory[source]
+	local xPlayer = SS.GetPlayerFromSource(source)
+	local inv = inventory[xPlayer.identifier]
 	cb(inv)
 end)
 
 local function findItem(source, name)
-	local inv = inventory[source]
+	local xPlayer = SS.GetPlayerFromSource(source)
+	local inv = inventory[xPlayer.identifier]
 	for k,v in pairs(inv.contents) do
 		if v.name == name then
 			return v.column, v.row, v.container
@@ -71,7 +23,8 @@ local function findItem(source, name)
 end
 
 local function hasItem(source, name, row, column, container)
-	local inv = inventory[source]
+	local xPlayer = SS.GetPlayerFromSource(source)
+	local inv = inventory[xPlayer.identifier]
 	for k,v in pairs(inv.contents) do
 		if v.name == name and v.row == row and v.column == column and v.container == container then
 			return k, "contents"
@@ -125,16 +78,55 @@ end
 
 RegisterNetEvent("SS:Server:moveItem", function(data)
 	local src = source
+	local xPlayer = SS.GetPlayerFromSource(source)
 	local itemId, container = hasItem(src, data.name, data.row, data.column, data.container)
 	if itemId then
-		inventory[src][container][itemId].row = data.y
-		inventory[src][container][itemId].column = data.x
-		inventory[src][container][itemId].rotated = data.rotated
-		inventory[src][container][itemId].container = data.newcontainer
+		inventory[xPlayer.identifier][container][itemId].row = data.y
+		inventory[xPlayer.identifier][container][itemId].column = data.x
+		inventory[xPlayer.identifier][container][itemId].rotated = data.rotated
+		inventory[xPlayer.identifier][container][itemId].container = data.newcontainer
 		if container ~= "contents" and inContents(data.container) then
-			inventory[src]["contents"][#inventory[src]["contents"] + 1] = inventory[src][container][itemId]
-			inventory[src][container][itemId] = nil
+			inventory[xPlayer.identifier]["contents"][#inventory[xPlayer.identifier]["contents"] + 1] = inventory[xPlayer.identifier][container][itemId]
+			inventory[xPlayer.identifier][container][itemId] = nil
 		end
-		TriggerClientEvent("SS:Client:UpdateInventory", src, inventory[src])
+		TriggerClientEvent("SS:Client:UpdateInventory", src, inventory[xPlayer.identifier])
+	end
+end)
+
+RegisterNetEvent("SS:Server:PlayerLoaded", function(src, charid)
+	local xPlayer = SS.GetPlayerFromSource(src)
+	exports.oxmysql:execute("SELECT identifier FROM inventory WHERE identifier = @identifier AND characterSlot = @charid", {
+		["@identifier"] = xPlayer.identifier,
+		["@charid"] = charid
+	}, function(inv)
+		if json.encode(inv) == json.encode({}) then
+			exports.oxmysql:execute("INSERT INTO inventory (identifier, characterSlot, items, accounts, weight) VALUES (@identifier, @characterSlot, @items, @accounts, @weight)", {
+				["@identifier"] = xPlayer.identifier,
+				["@characterSlot"] = xPlayer.charID,
+				["@items"] = json.encode({}),
+				["@accounts"] = json.encode({}),
+				["@weight"] = 0,
+			})
+		end
+	end)
+	exports.oxmysql:execute("SELECT items FROM inventory WHERE identifier = @identifier AND characterSlot = @charid", {
+		["@identifier"] = xPlayer.identifier,
+		["@charid"] = charid
+	}, function(inv)
+		inventory[xPlayer.identifier] = json.decode(inv)
+	end)
+end)
+
+CreateThread(function()
+	while true do
+		Wait(30000)
+		for k,v in pairs(SS.Players) do
+			local xPlayer = SS.GetPlayerFromSource(k)
+			exports.oxmysql:execute("UPDATE inventory SET items = @items WHERE identifier = @identifier AND characterSlot = @charid", {
+				["@identifier"] = xPlayer.identifier,
+				["@charid"] = xPlayer.charID,
+				["@items"] = json.encode(inventory[xPlayer.identifier]),
+			})
+		end
 	end
 end)

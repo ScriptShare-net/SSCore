@@ -267,6 +267,7 @@ RegisterNetEvent("SS:Server:CreatePlayer", function(charID)
 			DropPlayer(src, "Cheater")
 		else
 			SS.Player.Create(identifiers, src, charID)
+			TriggerEvent("SS:Server:PlayerLoaded", src, charID)
 		end
 	end)
 	
