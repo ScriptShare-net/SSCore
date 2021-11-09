@@ -1,8 +1,44 @@
 local zoneCreated = false
 local zones = {}
+local circles = {}
 local zonePlayers = {}
 
 SS.Players = SS.Players or {}
+
+exports("getZoneFromID", function(identifier)
+	return zones[identifier] or circles[identifier]
+end)
+
+local function getInside(x, y, pnts)
+	local i, j = #pnts, #pnts
+	local inside = false
+
+	for i = 1, #pnts do
+		if (pnts[i].y < y and pnts[j].y >= y or pnts[j].y < y and pnts[i].y >= y) and (pnts[i].x <= x or pnts[j].x <= x) then
+			if pnts[i].x + (y - pnts[i].y) / (pnts[j].y - pnts[i].y) * (pnts[j].x - pnts[i].x) < x then
+				inside = not inside
+			end
+		end
+		j = i
+	end
+
+	return inside
+end
+
+local function getZone(coords)
+	local currentZone
+	for id, zone in pairs(zones) do
+		if getInside(coords.x, coords.y, exports["SSCore"]:getZoneFromID(id).points) then
+			currentZone = id
+		end
+	end
+	for id, circle in pairs(circles) do
+		if #(coords - circle.center) <= circle.distance then
+			currentZone = id
+		end
+	end
+	return currentZone
+end
 
 local function initiate()
 	if not zoneCreated then return end
@@ -10,24 +46,22 @@ local function initiate()
 		while zoneCreated do
 			Wait(100)
 			for src, _ in pairs(SS.Players) do
-				local currentZone
 				if not zonePlayers[src] then zonePlayers[src] = "none" end
 				local coords = GetEntityCoords(GetPlayerPed(src))
-				for id, zone in pairs(zones) do
-					if zone.isInside(coords) then
-						currentZone = id
-					end
-				end
+				local currentZone = getZone(coords)
 				if not currentZone then
 					if zonePlayers[src] ~= "none" then
-						zones[zonePlayers[src]].leave(src)
+						exports["SSCore"]:getZoneFromID(zonePlayers[src]).leave(src)
+						zonePlayers[src] = "none"
 					end
 				else
 					if currentZone ~= zonePlayers[src] then
 						if zonePlayers[src] ~= "none" then
-							zones[zonePlayers[src]].leave(src)
+							exports["SSCore"]:getZoneFromID(zonePlayers[src]).leave(src)
+							zonePlayers[src] = "none"
 						end
-						zones[currentZone].enter(src)
+						exports["SSCore"]:getZoneFromID(currentZone).enter(src)
+						zonePlayers[src] = currentZone
 					end
 				end
 			end
@@ -38,7 +72,7 @@ end
 local function getLowestHighestZ(points)
 	local lowest, highest
 	for k,v in pairs(points) do
-		if not lowest then lowest, highest = v.z, v.z
+		if not lowest then lowest, highest = v.z, v.z end
 		if v.z < lowest then lowest = v.z end
 		if v.z > highest then highest = v.z end
 	end
@@ -53,7 +87,6 @@ exports("zoneCreate", function(identifier, points, minZ, maxZ, enterCallback, le
 		initiate()
 	end
 
-	zones[identifier] = {}
 	self = {}
 
 	self.identifier = identifier
@@ -86,32 +119,17 @@ exports("zoneCreate", function(identifier, points, minZ, maxZ, enterCallback, le
 			self.maxY = coords.y
 		end
 	end
+
+	self.getIdentifier = function()
+		return self.identifier
+	end
 	
 	self.enter = function(src)
-		zonePlayers[src] = self.identifier
 		enterCallback()
 	end
 
 	self.leave = function(src)
-		zonePlayers[src] = "none"
 		leaveCallback()
-	end
-
-	self.isInside = function(coords)
-		local x, y, points = coords.x, coords.y, self.points
-		local i, j = #points, #points
-		local inside = false
-
-		for i = 1, #points do
-			if (points[i].y < y and points[j].y > = y or points[j].y < y and points[i].y > = y) and (points[i].x < = x or points[j].x < = x) then
-				if points[i].x + (y - points[i].y) / (points[j].y - points[i].y) * (points[j].x - points[i].x) < x then
-					inside = not inside
-				end
-			end
-			j = i
-		end
-
-		return inside
 	end
 
 	self.draw = {}
@@ -128,21 +146,51 @@ exports("zoneCreate", function(identifier, points, minZ, maxZ, enterCallback, le
 	zones[identifier] = self
 end)
 
+exports("circleCreate", function(identifier, position, distance, height, enterCallback, leaveCallback)
+	if not identifier then return end
+	if not position then return end
+	if not distance then return end
+	if not zoneCreated then
+		zoneCreated = true
+		initiate()
+	end
+
+	self = {}
+
+	self.identifier = identifier
+	self.center = position
+	self.distance = distance
+	self.height = height
+
+	self.enter = function(src)
+		enterCallback()
+	end
+
+	self.leave = function(src)
+		leaveCallback()
+	end
+
+	circles[identifier] = self
+end)
+
 local newPoints = {}
 local height = 0
 
 RegisterCommand("AddPoint", function(source)
 	local coords = GetEntityCoords(GetPlayerPed(source))
+	coords = vector3(coords.x, coords.y, coords.z - 1)
 	newPoints[#newPoints + 1] = coords
 	TriggerClientEvent("SS:Client:AddZonePoint", source, coords)
 end)
 
 RegisterCommand("SetHeight", function(source, args)
+	if not args[1] then return end
 	height = tonumber(args[1])
 	TriggerClientEvent("SS:Client:SetHeight", source, height)
 end)
 
 RegisterCommand("CreateZone", function(source, args)
+	if not args[1] then return end
 	local identifier = tostring(args[1])
 	local minZ, maxZ = getLowestHighestZ(newPoints)
 	exports["SSCore"]:zoneCreate(identifier, newPoints, minZ, maxZ + height, function()
@@ -150,6 +198,8 @@ RegisterCommand("CreateZone", function(source, args)
 	end, function()
 		print("Left Zone " .. identifier)
 	end)
+	TriggerClientEvent("SS:Client:FinishZone", source, identifier)
+	TriggerClientEvent("SS:Client:DrawZone", source, identifier, newPoints, height)
 	print(" ------- Zone Created ------- ")
 	print("Identifier: " .. identifier)
 	print("Min Z: " .. minZ)
@@ -162,5 +212,40 @@ RegisterCommand("CreateZone", function(source, args)
 	print(" ---------------------------- ")
 	newPoints = {}
 	height = 0
-	TriggerClientEvent("SS:Client:FinishZone", source, identifier)
+end)
+
+RegisterCommand("DrawZone", function(source, args)
+	if not args[1] then return end
+	local identifier = tostring(args[1])
+	TriggerClientEvent("SS:Client:DrawZone", source, identifier, zones[identifier].points, zones[identifier].maxZ - zones[identifier].minZ)
+end)
+
+RegisterCommand("HideZone", function(source, args)
+	if not args[1] then return end
+	local identifier = tostring(args[1])
+	TriggerClientEvent("SS:Client:HideZone", source, identifier)
+end)
+
+RegisterCommand("PrintZone", function(source)
+	local coords = GetEntityCoords(GetPlayerPed(source))
+	print(getZone(coords), zonePlayers[source])
+end)
+
+RegisterCommand("CreateCircle", function(source, args)
+	local identifier = tostring(args[1])
+	local distance = tonumber(args[2])
+	local height = tonumber(args[3])
+	local coords = GetEntityCoords(GetPlayerPed(source))
+
+	exports["SSCore"]:circleCreate(identifier, coords, distance, height, function()
+		print("Entered Zone " .. identifier)
+	end, function()
+		print("Left Zone " .. identifier)
+	end)
+
+	TriggerClientEvent("SS:Client:DrawCircle", identifier, coords, distance, height)
+end)
+
+RegisterCommand("HideCircle", function()
+	TriggerClientEvent("SS:Client:HideCircle", identifier)
 end)
