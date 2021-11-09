@@ -106,3 +106,49 @@ exports("zoneCreate", function(identifier, points, minZ, maxZ, enterCallback, le
 
 	zones[identifier] = self
 end)
+
+local function getLowestHighestZ(points)
+	local lowest, highest
+	for k,v in pairs(points) do
+		if not lowest then lowest, highest = v.z, v.z
+		if v.z < lowest then lowest = v.z end
+		if v.z > highest then highest = v.z end
+	end
+	return lowest, highest
+end
+
+local newPoints = {}
+local height = 0
+
+RegisterCommand("AddPoint", function(source)
+	local coords = GetEntityCoords(GetPlayerPed(source))
+	newPoints[#newPoints + 1] = coords
+	TriggerClientEvent("SS:Client:AddZonePoint", source, coords)
+end)
+
+RegisterCommand("SetHeight", function(source, args)
+	height = tonumber(args[1])
+	TriggerClientEvent("SS:Client:SetHeight", source, height)
+end)
+
+RegisterCommand("CreateZone", function(source, args)
+	local identifier = tostring(args[1])
+	local minZ, maxZ = getLowestHighestZ(newPoints)
+	exports["SSCore"]:zoneCreate(identifier, newPoints, minZ, maxZ + height, function()
+		print("Entered Zone " .. identifier)
+	end, function()
+		print("Left Zone " .. identifier)
+	end)
+	print(" ------- Zone Created ------- ")
+	print("Identifier: " .. identifier)
+	print("Min Z: " .. minZ)
+	print("Max Z: " .. maxZ)
+	print("Height: " .. height)
+	for k,v in pairs(newPoints) do
+		print("Point " .. k .."- X: " .. v.x .. ", Y: " ..v.y .. ", Z: " .. v.z)
+	end
+	
+	print(" ---------------------------- ")
+	newPoints = {}
+	height = 0
+end)
