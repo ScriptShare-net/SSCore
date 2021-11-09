@@ -35,6 +35,16 @@ local function initiate()
 	end)
 end
 
+local function getLowestHighestZ(points)
+	local lowest, highest
+	for k,v in pairs(points) do
+		if not lowest then lowest, highest = v.z, v.z
+		if v.z < lowest then lowest = v.z end
+		if v.z > highest then highest = v.z end
+	end
+	return lowest, highest
+end
+
 exports("zoneCreate", function(identifier, points, minZ, maxZ, enterCallback, leaveCallback)
 	if not identifier then return end
 	if not points then return end
@@ -104,18 +114,19 @@ exports("zoneCreate", function(identifier, points, minZ, maxZ, enterCallback, le
 		return inside
 	end
 
+	self.draw = {}
+
+	self.SetDraw = function(src, value)
+		self.draw[src] = value
+		if value then
+			TriggerClientEvent("SS:Client:DrawZone", src, self.identifier, self.points, self.maxZ - self.minZ)
+		else
+			TriggerClientEvent("SS:Client:HideZone", src, self.identifier)
+		end
+	end
+
 	zones[identifier] = self
 end)
-
-local function getLowestHighestZ(points)
-	local lowest, highest
-	for k,v in pairs(points) do
-		if not lowest then lowest, highest = v.z, v.z
-		if v.z < lowest then lowest = v.z end
-		if v.z > highest then highest = v.z end
-	end
-	return lowest, highest
-end
 
 local newPoints = {}
 local height = 0
@@ -151,4 +162,5 @@ RegisterCommand("CreateZone", function(source, args)
 	print(" ---------------------------- ")
 	newPoints = {}
 	height = 0
+	TriggerClientEvent("SS:Client:FinishZone", source, identifier)
 end)
