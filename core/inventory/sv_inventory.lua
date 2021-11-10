@@ -12,7 +12,7 @@ SS.RegisterServerCallback("SS:Server:GetInventory", function(source, cb)
 		local zoneSize = zone.getSize()
 		cb(inv, zoneName, zoneInv, zoneSize)
 	else
-		inventory[xPlayer.identifier]
+		inventory[xPlayer.identifier]["stash"] = {} 
 		cb(inv, "Ground", {}, { width = 10, height = 20 })
 	end
 end)
@@ -129,6 +129,26 @@ RegisterNetEvent("SS:Server:PlayerLoaded", function(src, charid)
 end)
 
 CreateThread(function()
+	exports.oxmysql:execute("SELECT * FROM inventory_zones WHERE", {}, function(zones)
+		if zones then
+			for k, v in pairs(zones) do
+				if not v.zonedata.distance then
+					exports["SSCore"]:zoneCreate(v.identifier, v.zonedata.points, v.zonedata.minZ, v.zonedata.maxZ, function()
+						print("Entered Zone " .. v.identifier)
+					end, function()
+						print("Left Zone " .. v.identifier)
+					end)
+				else
+					exports["SSCore"]:circleCreate(v.identifier, v.zonedata.coords, v.zonedata.distance, v.zonedata.height, function()
+						print("Entered Zone " .. v.identifier)
+					end, function()
+						print("Left Zone " .. v.identifier)
+					end)
+				end
+			end
+		end
+	end)
+
 	while true do
 		Wait(30000)
 		for k,v in pairs(SS.Players) do
@@ -138,8 +158,37 @@ CreateThread(function()
 			exports.oxmysql:execute("UPDATE inventory SET items = @items WHERE identifier = @identifier AND characterSlot = @charid", {
 				["@identifier"] = xPlayer.identifier,
 				["@charid"] = xPlayer.charID,
-				["@items"] = json.encode(inv),
+				["@items"] = inv,
 			})
 		end
 	end
+end)
+
+RegisterCommand("CreateInventoryZone", function(s, args)
+	if not args[1] then return end
+	local identifier = args[1]
+	local zone = exports["SSCore"]:getZoneFromID(identifier)
+	if not zone then return end
+	local zonedata = {}
+	if zone.distance then
+		zonedata = {
+			coords = zone.coords,
+			distance = zone.distance,
+			height = zone.height,
+		}
+	else
+		zonedata = {
+			points = zone.points,
+			minZ = zone.minZ,
+			maxZ = zone.maxZ,
+		}
+	end
+	exports.oxmysql:execute("INSERT INTO inventory_zone (identifier, name, zonedata, items, width, height) VALUES (@identifier, @name, @zonedata, @items, @width, @height)", {
+		["@identifier"] = identifier,
+		["@name"] = zone.getName(),
+		["@zonedata"] = zonedata,
+		["@items"] = {},
+		["@width"] = 10,
+		["@height"] = 20
+	})
 end)

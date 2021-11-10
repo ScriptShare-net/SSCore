@@ -55,3 +55,13 @@ CREATE TABLE inventory (
 	`weight` int NOT NULL,
 	PRIMARY KEY (identifier, characterSlot)
 );
+
+CREATE TABLE inventory_zones (
+    identifier varchar(99) NOT NULL,
+	`name` varchar(99) NOT NULL,
+	zonedata longtext NOT NULL,
+	items longtext NOT NULL,
+	width int NOT NULL,
+	height int NOT NULL,
+	PRIMARY KEY (identifier)
+);
