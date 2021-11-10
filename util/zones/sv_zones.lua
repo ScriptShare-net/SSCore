@@ -40,6 +40,8 @@ local function getZone(coords)
 	return currentZone
 end
 
+exports("isCoordsInAnyZone", getZone)
+
 local function initiate()
 	if not zoneCreated then return end
 	CreateThread(function()
@@ -93,6 +95,25 @@ exports("zoneCreate", function(identifier, points, minZ, maxZ, enterCallback, le
 	self.points = points
 	self.minZ = minZ or -100
 	self.maxZ = maxZ or 100
+	self.name = identifier
+
+	self.setName = function(name)
+		self.name = name
+	end
+
+	self.getName = function()
+		return self.name
+	end
+
+	self.inventory = {}
+
+	self.getInventory = function()
+		return self.inventory
+	end
+
+	self.setInventory = function(inv)
+		self.inventory = inv
+	end
 
 	for _, coords in pairs(self.points) do
 		if not self.minX and not self.minY then
@@ -161,6 +182,25 @@ exports("circleCreate", function(identifier, position, distance, height, enterCa
 	self.center = position
 	self.distance = distance
 	self.height = height
+	self.inventory = {}
+
+	self.getInventory = function()
+		return self.inventory
+	end
+
+	self.setInventory = function(inv)
+		self.inventory = inv
+	end
+
+	self.name = identifier
+
+	self.setName = function(name)
+		self.name = name
+	end
+
+	self.getName = function()
+		return self.name
+	end
 
 	self.enter = function(src)
 		enterCallback()
@@ -168,6 +208,19 @@ exports("circleCreate", function(identifier, position, distance, height, enterCa
 
 	self.leave = function(src)
 		leaveCallback()
+	end
+
+	self.width = 10
+
+	self.height = 20
+
+	self.setSize = function(width, height)
+		self.width = width
+		self.height = height
+	end
+
+	self.getSize = function()
+		return self.width, self.height
 	end
 
 	circles[identifier] = self

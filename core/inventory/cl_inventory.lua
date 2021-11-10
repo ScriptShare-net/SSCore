@@ -4,15 +4,7 @@ local inventoryOpen = false
 local hotbarOpen = false
 local Inventory = {}
 
-local stash = {
-	name = "Ground",
-	info = {
-		width = 10,
-		height = 40,
-	}
-}
-
-local function openInventory(inventory, stash)
+local function openInventory(inventory, name, stashinventory, size)
 	Inventory = inventory
 	local player = PlayerPedId()
 	local inVehicle = IsPedInAnyVehicle(player, false)
@@ -20,9 +12,9 @@ local function openInventory(inventory, stash)
 	exports["SSCore"]:uiSetFocus("Inventory", inventoryOpen, inventoryOpen)
 	exports["SSCore"]:uiSendMessage("Inventory", {
 		show = inventoryOpen,
-		name = stash.name,
-		stash = stash.info,
-		stashcontent = stash.content,
+		name = name,
+		stash = size,
+		stashcontent = stashinventory,
 		contents = inventory
 	})
 end

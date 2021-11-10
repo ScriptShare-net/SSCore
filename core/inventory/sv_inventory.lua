@@ -3,7 +3,18 @@ local inventory = {}
 SS.RegisterServerCallback("SS:Server:GetInventory", function(source, cb)
 	local xPlayer = SS.GetPlayerFromSource(source)
 	local inv = inventory[xPlayer.identifier]
-	cb(inv)
+	local coords = GetEntityCoords(GetPlayerPed(source))
+	local zoneid = exports["SSCore"]:isCoordsInAnyZone(coords)
+	if zoneid then
+		local zone = exports["SSCore"]:getZoneFromID(zoneid)
+		local zoneInv = zone.getInventory()
+		local zoneName = zone.getName()
+		local zoneSize = zone.getSize()
+		cb(inv, zoneName, zoneInv, zoneSize)
+	else
+		inventory[xPlayer.identifier]
+		cb(inv, "Ground", {}, { width = 10, height = 20 })
+	end
 end)
 
 local function findItem(source, name)
@@ -122,10 +133,12 @@ CreateThread(function()
 		Wait(30000)
 		for k,v in pairs(SS.Players) do
 			local xPlayer = SS.GetPlayerFromSource(k)
+			local inv = inventory[xPlayer.identifier]
+			inv["stash"] = nil
 			exports.oxmysql:execute("UPDATE inventory SET items = @items WHERE identifier = @identifier AND characterSlot = @charid", {
 				["@identifier"] = xPlayer.identifier,
 				["@charid"] = xPlayer.charID,
-				["@items"] = json.encode(inventory[xPlayer.identifier]),
+				["@items"] = json.encode(inv),
 			})
 		end
 	end
