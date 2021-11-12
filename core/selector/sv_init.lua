@@ -268,6 +268,7 @@ RegisterNetEvent("SS:Server:CreatePlayer", function(charID)
 		else
 			SS.Player.Create(identifiers, src, charID)
 			TriggerEvent("SS:Server:PlayerLoaded", src, charID)
+			TriggerClientEvent("SS:Client:PlayerLoaded", src, SS.GetPlayerFromSource(src))
 		end
 	end)
 	
