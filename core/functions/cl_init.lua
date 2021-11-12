@@ -22,3 +22,8 @@ RegisterNetEvent("SS:Client:Callback", function(requestId, ...)
 	SS.ServerCallbacks[requestId](...)
 	SS.ServerCallbacks[requestId] = nil
 end)
+
+SS.DeleteVehicle = function(vehicle)
+	SetEntityAsMissionEntity(vehicle, false, true)
+	DeleteVehicle(vehicle)
+end
