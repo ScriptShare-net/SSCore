@@ -10,10 +10,14 @@ shared_scripts {
 }
 
 server_scripts {
+    'core/sv_config.lua',
+    'core/sv_cards.lua',
+    'core/sv_main.lua',
     'connection/sv_*.lua'
 }
 
 client_scripts {
+    'core/cl_*.lua',
     'connection/cl_*.lua'
 }
 
