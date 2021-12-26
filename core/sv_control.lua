@@ -1,0 +1,5 @@
+StopResource("hardcap")
+StopResource("mapmanager")
+StopResource("spawnmanager")
+StopResource("sessionmanager")
+StopResource("basic-gamemode")

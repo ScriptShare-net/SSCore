@@ -6,3 +6,6 @@ SS.Config.Discord = "https://discord.gg/ScriptShare-net"
 
 -- Forum link for the server
 SS.Config.Forum = "https://scriptshare.net/forum/"
+
+--Type of identifier to use as default
+SS.Config.DefaultIdentifier = "discord"

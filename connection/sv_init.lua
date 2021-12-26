@@ -3,79 +3,21 @@ local slotsFilled = 0
 local Queue = {}
 local deferralsList = {}
 
-StopResource("hardcap")
-StopResource("mapmanager")
-StopResource("spawnmanager")
-StopResource("sessionmanager")
-StopResource("basic-gamemode")
-
-local whitelistCard = SS.Connection.Cards.Whitelist
-
-local function plyId(source, cb)
-    local identifiers = {
-        ["source"] = source,
-        ["gta"] = "nil",
-        ["steam"] = "nil",
-        ["discord"] = "nil",
-        ["live"] = "nil",
-        ["xbox"] = "nil",
-        ["fivem"] = "nil",
-        ["ip"] = "nil",
-        ["gta2"] = "nil",
-        ["tokens"] = {},
-    }
-
-    for k,v in pairs(GetPlayerIdentifiers(source)) do
-        if string.sub(v, 1, string.len("steam:")) == "steam:" then
-            identifiers.steam = string.sub(v, 7)
-        elseif string.sub(v, 1, string.len("license:")) == "license:" then
-            identifiers.gta = string.sub(v, 9)
-        elseif string.sub(v, 1, string.len("discord:")) == "discord:" then
-            identifiers.discord = string.sub(v, 9)
-        elseif string.sub(v, 1, string.len("live:")) == "live:" then
-            identifiers.live = string.sub(v, 6)
-        elseif string.sub(v, 1, string.len("ip:")) == "ip:" then
-            identifiers.ip = string.sub(v, 4)
-        elseif string.sub(v, 1, string.len("xbl:")) == "xbl:" then
-            identifiers.xbox = string.sub(v, 5)
-        elseif string.sub(v, 1, string.len("fivem:")) == "fivem:" then
-            identifiers.fivem = string.sub(v, 7)
-        elseif string.sub(v, 1, string.len("license2:")) == "license2:" then
-            identifiers.gta2 = string.sub(v, 10)
-        else
-            print("FOUND NEW IDENTIFIER: "..tostring(v))
-        end
-    end
-
-    for i = 0, GetNumPlayerTokens(source) do
-        identifiers.tokens[i] = GetPlayerToken(source, i)
-    end
-
-    exports.oxmysql:execute("SELECT permid FROM users WHERE identifier = @identifier", {
-        ["@identifier"] = identifiers[SS.Identifier]
-    }, function(result)
-        if next(result) then
-            identifiers.permid = result
-        end
-		cb(identifiers)
-    end)
-end
-
 local function createUser(identifiers, cb)
-    exports.oxmysql:execute("INSERT INTO identifiers (identifier, gtas, steams, lives, xboxs, fivems, ips, discords, gta2s, tokens) VALUES (@identifier, @gtas, @steams, @lives, @xboxs, @fivems, @ips, @discords, @gta2s, @tokens)", {
-		["@identifier"] = identifiers[SS.Identifier],
-		["@gtas"] = json.encode({identifiers.gta}),
-		["@steams"] = json.encode({identifiers.steam}),
-		["@xboxs"] = json.encode({identifiers.xbox}),
-		["@ips"] = json.encode({identifiers.ip}),
-		["@lives"] = json.encode({identifiers.live}),
-		["@fivems"] = json.encode({identifiers.fivem}),
-		["@discords"] = json.encode({identifiers.discord}),
-		["@gta2s"] = json.encode({identifiers.gta2}),
-		["@tokens"] = json.encode({identifiers.tokens}),
+    exports.oxmysql:execute("INSERT INTO Identifiers (Identifier, GTAs, Steams, Lives, Xboxs, FiveMs, IPs, Discords, GTA2s, Tokens) VALUES (@identifier, @gtas, @steams, @lives, @xboxs, @fivems, @ips, @discords, @gta2s, @tokens)", {
+		["@identifier"] = identifiers.Identifier,
+		["@gtas"] = json.encode({identifiers.GTA}),
+		["@steams"] = json.encode({identifiers.Steam}),
+		["@xboxs"] = json.encode({identifiers.Xbox}),
+		["@ips"] = json.encode({identifiers.IP}),
+		["@lives"] = json.encode({identifiers.Live}),
+		["@fivems"] = json.encode({identifiers.FiveM}),
+		["@discords"] = json.encode({identifiers.Discord}),
+		["@gta2s"] = json.encode({identifiers.GTA2}),
+		["@tokens"] = json.encode({identifiers.Tokens}),
 	}, function(rows)
-		exports.oxmysql:execute("INSERT INTO users (identifier) VALUES (@identifier)", {
-			["@identifier"] = identifiers[SS.Identifier]
+		exports.oxmysql:execute("INSERT INTO Users (Identifier) VALUES (@identifier)", {
+			["@identifier"] = identifiers.Identifier
 		}, function(result)
 			cb(not (rows.affectedRows >= 1), not (result.affectedRows >= 1))
 		end)
@@ -97,16 +39,16 @@ end
 local function addIdentifiers(idtable, identifiers)
 	local identifierstable = idtable
 	for type, idtbl in pairs(idtable) do
-		if type ~= "identifier" and type ~= "tokens" and identifiers[string.sub(type, 1, -2)] then
+		if type ~= "Identifier" and type ~= "Tokens" and identifiers[string.sub(type, 1, -2)] then
 			if not string.match(json.encode(idtable), identifiers[string.sub(type, 1, -2)]) then
 				identifierstable[type][#identifierstable[type] + 1] = identifiers[string.sub(type, 1, -2)]
 			end
-		elseif type == "tokens" then
-			identifierstable.tokens = json.decode(identifierstable.tokens) or {}
-			for k, v in pairs(identifiers.tokens) do
+		elseif type == "Tokens" then
+			identifierstable.Tokens = json.decode(identifierstable.Tokens) or {}
+			for k, v in pairs(identifiers.Tokens) do
 				if not string.match(json.encode(idtable.tokens), v) then
-					identifierstable.tokens[k] = identifierstable.tokens[k] or {}
-					identifierstable.tokens[k][#identifierstable.tokens[k] + 1] = v
+					identifierstable.Tokens[k] = identifierstable.Tokens[k] or {}
+					identifierstable.Tokens[k][#identifierstable.Tokens[k] + 1] = v
 				end
 			end
 		end
@@ -115,22 +57,22 @@ local function addIdentifiers(idtable, identifiers)
 end
 
 local function updateIdentifiers(identifiers, cb)
-	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
-		["@identifier"] = identifiers[SS.Identifier]
+	exports.oxmysql:execute("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
+		["@identifier"] = identifiers.Identifier
 	}, function(result)
 		if result[1] then
 			local idtable = addIdentifiers(result[1], identifiers)
-			exports.oxmysql:execute("UPDATE identifiers SET discords = @discords, steams = @steams, gtas = @gtas, tokens = @tokens, lives = @lives, xboxs = @xboxs, ips = @ips, fivems = @fivems, gta2s = @gta2s WHERE identifier = @identifier", {
-				["@identifier"] = identifiers[SS.Identifier],
-				["@discords"] = idtable.discords,
-				["@steams"] = idtable.steams,
-				["@gtas"] = idtable.gtas,
-				["@tokens"] = json.encode(idtable.tokens),
-				["@lives"] = idtable.lives,
-				["@xboxs"] = idtable.xboxs,
-				["@ips"] = idtable.ips,
-				["@fivems"] = idtable.fivems,
-				["@gta2s"] = idtable.gta2s,
+			exports.oxmysql:execute("UPDATE Identifiers SET Discords = @discords, Steams = @steams, GTAs = @gtas, Tokens = @tokens, Lives = @lives, Xboxs = @xboxs, IPs = @ips, FiveMs = @fivems, GTA2s = @gta2s WHERE Identifier = @identifier", {
+				["@identifier"] = identifiers.Identifier,
+				["@discords"] = idtable.Discords,
+				["@steams"] = idtable.Steams,
+				["@gtas"] = idtable.GTAs,
+				["@tokens"] = json.encode(idtable.Tokens),
+				["@lives"] = idtable.Lives,
+				["@xboxs"] = idtable.Xboxs,
+				["@ips"] = idtable.IPs,
+				["@fivems"] = idtable.FiveMs,
+				["@gta2s"] = idtable.GTA2s,
 			}, function(rows)
 				cb(not (rows.affectedRows >= 1))
 			end)
@@ -142,7 +84,7 @@ end
 
 local function isIdentifiersBanned(identifiers)
 	local banList = {}
-	for identifier, player in pairs(SS.Bans) do
+	for identifier, player in pairs(SS.Bans.List) do
 		for type, idtable in pairs(identifiers) do
 			if findDuplicateIdentifiers(idtable, player) then
 				banList[identifier] = player
@@ -152,10 +94,10 @@ local function isIdentifiersBanned(identifiers)
 	return (#banList >= 1), banList
 end
 
-local function isBanned(identifier, permid, cb)
+local function isBanned(identifier, cb)
 	local banned = {}
 	local identifiers = {}
-	exports.oxmysql:execute("SELECT * FROM identifiers WHERE identifier = @identifier", {
+	exports.oxmysql:execute("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(result)
 		if not result then return false end
@@ -167,14 +109,14 @@ local function isBanned(identifier, permid, cb)
 		if identifiersBanned then
 			if #banList > 1 then
 				for bannedIdentifier, bannedIdentifiers in pairs(banList) do
-					exports.oxmysql:execute("UPDATE bans SET identifiers = @identifiers, time = @time, reason = @reason, bannedBy = @bannedBy WHERE identifier = @identifier", {
+					exports.oxmysql:execute("UPDATE Bans SET Identifiers = @identifiers, Time = @time, Reason = @reason, Banner = @bannedBy WHERE Identifier = @identifier", {
 						["@identifier"] = bannedIdentifier,
 						["@identifiers"] = json.encode(addIdentifiers(bannedIdentifiers, identifiers)),
 						["@time"] = 0,
 						["@reason"] = "Attempting to ban evade",
 						["@bannedBy"] = "Ban System"
 					})
-					SS.Bans[bannedIdentifier] = {
+					SS.Bans.List[bannedIdentifier] = {
 						identifier = bannedIdentifier,
 						identifiers = bannedIdentifiers,
 						time = 0,
@@ -185,30 +127,29 @@ local function isBanned(identifier, permid, cb)
 			end
 			local unbanTime
 			local banLength
-			if SS.Bans[identifier].time == 0 then
+			if SS.Bans.List[identifier].time == 0 then
 				unbanTime = "Never"
 				banLength = "Forever"
 			else
-				unbanTime = os.date('%H:%M:%S %d-%m-%y', SS.Bans[identifier].time + (SS.TimeZone * 60 * 60))
-				banLength = SS.Bans[identifier].time - os.time()
+				unbanTime = os.date('%H:%M:%S %d-%m-%y', SS.Bans.List[identifier].time + (SS.TimeZone * 60 * 60))
+				banLength = SS.Bans.List[identifier].time - os.time()
 			end
-			local banCard = SS.Connection.Cards.Ban(SS.Bans[identifier].reason, unbanTime, banLength, SS.Bans[identifier].bannedBy, permid)
 		end
 	end)
-	cb(identifiersBanned, banCard)
+	cb(identifiersBanned, SS.Connection.Cards.Ban(SS.Bans.List[identifier].reason, unbanTime, banLength, SS.Bans.List[identifier].bannedBy, identifiers.PermID))
 end
 
 local function getRank(identifier, cb)
 	local highestRank
-	exports.oxmysql:execute("SELECT groups FROM users WHERE identifier = @identifier", {
+	exports.oxmysql:execute("SELECT Groups FROM Users WHERE Identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(groups)
 		for _, name in pairs(groups) do
-			for name2, prio in pairs(SS.Queue.Ranks) do
+			for name2, groupdata in pairs(SS.Groups) do
 				if name == name2 then
 					if highestRank then
-						if SS.Queue.Ranks[highestRank] then
-							if SS.Queue.Ranks[highestRank] > prio then
+						if SS.Groups[highestRank] then
+							if SS.Groups[highestRank] > groupdata.Priority then
 								highestRank = name2
 							end
 						end
@@ -218,7 +159,7 @@ local function getRank(identifier, cb)
 				end
 			end
 		end
-		if not highestRank and not SS.Queue.Whitelist then
+		if not highestRank and not SS.Config.Connection.Whitelist then
 			highestRank = "none"
 		end
 		cb(highestRank)
@@ -261,7 +202,7 @@ end
 
 local function removeFromQueue(identifier)
 	local _, _, queue, pos = positionInQueue(identifier)
-	local rank = SS.Queue.Ranks[queue] or 10000
+	local rank = SS.Groups[queue].Priority or 10000
 	for i = pos + 1, #Queue[rank], 1 do
 		Queue[rank][i - 1] = Queue[rank][i]
 	end
@@ -273,7 +214,7 @@ local function removeFromQueue(identifier)
 end
 
 local function addToQueue(identifier, rank, deferrals, src)
-	local queue = SS.Queue.Ranks[rank] or 10000
+	local queue = SS.Groups[rank].Priority or 10000
 	Queue[queue] = Queue[queue] or {}
 	local position = #Queue[queue] + 1
 	Queue[queue][position] = Queue[queue][position] or {}
@@ -294,8 +235,7 @@ end
 
 local function updateQueue(identifier)
 	local currentQueue, lengthQueue, _, _ = positionInQueue(identifier)
-	local queueCard = SS.Connection.Cards.Queue(currentQueue, lengthQueue)
-	deferralsList[identifier].presentCard(queueCard, function(data, rawData) end)
+	deferralsList[identifier].presentCard(SS.Connection.Cards.Queue(currentQueue, lengthQueue), function(data, rawData) end)
 end
 
 local function startConnection(identifiers, deferrals)
@@ -305,7 +245,7 @@ local function startConnection(identifiers, deferrals)
 			return
 		end
 		deferrals.update("Checking Ban Status.")
-		isBanned(identifiers[SS.Identifier], identifiers.permid, function(banned, banCard)
+		isBanned(identifiers.Identifier, function(banned, banCard)
 			if banned then
 				deferrals.presentCard(banCard, function(data, rawData) end)
 				Wait(6000)
@@ -314,22 +254,22 @@ local function startConnection(identifiers, deferrals)
 			end
 
 			deferrals.update("Not Banned. Checking Rank.")
-			getRank(identifiers[SS.Identifier], function(highestRank)
+			getRank(identifiers.Identifier, function(highestRank)
 				if not highestRank then
-					deferrals.presentCard(whitelistCard, function(data, rawData) end)
+					deferrals.presentCard(SS.Connection.Cards.Whitelist, function(data, rawData) end)
 					Wait(6000)
 					deferrals.done("whitelist")
 					return
 				end
 
-				if SS.Queue.Ranks[highestRank] == 0 then
+				if SS.Groups[highestRank] == 0 then
 					deferrals.update("Connecting.")
-					connectPlayer(identifiers[SS.Identifier], deferrals, true)
+					connectPlayer(identifiers.Identifier, deferrals, true)
 					return
 				end
 				
 				deferrals.update("Adding To Queue.")
-				addToQueue(identifiers[SS.Identifier], highestRank, deferrals, identifiers.source)
+				addToQueue(identifiers.Identifier, highestRank, deferrals, identifiers.Source)
 			end)
 		end)
 	end)
@@ -341,8 +281,8 @@ AddEventHandler('playerConnecting', function(name, setReason, deferrals)
     local src = source
 
 	deferrals.update("Checking Identifiers.")
-    plyId(src, function(identifiers)
-		if identifiers.permid then
+    SS.GetPlayerIdentifiers(src, function(identifiers)
+		if identifiers.PermID then
 			deferrals.update("Found Identifiers. Starting Connection.")
 			startConnection(identifiers, deferrals)
 		else
@@ -370,7 +310,7 @@ CreateThread(function()
 	while true do
 		Wait(500)
 		if getFirstInQueue() then
-			if slotsFilled < SS.Queue.Slots then
+			if slotsFilled < SS.Config.Connection.Slots then
 				connectPlayer(getFirstInQueue(), deferralsList[getFirstInQueue()], false)
 			else
 				Wait(2000)
@@ -384,15 +324,13 @@ CreateThread(function()
 	end
 end)
 
-if SS.Queue.SkipPlayer then
+if SS.Config.Connection.Commands then
 	RegisterCommand("Skip_Player", function(r, args, s)
 		if args[1] then
 			connectPlayer(args[1], deferralsList[args[1]], false)
 		end
 	end)
-end
 
-if SS.Queue.RemovePlayer then
 	RegisterCommand("Remove_Player", function(r, args, s)
 		if args[1] then
 			deferralsList[args[1]].done("removePlayer")
