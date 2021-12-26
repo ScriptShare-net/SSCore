@@ -10,6 +10,8 @@ server_scripts {
     'core/sh_config.lua',
     'core/sv_functions.lua',
     'bans/sv_init.lua',
+    'users/sv_init.lua',
+    'users/sv_class.lua'
     'connection/sv_config.lua',
     'connection/sv_cards.lua',
     'connection/sv_init.lua',

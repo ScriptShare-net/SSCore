@@ -16,8 +16,9 @@ local function createUser(identifiers, cb)
 		["@gta2s"] = json.encode({identifiers.GTA2}),
 		["@tokens"] = json.encode({identifiers.Tokens}),
 	}, function(rows)
-		exports.oxmysql:execute("INSERT INTO Users (Identifier) VALUES (@identifier)", {
-			["@identifier"] = identifiers.Identifier
+		exports.oxmysql:execute("INSERT INTO Users (Identifier, Name) VALUES (@identifier, @name)", {
+			["@identifier"] = identifiers.Identifier,
+			["@name"] = GetPlayerName(identifiers.Source)
 		}, function(result)
 			cb(not (rows.affectedRows >= 1), not (result.affectedRows >= 1))
 		end)
@@ -231,6 +232,7 @@ local function connectPlayer(identifier, deferrals, noSlot)
 	if inQueue(identifier) then
 		removeFromQueue(identifier)
 	end
+	SS.Users.Create(identifier)
 end
 
 local function updateQueue(identifier)
