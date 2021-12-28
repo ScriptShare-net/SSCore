@@ -16,7 +16,9 @@ server_scripts {
     'connection/sv_cards.lua',
     'connection/sv_init.lua',
     'players/sv_init.lua',
-    'players/sv_class.lua'
+    'players/sv_class.lua',
+    'vehicles/sv_init.lua',
+    'vehicles/sv_class.lua'
 }
 
 client_scripts {

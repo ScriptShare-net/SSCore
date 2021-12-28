@@ -5,6 +5,7 @@ SS.Bans = {}
 SS.Groups = {}
 SS.Users = {}
 SS.Players = {}
+SS.Vehicles = {}
 
 AddEventHandler('SS:sharedObject', function(cb)
 	cb(SS)
