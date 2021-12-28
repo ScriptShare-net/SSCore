@@ -1,6 +1,7 @@
-SS.Gangs.Create = function(name, owner)
+SS.Gangs.Create = function(id, name, owner)
     self = {}
 
+    self.id = id
     self.name = name
     self.owner = owner
 
@@ -19,4 +20,6 @@ SS.Gangs.Create = function(name, owner)
     self.SetOwner = function(owner)
         self.owner = owner
     end
+
+    SS.Gangs.List[self.id] = self
 end
