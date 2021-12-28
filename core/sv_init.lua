@@ -6,6 +6,7 @@ SS.Groups = {}
 SS.Users = {}
 SS.Players = {}
 SS.Vehicles = {}
+SS.Gangs = {}
 
 AddEventHandler('SS:sharedObject', function(cb)
 	cb(SS)

@@ -18,7 +18,9 @@ server_scripts {
     'players/sv_init.lua',
     'players/sv_class.lua',
     'vehicles/sv_init.lua',
-    'vehicles/sv_class.lua'
+    'vehicles/sv_class.lua',
+    'gangs/sv_init.lua',
+    'gangs/sv_class.lua'
 }
 
 client_scripts {
