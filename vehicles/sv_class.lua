@@ -1,9 +1,10 @@
-function SS.Vehicle.Create(model, coords, heading)
+function SS.Vehicle.Create(id, model, coords, heading)
     local self = {}
     
     self.model = model
     self.coords = coords
     self.heading = heading
+    self.id = id
 
     self.MetaData = {}
 
@@ -25,5 +26,5 @@ function SS.Vehicle.Create(model, coords, heading)
 
     self.NetworkID = NetworkGetNetworkIdFromEntity(self.vehicle)
 
-    SS.Vehicles.List[NetworkID] = self
+    SS.Vehicles.List[id] = self
 end

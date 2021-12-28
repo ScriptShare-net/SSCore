@@ -146,11 +146,11 @@ local function getRank(identifier, cb)
 		["@identifier"] = identifier
 	}, function(groups)
 		for _, name in pairs(groups) do
-			for name2, groupdata in pairs(SS.Groups) do
+			for name2, groupdata in pairs(SS.Groups.List) do
 				if name == name2 then
 					if highestRank then
-						if SS.Groups[highestRank] then
-							if SS.Groups[highestRank] > groupdata.Priority then
+						if SS.Groups.List[highestRank] then
+							if SS.Groups.List[highestRank] > groupdata.Priority then
 								highestRank = name2
 							end
 						end
@@ -203,7 +203,7 @@ end
 
 local function removeFromQueue(identifier)
 	local _, _, queue, pos = positionInQueue(identifier)
-	local rank = SS.Groups[queue].Priority or 10000
+	local rank = SS.Groups.List[queue].Priority or 10000
 	for i = pos + 1, #Queue[rank], 1 do
 		Queue[rank][i - 1] = Queue[rank][i]
 	end
@@ -215,7 +215,7 @@ local function removeFromQueue(identifier)
 end
 
 local function addToQueue(identifier, rank, deferrals, src)
-	local queue = SS.Groups[rank].Priority or 10000
+	local queue = SS.Groups.List[rank].Priority or 10000
 	Queue[queue] = Queue[queue] or {}
 	local position = #Queue[queue] + 1
 	Queue[queue][position] = Queue[queue][position] or {}
@@ -264,7 +264,7 @@ local function startConnection(identifiers, deferrals)
 					return
 				end
 
-				if SS.Groups[highestRank] == 0 then
+				if SS.Groups.List[highestRank] == 0 then
 					deferrals.update("Connecting.")
 					connectPlayer(identifiers.Identifier, deferrals, true)
 					return

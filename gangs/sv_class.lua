@@ -1,4 +1,4 @@
-SS.Gangs.Create = function(id, name, owner)
+SS.Gangs.Create = function(name, owner)
     self = {}
 
     self.id = id
@@ -21,5 +21,5 @@ SS.Gangs.Create = function(id, name, owner)
         self.owner = owner
     end
 
-    SS.Gangs.List[self.id] = self
+    SS.Gangs.List[self.name] = self
 end

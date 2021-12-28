@@ -20,7 +20,9 @@ server_scripts {
     'vehicles/sv_init.lua',
     'vehicles/sv_class.lua',
     'gangs/sv_init.lua',
-    'gangs/sv_class.lua'
+    'gangs/sv_class.lua',
+    'businesses/sv_init.lua',
+    'businesses/sv_class.lua'
 }
 
 client_scripts {
