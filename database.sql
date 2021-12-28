@@ -4,4 +4,6 @@ Identifiers - PermID, Identifier, Discords, Steams, GTAs, Lives, Xboxs, IPs, Fiv
 Bans - Identifier, Identifiers, Time, Reason, Banner
 Groups - Name, Priority, Permissions
 Gangs - Name, Owner, Members, Ranks, MetaData
+Vehicles - ID, Type, Owner, MetaData
 Businesses - Name, Owner, Members, Ranks, MetaData
+Entities - ID, Type, MetaData 
