@@ -1,4 +1,4 @@
-function SS.Vehicle.Create(id, model, coords, heading)
+function SS.Vehicles.Create(id, model, coords, heading)
     local self = {}
     
     self.model = model

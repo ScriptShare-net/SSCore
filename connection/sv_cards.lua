@@ -11,7 +11,7 @@ SS.Connection.Cards.Whitelist = {
         },
         {
             ["type"] = "TextBlock",
-            ["text"] = SS.Config.Connection.WhitelistMessage
+            ["text"] = SS.Config.Connection.WhitelistMessage,
             ["wrap"] = true
         }
     },

@@ -1,6 +1,6 @@
 SS.Vehicles.List = {}
 
-function SS.Vehicle.Delete(id)
+function SS.Vehicles.Delete(id)
     local vehicle = SS.Vehicles.List[id].vehicle
     if DoesEntityExist(vehicle) then 
         SetModelAsNoLongerNeeded(vehicle)
