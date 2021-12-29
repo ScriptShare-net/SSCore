@@ -19,7 +19,7 @@ SS.Users.Create = function(identifier, id)
 
             SS.Users.List[self.Identifiers.Source] = self
 			TriggerEvent("SS:Server:PlayerConnected", self.Identifiers.Source)
-			SS.Alert("User Created: " .. self.Identifiers.Source..self.Name)
+			SS.Alert("User Created: " .. self.Identifiers.Source)
         end)
     end)
 end
