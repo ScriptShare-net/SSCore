@@ -1,12 +1,14 @@
-SS.Users.Create = function(identifier)
+SS.Users.Create = function(identifier, id)
     local self = {}
 
-    self.Identifier = identifier
+	self.Identifier = identifier
+	self.Loaded = false
 
-    SS.GetPlayerIdentifiers(identifier, function(identifiers)
+    SS.GetPlayerIdentifiers(id, function(identifiers)
         self.Identifiers = identifiers
+		self.Identifiers.Source = #SS.Users.List + 1
 
-        self.Name = GetPlayerName(self.Identifiers.Source)
+        self.Name = GetPlayerName(id)
 
         MySQL.query("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
             ["@identifier"] = identifier
@@ -16,7 +18,8 @@ SS.Users.Create = function(identifier)
             end
 
             SS.Users.List[self.Identifiers.Source] = self
+			TriggerEvent("SS:Server:PlayerConnected", self.Identifiers.Source)
+			SS.Alert("User Created: " .. self.Identifiers.Source..self.Name)
         end)
     end)
-	print("User Created:", identifier)
 end

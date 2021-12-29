@@ -7,5 +7,8 @@ SS.Config.Discord = "https://discord.gg/ScriptShare-net"
 -- Forum link for the server
 SS.Config.Forum = "https://scriptshare.net/forum/"
 
---Type of identifier to use as default
+-- Type of identifier to use as default
 SS.Config.DefaultIdentifier = "Discord"
+
+-- SSCore Modules
+SS.Config.CharacterSelector = true

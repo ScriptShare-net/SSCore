@@ -24,10 +24,13 @@ server_scripts {
     'gangs/sv_init.lua',
     'gangs/sv_class.lua',
     'businesses/sv_init.lua',
-    'businesses/sv_class.lua'
+    'businesses/sv_class.lua',
+	'modules/character_selector/sv_init.lua'
 }
 
 client_scripts {
+	'core/cl_init.lua',
+	'users/cl_init.lua'
 }
 
 files {

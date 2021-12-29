@@ -2,6 +2,7 @@ local next = next
 local slotsFilled = 0
 local Queue = {}
 local deferralsList = {}
+local srcs = {}
 
 local function createUser(identifiers, cb)
 	MySQL.query("INSERT INTO Users (Identifier, Name) VALUES (@identifier, @name)", {
@@ -223,7 +224,7 @@ local function removeFromQueue(identifier)
 	deferralsList[identifier] = nil
 end
 
-local function addToQueue(identifier, rank, deferrals, src)
+local function addToQueue(identifier, rank, deferrals)
 	local queue
 	if not SS.Groups.List[rank] then
 		queue = 10000
@@ -246,7 +247,7 @@ local function connectPlayer(identifier, deferrals, noSlot)
 	if inQueue(identifier) then
 		removeFromQueue(identifier)
 	end
-	SS.Users.Create(identifier)
+	SS.Users.Create(identifier, srcs[identifier])
 end
 
 local function updateQueue(identifier)
@@ -285,7 +286,7 @@ local function startConnection(identifiers, deferrals)
 				end
 				
 				deferrals.update("Adding To Queue.")
-				addToQueue(identifiers.Identifier, highestRank, deferrals, identifiers.Source)
+				addToQueue(identifiers.Identifier, highestRank, deferrals)
 			end)
 		end)
 	end)
@@ -298,6 +299,7 @@ AddEventHandler('playerConnecting', function(name, setReason, deferrals)
 
 	deferrals.update("Checking Identifiers.")
     SS.GetPlayerIdentifiers(src, function(identifiers)
+		srcs[identifiers.Identifier] = src
 		if identifiers.PermID then
 			deferrals.update("Found Identifiers. Starting Connection.")
 			startConnection(identifiers, deferrals)
