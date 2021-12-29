@@ -13,7 +13,7 @@ SS.Config.Connection.BanAppeal = "https://scriptshare.net/forums/banappeals"
 SS.Config.Connection.QueueMessage = "Thank you for choosing our server."
 
 --Player slots (Minus reserved slots)
-SS.Config.Connection.Slots = 60
+SS.Config.Connection.Slots = 1
 
 --Enable Connection Commands
 SS.Config.Connection.Commands = true

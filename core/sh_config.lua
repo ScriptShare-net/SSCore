@@ -8,4 +8,4 @@ SS.Config.Discord = "https://discord.gg/ScriptShare-net"
 SS.Config.Forum = "https://scriptshare.net/forum/"
 
 --Type of identifier to use as default
-SS.Config.DefaultIdentifier = "discord"
+SS.Config.DefaultIdentifier = "Discord"

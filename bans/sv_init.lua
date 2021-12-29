@@ -6,7 +6,7 @@ end
 
 SS.Bans.BanPlayer = function(source, time, reason, banner)
     local identifiers = SS.GetPlayerIdentifiers(source)
-    exports.oxmysql:execute("UPDATE Bans SET Identifiers = @identifiers, Time = @time, Reason = @reason, Banner = @bannedBy WHERE Identifier = @identifier", {
+    MySQL.query("UPDATE Bans SET Identifiers = @identifiers, Time = @time, Reason = @reason, Banner = @bannedBy WHERE Identifier = @identifier", {
         ["@identifier"] = identifiers.Identifier,
         ["@identifiers"] = json.encode(identifiers),--needs to ban all identifiers
         ["@time"] = time,
@@ -23,7 +23,7 @@ SS.Bans.BanPlayer = function(source, time, reason, banner)
 end
 
 Citizen.CreateThread(function()
-    exports.oxmysql:execute("SELECT * FROM Bans", {}, function(bantable)
+    MySQL.query("SELECT * FROM Bans", {}, function(bantable)
         if bantable then
             for k,v in pairs(bantable) do
                 bantable[k].Identifiers = json.decode(bantable[k].Identifiers)

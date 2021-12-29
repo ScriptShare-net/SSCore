@@ -6,9 +6,11 @@ version '1.00'
 author 'ScriptShare.net'
 
 server_scripts {
+	'@oxmysql/lib/MySQL.lua',
     'core/sv_init.lua',
     'core/sh_config.lua',
     'core/sv_functions.lua',
+	'groups/sv_init.lua',
     'bans/sv_init.lua',
     'users/sv_init.lua',
     'users/sv_class.lua',
@@ -32,4 +34,5 @@ files {
 }
 
 dependencies {
+	'oxmysql'
 }

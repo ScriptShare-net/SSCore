@@ -10,7 +10,7 @@ function SS.Vehicles.Delete(id)
 end
 
 Citizen.CreateThread(function()
-    exports.oxmysql:execute("SELECT * FROM Vehicles", {}, function(vehiclestable)
+    MySQL.query("SELECT * FROM Vehicles", {}, function(vehiclestable)
         if vehiclestable then
             for k,v in pairs(vehiclestable) do
                 SS.Vehicles.List[v.ID] = v

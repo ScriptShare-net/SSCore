@@ -14,6 +14,7 @@ CREATE TABLE `sscore`.`bans` ( `Identifier` VARCHAR(99) NOT NULL , `Identifiers`
 
 -- groups - Name, Priority, Permissions
 CREATE TABLE `sscore`.`groups` ( `Name` VARCHAR(99) NOT NULL , `Priority` INT(99) NOT NULL , `Permissions` LONGTEXT NOT NULL , PRIMARY KEY (`Name`)) ENGINE = InnoDB;
+INSERT INTO `sscore`.`groups` (`Name`, `Priority`, `Permissions`) VALUES ('default', '10000', '{}');
 
 -- gangs - Name, Owner, Members, Ranks, MetaData
 CREATE TABLE `sscore`.`gangs` ( `Name` VARCHAR(99) NOT NULL , `Owner` VARCHAR(99) NOT NULL , `Members` LONGTEXT NOT NULL , `Ranks` LONGTEXT NOT NULL , `MetaData` LONGTEXT NOT NULL , PRIMARY KEY (`Name`)) ENGINE = InnoDB;

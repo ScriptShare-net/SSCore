@@ -40,7 +40,7 @@ SS.GetPlayerIdentifiers = function(source, cb)
         Identifiers.Tokens[i] = GetPlayerToken(source, i)
     end
 
-    exports.oxmysql:execute("SELECT PermID FROM Users WHERE Identifier = @identifier", {
+    MySQL.query("SELECT PermID FROM Users WHERE Identifier = @identifier", {
         ["@identifier"] = Identifiers.Identifier
     }, function(result)
         if next(result) then

@@ -8,7 +8,7 @@ SS.Users.Create = function(identifier)
 
         self.Name = GetPlayerName(self.Identifiers.Source)
 
-        exports.oxmysql:execute("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
+        MySQL.query("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
             ["@identifier"] = identifier
         }, function(result)
             if result then
@@ -18,4 +18,5 @@ SS.Users.Create = function(identifier)
             SS.Users.List[self.Identifiers.Source] = self
         end)
     end)
+	print("User Created:", identifier)
 end

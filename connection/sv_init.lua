@@ -4,22 +4,23 @@ local Queue = {}
 local deferralsList = {}
 
 local function createUser(identifiers, cb)
-    exports.oxmysql:execute("INSERT INTO Identifiers (Identifier, GTAs, Steams, Lives, Xboxs, FiveMs, IPs, Discords, GTA2s, Tokens) VALUES (@identifier, @gtas, @steams, @lives, @xboxs, @fivems, @ips, @discords, @gta2s, @tokens)", {
+	MySQL.query("INSERT INTO Users (Identifier, Name) VALUES (@identifier, @name)", {
 		["@identifier"] = identifiers.Identifier,
-		["@gtas"] = json.encode({identifiers.GTA}),
-		["@steams"] = json.encode({identifiers.Steam}),
-		["@xboxs"] = json.encode({identifiers.Xbox}),
-		["@ips"] = json.encode({identifiers.IP}),
-		["@lives"] = json.encode({identifiers.Live}),
-		["@fivems"] = json.encode({identifiers.FiveM}),
-		["@discords"] = json.encode({identifiers.Discord}),
-		["@gta2s"] = json.encode({identifiers.GTA2}),
-		["@tokens"] = json.encode({identifiers.Tokens}),
-	}, function(rows)
-		exports.oxmysql:execute("INSERT INTO Users (Identifier, Name) VALUES (@identifier, @name)", {
+		["@name"] = GetPlayerName(identifiers.Source)
+	}, function(result)
+		MySQL.query("INSERT INTO Identifiers (PermID, Identifier, GTAs, Steams, Lives, Xboxs, FiveMs, IPs, Discords, GTA2s, Tokens) VALUES (@permid, @identifier, @gtas, @steams, @lives, @xboxs, @fivems, @ips, @discords, @gta2s, @tokens)", {
+			["@permid"] = result.insertId,
 			["@identifier"] = identifiers.Identifier,
-			["@name"] = GetPlayerName(identifiers.Source)
-		}, function(result)
+			["@gtas"] = json.encode({identifiers.GTA}),
+			["@steams"] = json.encode({identifiers.Steam}),
+			["@xboxs"] = json.encode({identifiers.Xbox}),
+			["@ips"] = json.encode({identifiers.IP}),
+			["@lives"] = json.encode({identifiers.Live}),
+			["@fivems"] = json.encode({identifiers.FiveM}),
+			["@discords"] = json.encode({identifiers.Discord}),
+			["@gta2s"] = json.encode({identifiers.GTA2}),
+			["@tokens"] = json.encode({identifiers.Tokens}),
+		}, function(rows)
 			cb(not (rows.affectedRows >= 1), not (result.affectedRows >= 1))
 		end)
 	end)
@@ -47,7 +48,7 @@ local function addIdentifiers(idtable, identifiers)
 		elseif type == "Tokens" then
 			identifierstable.Tokens = json.decode(identifierstable.Tokens) or {}
 			for k, v in pairs(identifiers.Tokens) do
-				if not string.match(json.encode(idtable.tokens), v) then
+				if not string.match(json.encode(idtable.Tokens), v) then
 					identifierstable.Tokens[k] = identifierstable.Tokens[k] or {}
 					identifierstable.Tokens[k][#identifierstable.Tokens[k] + 1] = v
 				end
@@ -58,12 +59,12 @@ local function addIdentifiers(idtable, identifiers)
 end
 
 local function updateIdentifiers(identifiers, cb)
-	exports.oxmysql:execute("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
+	MySQL.query("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
 		["@identifier"] = identifiers.Identifier
 	}, function(result)
 		if result[1] then
 			local idtable = addIdentifiers(result[1], identifiers)
-			exports.oxmysql:execute("UPDATE Identifiers SET Discords = @discords, Steams = @steams, GTAs = @gtas, Tokens = @tokens, Lives = @lives, Xboxs = @xboxs, IPs = @ips, FiveMs = @fivems, GTA2s = @gta2s WHERE Identifier = @identifier", {
+			MySQL.query("UPDATE Identifiers SET Discords = @discords, Steams = @steams, GTAs = @gtas, Tokens = @tokens, Lives = @lives, Xboxs = @xboxs, IPs = @ips, FiveMs = @fivems, GTA2s = @gta2s WHERE Identifier = @identifier", {
 				["@identifier"] = identifiers.Identifier,
 				["@discords"] = idtable.Discords,
 				["@steams"] = idtable.Steams,
@@ -98,7 +99,8 @@ end
 local function isBanned(identifier, cb)
 	local banned = {}
 	local identifiers = {}
-	exports.oxmysql:execute("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
+	local bancard
+	MySQL.query("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(result)
 		if not result then return false end
@@ -110,7 +112,7 @@ local function isBanned(identifier, cb)
 		if identifiersBanned then
 			if #banList > 1 then
 				for bannedIdentifier, bannedIdentifiers in pairs(banList) do
-					exports.oxmysql:execute("UPDATE Bans SET Identifiers = @identifiers, Time = @time, Reason = @reason, Banner = @bannedBy WHERE Identifier = @identifier", {
+					MySQL.query("UPDATE Bans SET Identifiers = @identifiers, Time = @time, Reason = @reason, Banner = @bannedBy WHERE Identifier = @identifier", {
 						["@identifier"] = bannedIdentifier,
 						["@identifiers"] = json.encode(addIdentifiers(bannedIdentifiers, identifiers)),
 						["@time"] = 0,
@@ -135,14 +137,16 @@ local function isBanned(identifier, cb)
 				unbanTime = os.date('%H:%M:%S %d-%m-%y', SS.Bans.List[identifier].time + (SS.TimeZone * 60 * 60))
 				banLength = SS.Bans.List[identifier].time - os.time()
 			end
+			cb(identifiersBanned, SS.Connection.Cards.Ban(SS.Bans.List[identifier].reason, unbanTime, banLength, SS.Bans.List[identifier].bannedBy, identifiers.PermID))
+			return
 		end
 	end)
-	cb(identifiersBanned, SS.Connection.Cards.Ban(SS.Bans.List[identifier].reason, unbanTime, banLength, SS.Bans.List[identifier].bannedBy, identifiers.PermID))
+	cb(false)
 end
 
 local function getRank(identifier, cb)
 	local highestRank
-	exports.oxmysql:execute("SELECT Groups FROM Users WHERE Identifier = @identifier", {
+	MySQL.query("SELECT Groups FROM Users WHERE Identifier = @identifier", {
 		["@identifier"] = identifier
 	}, function(groups)
 		for _, name in pairs(groups) do
@@ -203,7 +207,12 @@ end
 
 local function removeFromQueue(identifier)
 	local _, _, queue, pos = positionInQueue(identifier)
-	local rank = SS.Groups.List[queue].Priority or 10000
+	local rank
+	if not SS.Groups.List[queue] then
+		rank = 10000
+	else
+		rank = SS.Groups.List[queue].Priority
+	end
 	for i = pos + 1, #Queue[rank], 1 do
 		Queue[rank][i - 1] = Queue[rank][i]
 	end
@@ -215,7 +224,12 @@ local function removeFromQueue(identifier)
 end
 
 local function addToQueue(identifier, rank, deferrals, src)
-	local queue = SS.Groups.List[rank].Priority or 10000
+	local queue
+	if not SS.Groups.List[rank] then
+		queue = 10000
+	else
+		queue = SS.Groups.List[rank].Priority
+	end
 	Queue[queue] = Queue[queue] or {}
 	local position = #Queue[queue] + 1
 	Queue[queue][position] = Queue[queue][position] or {}
