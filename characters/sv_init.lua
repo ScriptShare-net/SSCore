@@ -1,0 +1,1 @@
+SS.Characters.List = {}

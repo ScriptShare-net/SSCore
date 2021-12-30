@@ -53,3 +53,16 @@ end
 SS.Alert = function(string)
 	print("[^2SSCore^0] " .. string)
 end
+
+SS.GetCharacterFromSource = function(source)
+	return SS.Characters.List[source]
+end
+
+SS.Math = {}
+
+function SS.Math.GenerateRandomNumber(min, max)
+    math.randomseed(os.time() * math.random())
+    local number = math.random(min, max)
+
+    return number
+end

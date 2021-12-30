@@ -12,3 +12,4 @@ SS.Config.DefaultIdentifier = "Discord"
 
 -- SSCore Modules
 SS.Config.CharacterSelector = true
+SS.Config.Skin = true
