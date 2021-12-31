@@ -4,10 +4,6 @@ if SS.Config.CharacterSelector then
 	SS.CharacterSelector = {}
 	SS.CharacterSelector.Ranks = {}
 
-	RegisterNetEvent("SS:Server:ClientLoaded", function(src)
-		SS.Alert("Client Loaded: " .. src)
-	end)
-
 	local next = next
 
 	local createCharacter = {
@@ -79,7 +75,7 @@ if SS.Config.CharacterSelector then
 
 	function SS.CharacterSelector.GetLimit(identifier, cb)
 		local characterLimit = SS.Config.CharacterSelector.Limit
-		MySQL.Query("SELECT Groups FROM users WHERE Identifier = @identifier", {
+		MySQL.query("SELECT Groups FROM users WHERE Identifier = @identifier", {
 			["@identifier"] = identifier
 		}, function(result)
 			if result.groups then
@@ -103,7 +99,7 @@ if SS.Config.CharacterSelector then
 
 	local function getCharacters(identifier, limit, cb)
 		local characters = {}
-		MySQL.Query("SELECT * FROM Characters WHERE Identifier = @identifier", {
+		MySQL.query("SELECT * FROM Characters WHERE Identifier = @identifier", {
 			["@identifier"] = identifier
 		}, function(result)
 			if next(result) then
@@ -143,10 +139,10 @@ if SS.Config.CharacterSelector then
 	end
 
 	function CreateIdentity(identifier, characterid, data, callback)
-		local skin = createCharacter.skin
+		local skin = createCharacter.Skin
 		skin.sex = data.sex
 		if skin.sex then skin.model = "mp_f_freemode_01" end
-		MySQL.Query("SELECT CharacterSlot FROM Characters WHERE Identifier = @identifier AND CharacterSlot = @characterSlot", {
+		MySQL.query("SELECT CharacterSlot FROM Characters WHERE Identifier = @identifier AND CharacterSlot = @characterSlot", {
 			["@identifier"] = identifier,
 			["@characterSlot"] = characterid,
 		}, function(result)
@@ -157,9 +153,14 @@ if SS.Config.CharacterSelector then
 					Job = {
 						NameLabel = "Unemployeed",
 						GradeLabel = "Unemployeed",
+					},
+					Gang = {
+						NameLabel = "None",
+						GradeLabel = "None",
 					}
 				}
-				MySQL.Query("INSERT INTO Characters (Identifier, CharacterSlot, FirstName, LastName, MetaData) VALUES (@identifier, @characterSlot, @firstName, @lastName, @metadata)", {
+				MySQL.query("INSERT INTO Characters (PermID, Identifier, CharacterSlot, FirstName, LastName, MetaData) VALUES (@permid, @identifier, @characterSlot, @firstName, @lastName, @metadata)", {
+					["@permid"] = SS.GetPermIDFromIdentifier(identifier),
 					['@identifier'] = identifier,
 					['@characterSlot'] = characterid,
 					['@firstName'] = data.FirstName,
@@ -175,8 +176,8 @@ if SS.Config.CharacterSelector then
 		end)
 	end
 
-	RegisterNetEvent("SS:Server:Initiate", function()
-		local src = source
+	RegisterNetEvent("SS:Server:ClientLoaded", function(src)
+		SS.Alert("Client Loaded: " .. src)
 		if not SS.GetCharacterFromSource(src) then
 			SS.GetPlayerIdentifiers(src, function(identifiers)
 				SS.CharacterSelector.Initiate(identifiers.Identifier, src)
@@ -187,12 +188,17 @@ if SS.Config.CharacterSelector then
 	end)
 
 	RegisterNetEvent("SS:Server:RegisterIdentity", function(data, charid)
-		if data.firstName == "Create" then return end
+		if data.FirstName == "Create" then return end
 		local src = source
 		SS.GetPlayerIdentifiers(src, function(identifiers)
 			CreateIdentity(identifiers.Identifier, charid, data, function(created)
 				if created then
 					TriggerClientEvent("SS:Client:CreateSkin", src)
+					if SS.Characters.List[src] then
+						DropPlayer(src, "Cheater")
+					else
+						SS.Characters.Create(identifiers, src, charid)
+					end
 				end
 			end)
 		end)
@@ -200,24 +206,34 @@ if SS.Config.CharacterSelector then
 
 	SS.RegisterServerCallback("SS:Server:GetRandomFemale", function(source, cb)
 		local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
-		MySQL.Query("SELECT MetaData FROM Characters WHERE LOCATE('mp_f_freemode_01', MetaData)", {}, function(result)
-			local characternum = SS.Math.GenerateRandomNumber(1, #result)
-			if result[characternum].MetaData.Skin then
-				cb(result[characternum].MetaData.Skin.skin, result[characternum].MetaData.Skin.cosmetics, result[characternum].MetaData.Skin.clothing, result[characternum].MetaData.Skin.tattoos)
+		MySQL.query("SELECT MetaData FROM Characters WHERE LOCATE('mp_f_freemode_01', MetaData)", {}, function(result)
+			local characternum
+			if not result[1] then
+				cb(createCharacter.Skin.skin, createCharacter.Skin.cosmetics, createCharacter.Skin.clothing, createCharacter.Skin.tattoos)
 			else
-				cb(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
+				characternum = math.random(1, #result)
+				if result[characternum].MetaData.Skin then
+					cb(result[characternum].MetaData.Skin.skin, result[characternum].MetaData.Skin.cosmetics, result[characternum].MetaData.Skin.clothing, result[characternum].MetaData.Skin.tattoos)
+				else
+					cb(createCharacter.Skin.skin, createCharacter.Skin.cosmetics, createCharacter.Skin.clothing, createCharacter.Skin.tattoos)
+				end
 			end
 		end)
 	end)
 
 	SS.RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
 		local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
-		MySQL.Query("SELECT * FROM characters WHERE LOCATE('mp_m_freemode_01', skin)", {}, function(result)
-			local characternum = SS.Math.GenerateRandomNumber(1, #result)
-			if result[characternum].skin then
-				cb(result[characternum].skin, result[characternum].cosmetics, result[characternum].clothing, result[characternum].tattoos)
+		MySQL.query("SELECT * FROM characters WHERE LOCATE('mp_m_freemode_01', MetaData)", {}, function(result)
+			local characternum
+			if not result[1] then
+				cb(createCharacter.Skin.skin, createCharacter.Skin.cosmetics, createCharacter.Skin.clothing, createCharacter.Skin.tattoos)
 			else
-				cb(createCharacter.skin.skin, createCharacter.skin.cosmetics, createCharacter.skin.clothing, createCharacter.skin.tattoos)
+				characternum = math.random(1, #result)
+				if result[characternum].MetaData.Skin then
+					cb(result[characternum].MetaData.Skin.skin, result[characternum].MetaData.Skin.cosmetics, result[characternum].MetaData.Skin.clothing, result[characternum].MetaData.Skin.tattoos)
+				else
+					cb(createCharacter.Skin.skin, createCharacter.Skin.cosmetics, createCharacter.Skin.clothing, createCharacter.Skin.tattoos)
+				end
 			end
 		end)
 	end)
@@ -225,14 +241,23 @@ if SS.Config.CharacterSelector then
 	RegisterNetEvent("SS:Server:CreatePlayer", function(charID)
 		local src = source
 		SS.GetPlayerIdentifiers(src, function(identifiers)
-			if SS.Players[src] then
+			if SS.Characters.List[src] then
 				DropPlayer(src, "Cheater")
 			else
-				SS.Player.Create(identifiers, src, charID)
-				TriggerEvent("SS:Server:PlayerLoaded", src, charID)
-				TriggerClientEvent("SS:Client:PlayerLoaded", src, SS.GetPlayerFromSource(src))
+				SS.Characters.Create(identifiers, src, charID)
 			end
 		end)
-		
+	end)
+
+	RegisterNetEvent("SS:Server:SpawningPlayer", function()
+		local src = source
+		local xPlayer = SS.GetCharacterFromSource(src)
+		if not xPlayer.spawned then
+			xPlayer.spawned = true
+			TriggerEvent("SS:Server:CharacterSelected", src, charID)
+			TriggerClientEvent("SS:Client:CharacterSelected", src, xPlayer)
+		else
+			DropPlayer(src, "cheating")
+		end
 	end)
 end

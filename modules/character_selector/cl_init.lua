@@ -37,7 +37,6 @@ if SS.Config.CharacterSelector then
 	end
 
 	local function getSpawn(spawnID)
-		print(spawnID, spawnAmount())
 		local i = 1
 		for k,v in pairs(SS.Spawns) do
 			if i == spawnID then
@@ -56,25 +55,25 @@ if SS.Config.CharacterSelector then
 	local function loadPlayerData(charID)
 		local spawnMessage = "Create"
 		local sexMessage = "Male"
-		if characters[charID].firstName ~= "Create" then spawnMessage = "Spawn" end
-		if characters[charID].skin.sex == 1 then sexMessage = "Female" end
-		exports["ui-wrapper"]:uiSendMessage("Selector", {
+		if characters[charID].FirstName ~= "Create" then spawnMessage = "Spawn" end
+		if characters[charID].Skin.sex == 1 then sexMessage = "Female" end
+		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 			show = true,
-			name = characters[charID].firstName .. " " .. characters[charID].lastName,
-			job = characters[charID].job.nameLabel .. " - " .. (characters[charID].job.gradeLabel or "N/A"),
-			group = characters[charID].group.nameLabel .. " - " .. (characters[charID].group.gradeLabel or "N/A"),
-			bank = characters[charID].bank or 0,
-			dob = characters[charID].dob,
+			name = characters[charID].FirstName .. " " .. characters[charID].LastName,
+			job = characters[charID].Job.NameLabel .. " - " .. (characters[charID].Job.GradeLabel or "N/A"),
+			gang = characters[charID].Gang.NameLabel .. " - " .. (characters[charID].Gang.GradeLabel or "N/A"),
+			bank = characters[charID].Bank or 0,
+			dob = characters[charID].DOB,
 			sex = sexMessage,
 			spawn = spawnMessage,
 		})
 	end
 
 	local function loadFirstCharacter()
-		characterNumber = characters.favourite
+		characterNumber = characters.Favourite
 		local player = PlayerPedId()
 		DoScreenFadeOut(10)
-		loadSkin(characters[characters.favourite].skin)
+		loadSkin(characters[characters.Favourite].Skin)
 		Wait(500)
 		SetEntityCoords(player, -78.07911682129, -836.62414550782, 221.9912109375)
 		DoScreenFadeOut(10)
@@ -96,13 +95,12 @@ if SS.Config.CharacterSelector then
 		pedgoto(player, -83.538459777832, -835.75384521484, 221.9912109375)
 		turntohead(player, 340.15747070312, 1000)
 		FreezeEntityPosition(player, true)
-		exports["ui-wrapper"]:uiEnable("Selector")
-		loadPlayerData(characters.favourite)
+		exports["ui-wrapper"]:uiEnable("CharacterSelector")
+		loadPlayerData(characters.Favourite)
 	end
 
 	local function loadCharacter(charID)
-		print(charID)
-		loadSkin(characters[charID].skin)
+		loadSkin(characters[charID].Skin)
 		loadPlayerData(charID)
 	end
 
@@ -135,7 +133,7 @@ if SS.Config.CharacterSelector then
 		characters = characterData
 		Wait(2000)
 		exports["ui-wrapper"]:uiDisableAll()
-		exports["ui-wrapper"]:uiSetFocus("Selector", true, true)
+		exports["ui-wrapper"]:uiSetFocus("CharacterSelector", true, true)
 		firstSpawnPlayer()
 		loadFirstCharacter()
 	end)
@@ -158,24 +156,24 @@ if SS.Config.CharacterSelector then
 		exports["ui-wrapper"]:setHotbar(true)
 	end
 
-	exports["ui-wrapper"]:uiRegisterCallback("Selector", "nextchar", function(data, cb)
+	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "nextchar", function(data, cb)
 		characterNumber = characterNumber + 1
-		if characterNumber > characters.max then characterNumber = 1 end
+		if characterNumber > characters.Max then characterNumber = 1 end
 		loadCharacter(characterNumber)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("Selector", "prevchar", function(data, cb)
+	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "prevchar", function(data, cb)
 		characterNumber = characterNumber - 1
-		if characterNumber < 1 then characterNumber = characters.max end
+		if characterNumber < 1 then characterNumber = characters.Max end
 		loadCharacter(characterNumber)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("Selector", "spawnsel", function(data, cb)
-		if characters[characterNumber].firstName ~= "Create" then
+	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "spawnsel", function(data, cb)
+		if characters[characterNumber].FirstName ~= "Create" then
 			local spawnName, coords = getSpawn(spawnNumber)
 			SetCamCoord(camera, coords.x, coords.y, coords.z + 1321 - coords.z)
 			PointCamAtCoord(camera, coords.x, coords.y, coords.z)
-			exports["ui-wrapper"]:uiSendMessage("Selector", {
+			exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 				map = true,
 				spawnname = spawnName,
 				x = coords.x,
@@ -185,17 +183,17 @@ if SS.Config.CharacterSelector then
 			SetWeatherTypeNow("CLEAR")
 			SetCloudHatOpacity(0)
 		else
-			exports["ui-wrapper"]:uiSendMessage("Selector", {
+			exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 				create = true,
 			})
 		end
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("Selector", "nextspawn", function(data, cb)
+	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "nextspawn", function(data, cb)
 		spawnNumber = spawnNumber + 1
 		if spawnNumber > spawnAmount() then spawnNumber = 1 end
 		local spawnName, coords = getSpawn(spawnNumber)
-		exports["ui-wrapper"]:uiSendMessage("Selector", {
+		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 			map = true,
 			spawnname = spawnName,
 			x = coords.x,
@@ -206,11 +204,11 @@ if SS.Config.CharacterSelector then
 		PointCamAtCoord(camera, coords.x, coords.y, coords.z)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("Selector", "prevspawn", function(data, cb)
+	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "prevspawn", function(data, cb)
 		spawnNumber = spawnNumber - 1
 		if spawnNumber < 1 then spawnNumber = spawnAmount() end
 		local spawnName, coords = getSpawn(spawnNumber)
-		exports["ui-wrapper"]:uiSendMessage("Selector", {
+		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 			map = true,
 			spawnname = spawnName,
 			x = coords.x,
@@ -221,19 +219,19 @@ if SS.Config.CharacterSelector then
 		PointCamAtCoord(camera, coords.x, coords.y, coords.z)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("Selector", "confirmspawn", function(data, cb)
+	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "confirmspawn", function(data, cb)
 		TriggerServerEvent("SS:Server:CreatePlayer", characterNumber)
 		spawnPlayer(SS.Spawns[data.spawn])
-		exports["ui-wrapper"]:uiSendMessage("Selector", {
+		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 			show = false,
 		})
-		exports["ui-wrapper"]:uiSetFocus("Selector", false, false)
+		exports["ui-wrapper"]:uiSetFocus("CharacterSelector", false, false)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("Selector", "identity", function(data, cb)
+	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "identity", function(data, cb)
 		TriggerServerEvent("SS:Server:RegisterIdentity", data, characterNumber)
-		exports["ui-wrapper"]:uiSetFocus("Selector", false, false)
-		exports["ui-wrapper"]:uiSendMessage("Selector", {
+		exports["ui-wrapper"]:uiSetFocus("CharacterSelector", false, false)
+		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 			create = false,
 		})
 	end)
@@ -251,8 +249,8 @@ if SS.Config.CharacterSelector then
 		local sceneped
 		local femaleindex = (GetEntityIndexOfCutsceneEntity("MP_Female_Character", (GetHashKey("mp_m_freemode_01") or GetHashKey("mp_f_freemode_01"))))
 		local maleindex = (GetEntityIndexOfCutsceneEntity("MP_Male_Character", (GetHashKey("mp_m_freemode_01") or GetHashKey("mp_f_freemode_01"))))
-		skintable = characters[characterNumber].skin
-		if skintable.skin.sex == 0 then
+		skintable = characters[characterNumber].Skin
+		if skintable.sex == 0 then
 			SetEntityVisible(GetPedIndexFromEntityIndex(femaleindex), false)
 			sceneped = GetPedIndexFromEntityIndex(maleindex)
 		else
@@ -302,7 +300,7 @@ if SS.Config.CharacterSelector then
 		SetCamActive(camera, false)
 		DoScreenFadeIn(1000)
 		exports["ui-wrapper"]:uiEnableAll()
-		exports["ui-wrapper"]:setHotbar(true)
+		TriggerServerEvent("SS:Server:SpawningPlayer")
 	end
 
 	RegisterNetEvent("SS:Client:CreateSkin", function()

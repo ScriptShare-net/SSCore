@@ -37,14 +37,14 @@ SS.GetPlayerIdentifiers = function(source, cb)
     Identifiers.Identifier = Identifiers[SS.Config.DefaultIdentifier]
 
     for i = 0, GetNumPlayerTokens(source) do
-        Identifiers.Tokens[i] = GetPlayerToken(source, i)
+		table.insert(Identifiers.Tokens, GetPlayerToken(source, i))
     end
 
     MySQL.query("SELECT PermID FROM Users WHERE Identifier = @identifier", {
         ["@identifier"] = Identifiers.Identifier
     }, function(result)
         if next(result) then
-            Identifiers.PermID = result
+            Identifiers.PermID = result[1].PermID
         end
 		cb(Identifiers)
     end)
@@ -58,11 +58,30 @@ SS.GetCharacterFromSource = function(source)
 	return SS.Characters.List[source]
 end
 
-SS.Math = {}
+SS.GetPermIDFromIdentifier = function(identifier)
+	for k, v in pairs(SS.Users.List) do
+		if v.Identifier == identifier then
+			return v.Identifiers.PermID
+		end
+	end
+end
 
-function SS.Math.GenerateRandomNumber(min, max)
-    math.randomseed(os.time() * math.random())
-    local number = math.random(min, max)
+SS.ServerCallbacks = {}
 
-    return number
+RegisterServerEvent("SS:Server:Callback", function(name, requestId, ...)
+	local src = source
+
+	SS.TriggerServerCallback(name, requestId, src, function(...)
+		TriggerClientEvent("SS:Client:Callback", src, requestId, ...)
+	end, ...)
+end)
+
+SS.RegisterServerCallback = function(name, cb)
+	SS.ServerCallbacks[name] = cb
+end
+
+SS.TriggerServerCallback = function(name, requestId, source, cb, ...)
+	if SS.ServerCallbacks[name] then
+		SS.ServerCallbacks[name](source, cb, ...)
+	end
 end

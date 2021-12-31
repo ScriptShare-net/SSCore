@@ -3,8 +3,8 @@ CREATE DATABASE `sscore`;
 -- users - PermID, Identifier, Name, Groups
 CREATE TABLE `sscore`.`users` ( `PermID` INT(99) NOT NULL AUTO_INCREMENT , `Identifier` VARCHAR(99) NOT NULL , `Name` VARCHAR(99) NOT NULL , `Groups` LONGTEXT NOT NULL , PRIMARY KEY (`PermID`)) ENGINE = InnoDB;
 
--- characters - PermID, CharacterSlot, FirstName, LastName, Metadata
-CREATE TABLE `sscore`.`characters` ( `PermID` INT(99) NOT NULL , `CharacterSlot` INT(99) NOT NULL , `FirstName` VARCHAR(99) NOT NULL , `LastName` VARCHAR(99) NOT NULL , `MetaData` LONGTEXT NOT NULL , PRIMARY KEY (`PermID`)) ENGINE = InnoDB;
+-- characters - PermID, Identifier, CharacterSlot, FirstName, LastName, MetaData
+CREATE TABLE `sscore`.`characters` ( `PermID` INT(99) NOT NULL , `Identifier` VARCHAR(99) NOT NULL , `CharacterSlot` INT(99) NOT NULL , `FirstName` VARCHAR(99) NOT NULL , `LastName` VARCHAR(99) NOT NULL , `MetaData` LONGTEXT NOT NULL , PRIMARY KEY (`PermID`, `CharacterSlot`)) ENGINE = InnoDB;
 
 -- identifiers - PermID, Identifier, Discords, Steams, GTAs, Lives, Xboxs, IPs, FiveMs, GTA2s, Tokens
 CREATE TABLE `sscore`.`identifiers` ( `PermID` INT(99) NOT NULL , `Identifier` VARCHAR(99) NOT NULL , `Discords` LONGTEXT NOT NULL , `Steams` LONGTEXT NOT NULL , `GTAs` LONGTEXT NOT NULL , `Lives` LONGTEXT NOT NULL , `Xboxs` LONGTEXT NOT NULL , `IPs` LONGTEXT NOT NULL , `FiveMs` LONGTEXT NOT NULL , `GTA2s` LONGTEXT NOT NULL , `Tokens` LONGTEXT NOT NULL , PRIMARY KEY (`PermID`)) ENGINE = InnoDB;

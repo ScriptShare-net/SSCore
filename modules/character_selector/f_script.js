@@ -86,15 +86,15 @@ $(function () {
 	toggleDisplay(false);
 
 	$("#left").click(function () {
-		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "Selector", name: "prevchar"}));
+		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "CharacterSelector", name: "prevchar"}));
 	});
 
 	$("#right").click(function () {
-		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "Selector", name: "nextchar"}));
+		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "CharacterSelector", name: "nextchar"}));
 	});
 
 	$("#middle").click(function () {
-		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "Selector", name: "spawnsel"}));
+		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "CharacterSelector", name: "spawnsel"}));
 	})
 
 	$("#middle").hover(function () {
@@ -104,17 +104,17 @@ $(function () {
 	})
 
 	$("#pin").click(function () {
-		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "Selector", name: "confirmspawn", args: {
+		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "CharacterSelector", name: "confirmspawn", args: {
 			spawn: spawnLocation
 		}}));
 	})
 
 	$("#leftmap").click(function () {
-		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "Selector", name: "prevspawn"}));
+		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "CharacterSelector", name: "prevspawn"}));
 	});
 
 	$("#rightmap").click(function () {
-		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "Selector", name: "nextspawn"}));
+		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "CharacterSelector", name: "nextspawn"}));
 	});
 
 	$(".nbutton").click(function (e) {
@@ -135,9 +135,9 @@ $(function () {
 			return
 		}
 		
-		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "Selector", name: "identity", args: {
-			firstName: $("#fname").val(),
-			lastName: $("#lname").val(),
+		$.post("https://ui-wrapper/post", JSON.stringify({identifier: "CharacterSelector", name: "identity", args: {
+			FirstName: $("#fname").val(),
+			LastName: $("#lname").val(),
 			dob: {
 				d: $("#day").val(),
 				m: $("#month").val(),
@@ -151,7 +151,7 @@ $(function () {
 		var item = event.data;
 		if (item.show) {
 			toggleDisplay(true);
-			$('.character').html('<h3>' + item.name + '</h3><p><b>Work:</b> ' + item.job + '</h3><p><b>group:</b> ' + item.group + '</p><p><b>Date of brith:</b> ' + item.dob + '</p><p><b>Gender:</b> ' + item.sex + '</p>');
+			$('.character').html('<h3>' + item.name + '</h3><p><b>Work:</b> ' + item.job + '</h3><p><b>Gang:</b> ' + item.gang + '</p><p><b>Date of brith:</b> ' + item.dob + '</p><p><b>Gender:</b> ' + item.sex + '</p>');
 			$(".spawn").html(item.spawn);
 		} else if (item.show == false) {
 			toggleDisplay(false);

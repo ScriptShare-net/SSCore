@@ -25,7 +25,7 @@ SS.Characters.Create = function(identifiers, source, characterID)
 
     self.FirstName = "Unknown" -- Firstname
     self.LastName = "Unknown" -- Last name
-    self.MetaData.name = self.firstname .. " " .. self.lastname -- First + Lastname
+    self.MetaData.name = self.FirstName .. " " .. self.LastName -- First + Lastname
     self.MetaData.pay = 0 -- Pay
     self.MetaData.coords = vector3(0,0,0) -- Player Coords
     self.MetaData.weight = 0 -- Player weight (how much they're holding)
@@ -339,4 +339,5 @@ SS.Characters.Create = function(identifiers, source, characterID)
     end
 
     SS.Characters.List[source] = self
+	SS.Alert("Created Character: "..source)
 end

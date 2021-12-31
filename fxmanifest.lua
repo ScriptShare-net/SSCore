@@ -43,10 +43,11 @@ client_scripts {
 
 files {
 	'modules/character_selector/index.html',
-	'modules/character_selector/f_script.html',
+	'modules/character_selector/f_script.js',
 }
 
 dependencies {
 	'oxmysql',
 	'ui-wrapper',
+	'bob74_ipl',
 }

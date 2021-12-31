@@ -20,7 +20,7 @@ local function createUser(identifiers, cb)
 			["@fivems"] = json.encode({identifiers.FiveM}),
 			["@discords"] = json.encode({identifiers.Discord}),
 			["@gta2s"] = json.encode({identifiers.GTA2}),
-			["@tokens"] = json.encode({identifiers.Tokens}),
+			["@tokens"] = json.encode(identifiers.Tokens),
 		}, function(rows)
 			cb(not (rows.affectedRows >= 1), not (result.affectedRows >= 1))
 		end)
@@ -42,17 +42,9 @@ end
 local function addIdentifiers(idtable, identifiers)
 	local identifierstable = idtable
 	for type, idtbl in pairs(idtable) do
-		if type ~= "Identifier" and type ~= "Tokens" and identifiers[string.sub(type, 1, -2)] then
+		if type ~= "Identifier" and identifiers[string.sub(type, 1, -2)] then
 			if not string.match(json.encode(idtable), identifiers[string.sub(type, 1, -2)]) then
-				identifierstable[type][#identifierstable[type] + 1] = identifiers[string.sub(type, 1, -2)]
-			end
-		elseif type == "Tokens" then
-			identifierstable.Tokens = json.decode(identifierstable.Tokens) or {}
-			for k, v in pairs(identifiers.Tokens) do
-				if not string.match(json.encode(idtable.Tokens), v) then
-					identifierstable.Tokens[k] = identifierstable.Tokens[k] or {}
-					identifierstable.Tokens[k][#identifierstable.Tokens[k] + 1] = v
-				end
+				table.insert(identifierstable[type], identifiers[string.sub(type, 1, -2)])
 			end
 		end
 	end
@@ -70,7 +62,7 @@ local function updateIdentifiers(identifiers, cb)
 				["@discords"] = idtable.Discords,
 				["@steams"] = idtable.Steams,
 				["@gtas"] = idtable.GTAs,
-				["@tokens"] = json.encode(idtable.Tokens),
+				["@tokens"] = idtable.Tokens,
 				["@lives"] = idtable.Lives,
 				["@xboxs"] = idtable.Xboxs,
 				["@ips"] = idtable.IPs,
