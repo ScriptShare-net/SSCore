@@ -68,7 +68,7 @@ if SS.Config.Skin then
 	end
 
 	SS.Skin.LoadSkin = function(skin, entity)
-		SS.Skin.ApplyModel(SS.Skin.DefaultModels[skin.sex], entity)
+		SS.Skin.ApplyModel(skin.model, entity)
 		SS.Skin.ApplySkin(skin.skin, entity)
 		SS.Skin.ApplyTattoos(skin.tattoos, entity)
 		SS.Skin.ApplyClothing(skin.clothing, entity)
@@ -165,7 +165,7 @@ if SS.Config.Skin then
 		local modelHash = GetHashKey(model)
 
 		if not IsModelValid(modelHash) then
-			SS.Alert("[skin] Model didn't exist! Model: "..modelHash)
+			SS.Alert("[skin] Model didn't exist! Model: "..modelHash .. " for model " .. model)
 			return false
 		end
 

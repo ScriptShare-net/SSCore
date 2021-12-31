@@ -30,7 +30,7 @@ if SS.Config.CharacterSelector then
 
 	local function spawnAmount()
 		local length = 0
-		for k,v in pairs(SS.Spawns) do
+		for k,v in pairs(SS.Config.CharacterSelectorSpawns) do
 			length = length + 1
 		end
 		return length
@@ -38,7 +38,7 @@ if SS.Config.CharacterSelector then
 
 	local function getSpawn(spawnID)
 		local i = 1
-		for k,v in pairs(SS.Spawns) do
+		for k,v in pairs(SS.Config.CharacterSelectorSpawns) do
 			if i == spawnID then
 				return k, v
 			end
@@ -153,7 +153,6 @@ if SS.Config.CharacterSelector then
 		RemoveAllPedWeapons(ped)
 		ClearPlayerWantedLevel(ped)
 		exports["ui-wrapper"]:uiEnableAll()
-		exports["ui-wrapper"]:setHotbar(true)
 	end
 
 	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "nextchar", function(data, cb)
@@ -221,7 +220,7 @@ if SS.Config.CharacterSelector then
 
 	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "confirmspawn", function(data, cb)
 		TriggerServerEvent("SS:Server:CreatePlayer", characterNumber)
-		spawnPlayer(SS.Spawns[data.spawn])
+		spawnPlayer(SS.Config.CharacterSelectorSpawns[data.spawn])
 		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
 			show = false,
 		})

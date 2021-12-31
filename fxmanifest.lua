@@ -38,6 +38,7 @@ client_scripts {
 	'core/cl_functions.lua',
 	'users/cl_init.lua',
 	'modules/skin/cl_init.lua',
+	'modules/character_selector/cl_config.lua',
 	'modules/character_selector/cl_init.lua',
 }
 
