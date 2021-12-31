@@ -1,5 +1,3 @@
-SS.Config.CharacterSelector = {}
-
 --Spawns
 SS.Config.CharacterSelectorSpawns = {
 	["Airport"] = vector4(-1030.08, -2731.66, 13.76, 15.86),

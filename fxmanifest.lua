@@ -33,6 +33,7 @@ server_scripts {
 }
 
 client_scripts {
+    '@menuv/menuv.lua',
 	'core/cl_init.lua',
 	'core/sh_config.lua',
 	'core/cl_functions.lua',
@@ -51,4 +52,6 @@ dependencies {
 	'oxmysql',
 	'ui-wrapper',
 	'bob74_ipl',
+	'menuv',
+	'fivem-appearance',
 }

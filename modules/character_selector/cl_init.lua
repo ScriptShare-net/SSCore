@@ -303,10 +303,43 @@ if SS.Config.CharacterSelector then
 	end
 
 	RegisterNetEvent("SS:Client:CreateSkin", function()
-		-- put the skin menu on screen and callback to this function
-		--exports["SSCore"]:skinEditor(true, function(newSkin)-- first val is first spawn, second is callback when saved
-		--	characters[characterNumber].skin = newSkin
-			loadCutScene()
-		--end)
+		local config = {
+			ped = true,
+			headBlend = true,
+			faceFeatures = true,
+			headOverlays = true,
+			components = true,
+			props = true,
+		}
+		
+		exports['fivem-appearance']:startPlayerCustomization(function(appearance)
+			if (appearance) then
+				characters[characterNumber].Skin = SS.Skin.GetSkin()
+				TriggerServerEvent("SS:Server:SetSkin", SS.Skin.GetSkin())
+				loadCutScene()
+			else
+				Wait(10)
+				TriggerEvent("SS:Client:CreateSkin")
+			end
+		end, config)
 	end)
 end
+
+RegisterCommand('customization', function()
+	local config = {
+		ped = true,
+		headBlend = true,
+		faceFeatures = true,
+		headOverlays = true,
+		components = true,
+		props = true,
+	}
+
+	exports['fivem-appearance']:startPlayerCustomization(function (appearance)
+		if (appearance) then
+			TriggerServerEvent("SS:Console:Print", json.encode(SS.Skin.GetSkin()))
+		else
+			print('Canceled')
+		end
+	end, config)
+end, false)

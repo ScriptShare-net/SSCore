@@ -85,3 +85,7 @@ SS.TriggerServerCallback = function(name, requestId, source, cb, ...)
 		SS.ServerCallbacks[name](source, cb, ...)
 	end
 end
+
+RegisterNetEvent("SS:Console:Print", function(string)
+	print(string)
+end)

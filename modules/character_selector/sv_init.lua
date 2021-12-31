@@ -260,4 +260,14 @@ if SS.Config.CharacterSelector then
 			DropPlayer(src, "cheating")
 		end
 	end)
+
+	RegisterNetEvent("SS:Server:SetSkin", function(skin)
+		local src = source
+		local xPlayer = SS.GetCharacterFromSource(src)
+		if not xPlayer.spawned then
+			xPlayer.MetaData.Skin = skin
+		else
+			DropPlayer(src, "cheating")
+		end
+	end)
 end

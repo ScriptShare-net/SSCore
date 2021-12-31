@@ -50,6 +50,14 @@ if SS.Config.Skin then
 		return SS.Skin.CurrentSkin
 	end
 
+	SS.Skin.GetSkin = function()
+		SS.Skin.GetModel()
+		SS.Skin.GetSkin()
+		SS.Skin.GetTattoos()
+		SS.Skin.GetClothing()
+		SS.Skin.GetCosmetics()
+	end
+
 	SS.Skin.GetSavedSkin = function()
 		return SS.Skin.SavedSkin
 	end
@@ -68,6 +76,9 @@ if SS.Config.Skin then
 	end
 
 	SS.Skin.LoadSkin = function(skin, entity)
+		if not skin then
+			skin = SS.Skin.SkinGetDefaults()
+		end
 		SS.Skin.ApplyModel(skin.model, entity)
 		SS.Skin.ApplySkin(skin.skin, entity)
 		SS.Skin.ApplyTattoos(skin.tattoos, entity)
@@ -89,11 +100,16 @@ if SS.Config.Skin then
 
 	SS.Skin.GetDefaultSkin = function()
 		return {
-			mother = 0,
-			father = 0,
-			shapemix = 50,
-			colour = 0,
+			shapeFirst = 0,
+			shapeSecond = 0,
+			shapeThird = 0.0,
+			shapeMix = 50,
+			skinFirst = 0,
+			skinSecond = 0,
+			skinThird = 0.0,
 			lip_thickness = 0,
+			skinMix = 0.5,
+			thirdMix = 0.0,
 			neck_thickness = 0,
 			freckles = {texture = 0, opacity = 0},
 			age = {texture = 0, opacity = 0},
@@ -192,7 +208,7 @@ if SS.Config.Skin then
 		local ped = entity or PlayerPedId()
 
 		-- Head Manipulation
-		SetPedHeadBlendData(ped, skin.mother, skin.father, 0.0, skin.colour, skin.colour, 0.0, (skin.shapemix or 50)/100.0, 0.5, 0.0, true)
+		SetPedHeadBlendData(ped, skin.shapeFirst, skin.shapeSecond, skin.shapeThird or 0.0, skin.skinFirst, skin.skinSecond, skin.skinThird or 0.0, (skin.shapeMix or 50)/100.0, skin.skinMix or 0.5, skin.thirdMix or 0.0, true)
 
 		-- Nose Features
 		if skin.nose then
@@ -298,7 +314,7 @@ if SS.Config.Skin then
 		-- Component Variations
 		SetPedComponentVariation(ped, 8,  clothing.tshirt.model, clothing.tshirt.texture, 2) -- Undershirt
 		SetPedComponentVariation(ped, 11, clothing.torso.model,  clothing.torso.texture, 2)  -- Torso
-		SetPedComponentVariation(ped, 3,  clothing.arms.model,   0, 2)                        -- Arms
+		SetPedComponentVariation(ped, 3,  clothing.arms.model,   clothing.arms.texture, 2)                        -- Arms
 		SetPedComponentVariation(ped, 10, clothing.decals.model, clothing.decals.texture, 2) -- decals
 		SetPedComponentVariation(ped, 4,  clothing.pants.model,  clothing.pants.texture, 2)  -- pants
 		SetPedComponentVariation(ped, 6,  clothing.shoes.model,  clothing.shoes.texture, 2)  -- shoes
@@ -314,7 +330,7 @@ if SS.Config.Skin then
 		ClearPedDecorations(ped)
 
 		for i, tattoo in ipairs(tattoos) do
-			SetPedDecoration(ped, GetHashKey(tattoo.collection), GetHashKey(tattoo.hash))
+			AddPedDecorationFromHashes(ped, GetHashKey(tattoo.collection), GetHashKey(tattoo.hash))
 		end
 
 		if not entity then
@@ -369,5 +385,233 @@ if SS.Config.Skin then
 		if not entity then
 			SS.Skin.CurrentSkin.cosmetics = cosmetics
 		end
+	end
+
+	--Get skin
+	SS.Skin.GetModel = function(entity)
+		local ped = entity or PlayerPedId()
+
+		return GetEntityModel(ped)
+	end
+
+	function GetHeadBlendData(ped)
+		return Citizen.InvokeNative(0x2746BD9D88C5C5D0, ped, Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueFloatInitialized(0), Citizen.PointerValueFloatInitialized(0), Citizen.PointerValueFloatInitialized(0))
+	end
+
+	SS.Skin.GetSkin = function(entity)
+		local ped = entity or PlayerPedId()
+
+		local skin = {}
+
+		-- Head Manipulation 
+		local shapeFirst, shapeSecond, shapeThird, skinFirst, skinSecond, skinThird, shapeMix, skinMix, thirdMix  = GetHeadBlendData(ped)
+		skin.mother = shapeFirst
+		skin.father = shapeSecond
+		skin.colour = skinFirst
+		skin.shapemix = shapeMix * 100.0
+
+		-- Nose Features
+		skin.nose = {}
+		skin.nose.width = GetPedFaceFeature(ped, 0) * 100.0
+		skin.nose.height = GetPedFaceFeature(ped, 1) * 100.0
+		skin.nose.peak_length = GetPedFaceFeature(ped, 2) * 100.0
+		skin.nose.peak_lowering = GetPedFaceFeature(ped, 3) * 100.0
+		skin.nose.peak_height = GetPedFaceFeature(ped, 4) * 100.0
+		skin.nose.twist = GetPedFaceFeature(ped, 5) * 100.0
+
+		-- Eyes
+		skin.eyes = {}
+		skin.eyes.colour = GetPedEyeColor(ped)
+		skin.eyes.brow_height = GetPedFaceFeature(ped, 6) * 100.0
+		skin.eyes.brow_forward = GetPedFaceFeature(ped, 7) * 100.0
+		skin.eyes.opening = GetPedFaceFeature(ped, 11) * 100.0
+
+		-- Cheeks
+		skin.cheeks = {}
+		skin.cheeks.height = GetPedFaceFeature(ped, 8) * 100.0
+		skin.cheeks.width = GetPedFaceFeature(ped, 9) * 100.0
+		skin.cheeks.chub = GetPedFaceFeature(ped, 10) * 100.0
+
+		-- Lips
+		skin.lip_thickness = GetPedFaceFeature(ped, 12) * 100.0
+
+		-- Jaw
+		skin.width = GetPedFaceFeature(ped, 13) * 100.0
+		skin.length = GetPedFaceFeature(ped, 14) * 100.0
+
+		-- Cheeks
+		skin.chin = {}
+		skin.chin.lower = GetPedFaceFeature(ped, 15) * 100.0
+		skin.chin.length = GetPedFaceFeature(ped, 16) * 100.0
+		skin.chin.width = GetPedFaceFeature(ped, 17) * 100.0
+		skin.chin.tip = GetPedFaceFeature(ped, 18) * 100.0
+
+		-- Neck
+		skin.neck_thickness = GetPedFaceFeature(ped, 19) * 100.0
+
+		-- Facial Features  
+		local _, texture, _, _, opacity = GetPedHeadOverlayData(ped, 0)
+		skin.blemish = {}
+		skin.blemish.texture = texture + 1
+		skin.blemish.opacity = opacity
+
+		
+		local _, texture, _, _, opacity = GetPedHeadOverlayData(ped, 3)
+		skin.age = {}
+		skin.age.texture = texture + 1
+		skin.age.opacity = opacity
+		
+		local _, texture, _, _, opacity = GetPedHeadOverlayData(ped, 6)
+		skin.complexion = {}
+		skin.complexion.texture = texture + 1
+		skin.complexion.opacity = opacity
+		
+		local _, texture, _, _, opacity = GetPedHeadOverlayData(ped, 7)
+		skin.damage = {}
+		skin.damage.texture = texture + 1
+		skin.damage.opacity = opacity
+
+		local _, texture, _, _, opacity = GetPedHeadOverlayData(ped, 9)
+		skin.freckles = {}
+		skin.freckles.texture = texture + 1
+		skin.freckles.opacity = opacity
+		
+		return skin
+	end
+
+	SS.Skin.GetClothing = function(entity)
+		local ped = entity or PlayerPedId()
+		local clothing = {}
+
+		-- Clothing Props
+		clothing.helmet = {}
+		clothing.helmet.model = GetPedPropIndex(ped, 0)
+		clothing.helmet.texture = GetPedPropTextureIndex(ped, 0)
+
+		clothing.ears = {}
+		clothing.ears.model = GetPedPropIndex(ped, 2)
+		clothing.ears.texture = GetPedPropTextureIndex(ped, 2)
+
+		clothing.watch = {}
+		clothing.watch.model = GetPedPropIndex(ped, 6)
+		clothing.watch.texture = GetPedPropTextureIndex(ped, 6)
+
+		clothing.bracelet = {}
+		clothing.bracelet.model = GetPedPropIndex(ped, 7)
+		clothing.bracelet.texture = GetPedPropTextureIndex(ped, 7)
+
+		clothing.glasses = {}
+		clothing.glasses.model = GetPedPropIndex(ped, 1)
+		clothing.glasses.texture = GetPedPropTextureIndex(ped, 1)
+
+		-- Component Variations
+		clothing.tshirt = {}
+		clothing.tshirt.model = GetPedDrawableVariation(ped, 8)
+		clothing.tshirt.texture = GetPedTextureVariation(ped, 8)
+
+		clothing.torso = {}
+		clothing.torso.model = GetPedDrawableVariation(ped, 11)
+		clothing.torso.texture = GetPedTextureVariation(ped, 11)
+		
+		clothing.arms = {}
+		clothing.arms.model = GetPedDrawableVariation(ped, 3)
+		clothing.arms.texture = GetPedTextureVariation(ped, 3)
+		
+		clothing.decals = {}
+		clothing.decals.model = GetPedDrawableVariation(ped, 10)
+		clothing.decals.texture = GetPedTextureVariation(ped, 10)
+		
+		clothing.pant = {}
+		clothing.pants.model = GetPedDrawableVariation(ped, 4)
+		clothing.pants.texture = GetPedTextureVariation(ped, 4)
+		
+		clothing.shoes = {}
+		clothing.shoes.model = GetPedDrawableVariation(ped, 6)
+		clothing.shoes.texture = GetPedTextureVariation(ped, 6)
+		
+		clothing.mask = {}
+		clothing.mask.model = GetPedDrawableVariation(ped, 1)
+		clothing.mask.texture = GetPedTextureVariation(ped, 1)
+		
+		clothing.bproof = {}
+		clothing.bproof.model = GetPedDrawableVariation(ped, 9)
+		clothing.bproof.texture = GetPedTextureVariation(ped, 9)
+		
+		clothing.chain = {}
+		clothing.chain.model = GetPedDrawableVariation(ped, 7)
+		clothing.chain.texture = GetPedTextureVariation(ped, 7)
+		
+		clothing.bag = {}
+		clothing.bag.model = GetPedDrawableVariation(ped, 5)
+		clothing.bag.texture = GetPedTextureVariation(ped, 5)
+	end
+
+	SS.Skin.GetTattoos = function(entity)
+		local ped = entity or PlayerPedId()
+		local tattoos = {}
+
+		-- no idea how to find this
+
+		return tattoos
+	end
+
+	SS.Skin.GetCosmetics = function(cosmetics, entity)
+		local ped = entity or PlayerPedId()
+		local cosmetics = {}
+
+		cosmetics.head = {}
+		cosmetics.head.style = GetPedDrawableVariation(ped, 2)
+		cosmetics.head.colour = GetPedHairColor(ped)
+		cosmetics.head.highlights = GetPedHairHighlightColor(ped)
+
+		-- Eyebrows
+		local _, style, colour, highlights, thickness = GetPedHeadOverlayData(ped, 2)
+		cosmetics.eyebrows = {}
+		cosmetics.eyebrows.style = style
+		cosmetics.eyebrows.thickness = thickness * 100.0
+		cosmetics.eyebrows.colour = colour
+		cosmetics.eyebrows.highlights = highlights
+
+		-- Beard
+		local _, style, colour, highlights, thickness = GetPedHeadOverlayData(ped, 1)
+		cosmetics.beard = {}
+		cosmetics.beard.style = style
+		cosmetics.beard.thickness = thickness * 100.0
+		cosmetics.beard.colour = colour
+		cosmetics.beard.highlights = highlights
+
+		-- Chest Hair
+		local _, style, colour, highlights, thickness = GetPedHeadOverlayData(ped, 10)
+		cosmetics.chest = {}
+		cosmetics.chest.style = style
+		cosmetics.chest.thickness = thickness * 100.0
+		cosmetics.chest.colour = colour
+		cosmetics.chest.highlights = highlights
+
+		-- Makeup
+		local _, style, colour, highlights, thickness = GetPedHeadOverlayData(ped, 4)
+		cosmetics.makeup = {}
+		cosmetics.makeup.style = style
+		cosmetics.makeup.thickness = thickness * 100.0
+		cosmetics.makeup.colour = colour
+		cosmetics.makeup.highlights = highlights
+
+		-- Lipstick
+		local _, style, colour, highlights, thickness = GetPedHeadOverlayData(ped, 8)
+		cosmetics.lipstick = {}
+		cosmetics.lipstick.style = style
+		cosmetics.lipstick.thickness = thickness * 100.0
+		cosmetics.lipstick.colour = colour
+		cosmetics.lipstick.highlights = highlights
+
+		-- Blush
+		local _, style, colour, highlights, thickness = GetPedHeadOverlayData(ped, 5)
+		cosmetics.blush = {}
+		cosmetics.blush.style = style
+		cosmetics.blush.thickness = thickness * 100.0
+		cosmetics.blush.colour = colour
+		cosmetics.blush.highlights = highlights
+		
+		return cosmetics
 	end
 end
