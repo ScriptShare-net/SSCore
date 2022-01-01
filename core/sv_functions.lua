@@ -51,7 +51,9 @@ SS.GetPlayerIdentifiers = function(source, cb)
 end
 
 SS.Alert = function(string)
-	print("[^2SSCore^0] " .. string)
+	if SS.Config.Alert then
+		print("[^2SSCore^0] " .. string)
+	end
 end
 
 SS.GetCharacterFromSource = function(source)
@@ -86,6 +88,8 @@ SS.TriggerServerCallback = function(name, requestId, source, cb, ...)
 	end
 end
 
-RegisterNetEvent("SS:Console:Print", function(string)
-	print(string)
-end)
+if SS.Config.ConsolePrint then
+	RegisterNetEvent("SS:Console:Print", function(string)
+		print(string)
+	end)
+end
