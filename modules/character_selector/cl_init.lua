@@ -265,6 +265,7 @@ if SS.Config.CharacterSelector then
 				SS.TriggerServerCallback("SS:Server:GetRandomFemale", function(skin, cosmetics, clothing, tattoos)
 					local femaletable = {}
 					femaletable.skin = skin or SS.Skin.GetDefaultSkin()
+					femaletable.model = "mp_f_freemode_01"
 					femaletable.sex = 1
 					femaletable.cosmetics = cosmetics or SS.Skin.GetDefaultCosmetics()
 					femaletable.clothing = clothing or SS.Skin.GetDefaultClothing(femaletable.sex)
@@ -276,6 +277,7 @@ if SS.Config.CharacterSelector then
 				SS.TriggerServerCallback("SS:Server:GetRandomMale", function(skin, cosmetics, clothing, tattoos)
 					local maletable = {}
 					maletable.skin = skin or SS.Skin.GetDefaultSkin()
+					maletable.model = "mp_m_freemode_01"
 					maletable.sex = 0
 					maletable.cosmetics = cosmetics or SS.Skin.GetDefaultCosmetics()
 					maletable.clothing = clothing or SS.Skin.GetDefaultClothing(maletable.sex)
@@ -314,8 +316,8 @@ if SS.Config.CharacterSelector then
 		
 		exports['fivem-appearance']:startPlayerCustomization(function(appearance)
 			if (appearance) then
-				characters[characterNumber].Skin = SS.Skin.GetSkin()
-				TriggerServerEvent("SS:Server:SetSkin", SS.Skin.GetSkin())
+				characters[characterNumber].Skin = SS.Skin.Get()
+				TriggerServerEvent("SS:Server:SetSkin", SS.Skin.Get())
 				loadCutScene()
 			else
 				Wait(10)
@@ -337,7 +339,7 @@ RegisterCommand('customization', function()
 
 	exports['fivem-appearance']:startPlayerCustomization(function (appearance)
 		if (appearance) then
-			TriggerServerEvent("SS:Console:Print", json.encode(SS.Skin.GetSkin()))
+			TriggerServerEvent("SS:Console:Print", json.encode(SS.Skin.Get()))
 		else
 			print('Canceled')
 		end

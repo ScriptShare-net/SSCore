@@ -50,12 +50,18 @@ if SS.Config.Skin then
 		return SS.Skin.CurrentSkin
 	end
 
-	SS.Skin.GetSkin = function()
-		SS.Skin.GetModel()
-		SS.Skin.GetSkin()
-		SS.Skin.GetTattoos()
-		SS.Skin.GetClothing()
-		SS.Skin.GetCosmetics()
+	SS.Skin.Get = function()
+		local skin = {}
+		skin.model = SS.Skin.GetModel()
+		skin.skin = SS.Skin.GetSkin()
+		skin.tattoos = SS.Skin.GetTattoos()
+		skin.clothing = SS.Skin.GetClothing()
+		skin.cosmetics = SS.Skin.GetCosmetics()
+		skin.sex = 0
+		if skin.model == "mp_m_freemode_01" then
+			skin.sex = 1
+		end
+		return skin
 	end
 
 	SS.Skin.GetSavedSkin = function()
@@ -405,10 +411,14 @@ if SS.Config.Skin then
 
 		-- Head Manipulation 
 		local shapeFirst, shapeSecond, shapeThird, skinFirst, skinSecond, skinThird, shapeMix, skinMix, thirdMix  = GetHeadBlendData(ped)
-		skin.mother = shapeFirst
-		skin.father = shapeSecond
-		skin.colour = skinFirst
-		skin.shapemix = shapeMix * 100.0
+		skin.shapeFirst = shapeFirst
+		skin.shapeSecond = shapeSecond
+		skin.shapeThird = shapeThird
+		skin.skinFirst = skinFirst
+		skin.skinSecond = skinSecond
+		skin.skinThird = skinThird
+		skin.shapeMix = shapeMix * 100.0
+		skin.thirdMix = thirdMix
 
 		-- Nose Features
 		skin.nose = {}
@@ -521,7 +531,7 @@ if SS.Config.Skin then
 		clothing.decals.model = GetPedDrawableVariation(ped, 10)
 		clothing.decals.texture = GetPedTextureVariation(ped, 10)
 		
-		clothing.pant = {}
+		clothing.pants = {}
 		clothing.pants.model = GetPedDrawableVariation(ped, 4)
 		clothing.pants.texture = GetPedTextureVariation(ped, 4)
 		
@@ -544,6 +554,8 @@ if SS.Config.Skin then
 		clothing.bag = {}
 		clothing.bag.model = GetPedDrawableVariation(ped, 5)
 		clothing.bag.texture = GetPedTextureVariation(ped, 5)
+
+		return clothing
 	end
 
 	SS.Skin.GetTattoos = function(entity)
