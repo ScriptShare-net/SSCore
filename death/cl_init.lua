@@ -1,4 +1,4 @@
-AddEventHandler('SSCore:onPlayerDeath', function(data)
+AddEventHandler('SSCore:Client:onPlayerDeath', function(data)
     if data == nil then return end
 end)
 
@@ -31,5 +31,5 @@ function playerKilled(killedBy)
     local plyCoords = GetEntityCoords(plyPed)
 
     local table = {coords = plyCoords, killedBy = killedBy}
-    TriggerEvent('SSCore:onPlayerDeath', table)
+    TriggerEvent('SSCore:Client:onPlayerDeath', table)
 end
