@@ -3,7 +3,9 @@ SS.Entity.Buckets = {} -- Table for Entity buckets
 
 AddEventHandler('playerDropped', function()
     local src = source
-    if not src then return end 
+    if not src then return end
+    local t = SS.GetPlayerIdentifiers(src)
+    local identifier = t.Identifier
     SS.Player.Buckets[t.Identifier] = nil
 end
 
