@@ -30,6 +30,7 @@ server_scripts {
 	'modules/skin/sv_init.lua',
 	'modules/character_selector/sv_config.lua',
 	'modules/character_selector/sv_init.lua',
+	'modules/routing/sv_init.lua'
 }
 
 client_scripts {
