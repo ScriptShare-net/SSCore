@@ -1,3 +1,4 @@
+local SSCore = exports["SSCore"]
 local next = next
 local slotsFilled = 0
 local Queue = {}

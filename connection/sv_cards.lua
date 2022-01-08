@@ -1,32 +1,34 @@
-SS.Connection.Cards = {}
+local SSCore = exports["SSCore"]
 
-SS.Connection.Cards.Whitelist = {
-    ["type"] = "AdaptiveCard",
-    ["body"] = {
-        {
-            ["type"] = "TextBlock",
-            ["size"] = "Medium",
-            ["weight"] = "Bolder",
-            ["text"] = "Welcome to " .. SS.Config.ServerName
+exports("GetWhitelistCard", function()
+    return {
+        ["type"] = "AdaptiveCard",
+        ["body"] = {
+            {
+                ["type"] = "TextBlock",
+                ["size"] = "Medium",
+                ["weight"] = "Bolder",
+                ["text"] = "Welcome to " .. SSCore:GetConfigValue("ServerName")
+            },
+            {
+                ["type"] = "TextBlock",
+                ["text"] = SSCore:GetConfigValue("WhitelistMessage"),
+                ["wrap"] = true
+            }
         },
-        {
-            ["type"] = "TextBlock",
-            ["text"] = SS.Config.Connection.WhitelistMessage,
-            ["wrap"] = true
-        }
-    },
-    ["actions"] = {
-        {
-            ["type"] = "Action.OpenUrl",
-            ["title"] = "Join Discord",
-            ["url"] = SS.Config.Discord
-        }
-    },
-    ["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
-    ["version"] = "1.3"
-}
+        ["actions"] = {
+            {
+                ["type"] = "Action.OpenUrl",
+                ["title"] = "Join Discord",
+                ["url"] = SSCore:GetConfigValue("DiscordLink")
+            }
+        },
+        ["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
+        ["version"] = "1.3"
+    }
+end)
 
-SS.Connection.Cards.Ban = function(reason, unbanTime, banLength, bannedBy, accountId)
+exports("GetBanCard", function(reason, unbanTime, banLength, bannedBy, accountId)
     return {
         ["type"] = "AdaptiveCard",
         ["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
@@ -34,7 +36,7 @@ SS.Connection.Cards.Ban = function(reason, unbanTime, banLength, bannedBy, accou
         ["body"] = {
             {
                 ["type"] = "Image",
-                ["url"] = SS.Config.Connection.Banner
+                ["url"] = SSCore:GetConfigValue("ServerBanner")
             },
             {
                 ["type"] = "TextBlock",
@@ -189,38 +191,38 @@ SS.Connection.Cards.Ban = function(reason, unbanTime, banLength, bannedBy, accou
                     {
                         ["type"] = "Action.OpenUrl",
                         ["title"] = "Ban Appeal",
-                        ["url"] = SS.Config.Connection.BanAppeal
+                        ["url"] = SSCore:GetConfigValue("BanAppealLink")
                     }
                 }
             }
         }
     }
-end
+end)
 
-SS.Connection.Cards.Queue = function(currentQueue, lengthQueue)
+exports("GetQueueCard", function(currentQueue, lengthQueue)
     return {
 		["type"] = "AdaptiveCard",
 		["body"] = {
 			{
 				["type"] = "Image",
-				["url"] = SS.Config.Connection.Banner
+				["url"] = SSCore:GetConfigValue("ServerBanner")
 			},
 			{
 				["type"] = "TextBlock",
 				["size"] = "Medium",
 				["weight"] = "Bolder",
-				["text"] = SS.Config.ServerName,
+				["text"] = SSCore:GetConfigValue("ServerName"),
 				["horizontalAlignment"] = "Center"
 			},
 			{
 				["type"] = "TextBlock",
-				["text"] = "Welcome to " .. SS.Config.ServerName .. ".",
+				["text"] = "Welcome to " .. SSCore:GetConfigValue("ServerName") .. ".",
 				["wrap"] = true,
 				["horizontalAlignment"] = "Center"
 			},
 			{
 				["type"] = "TextBlock",
-				["text"] = SS.Config.Connection.QueueMessage,
+				["text"] = SSCore:GetConfigValue("QueueMessage"),
 				["wrap"] = true,
 				["horizontalAlignment"] = "Center"
 			},
@@ -305,7 +307,7 @@ SS.Connection.Cards.Queue = function(currentQueue, lengthQueue)
 									{
 										["type"] = "Action.OpenUrl",
 										["title"] = "Forum",
-										["url"] = SS.Config.Forum
+										["url"] = SSCore:GetConfigValue("ForumLink")
 									}
 								}
 							}
@@ -321,7 +323,7 @@ SS.Connection.Cards.Queue = function(currentQueue, lengthQueue)
 									{
 										["type"] = "Action.OpenUrl",
 										["title"] = "Discord",
-										["url"] = SS.Config.Discord
+										["url"] = SSCore:GetConfigValue("DiscordLink")
 									}
 								}
 							}
@@ -334,4 +336,4 @@ SS.Connection.Cards.Queue = function(currentQueue, lengthQueue)
 		["$schema"] = "http://adaptivecards.io/schemas/adaptive-card.json",
 		["version"] = "1.3"
 	}
-end
+end)

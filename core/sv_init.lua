@@ -1,19 +1,9 @@
-SS = {}
-SS.Config = {}
-SS.Connection = {}
-SS.Bans = {}
-SS.Groups = {}
-SS.Users = {}
-SS.Characters = {}
-SS.Vehicles = {}
-SS.Gangs = {}
-SS.Businesses = {}
-SS.Entities = {}
+local Config = {}
 
-AddEventHandler('SS:sharedObject', function(cb)
-	cb(SS)
+exports("SetConfigValue", function(name, value)
+	Config[name] = value
 end)
 
-exports("sharedObject", function()
-	return SS
+exports("GetConfigValue", function(name)
+	return Config[name]
 end)
