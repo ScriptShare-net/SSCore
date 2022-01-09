@@ -26,7 +26,7 @@ CreateThread(function()
     end 
 end)
 
-function playerKilled(killedBy) 
+local function playerKilled(killedBy) 
     local plyPed = PlayerPedId()
     local plyCoords = GetEntityCoords(plyPed)
 

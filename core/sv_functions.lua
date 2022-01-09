@@ -1,4 +1,6 @@
-SS.GetPlayerIdentifiers = function(source, cb)
+local SSCore = exports["SSCore"]
+
+exports("GetUserIdentifiers", function(source, cb)
     local Identifiers = {
         ["Source"] = source,
         ["GTA"] = "nil",
@@ -34,7 +36,7 @@ SS.GetPlayerIdentifiers = function(source, cb)
         end
     end
     
-    Identifiers.Identifier = Identifiers[SS.Config.DefaultIdentifier]
+    Identifiers.Identifier = Identifiers[SSCore:GetConfigValue("DefaultIdentifier")]
 
     for i = 0, GetNumPlayerTokens(source) do
 		table.insert(Identifiers.Tokens, GetPlayerToken(source, i))
@@ -48,47 +50,43 @@ SS.GetPlayerIdentifiers = function(source, cb)
         end
 		cb(Identifiers)
     end)
-end
+end)
 
-SS.Alert = function(string)
-	if SS.Config.Alert then
+exports("Alert", function(string)
+	if SSCore:GetConfigValue("Alert") then
 		print("[^2SSCore^0] " .. string)
 	end
-end
+end)
 
-SS.GetCharacterFromSource = function(source)
-	return SS.Characters.List[source]
-end
-
-SS.GetPermIDFromIdentifier = function(identifier)
-	for k, v in pairs(SS.Users.List) do
+exports("GetPermIDFromIdentifier", function(identifier)
+	for k, v in pairs(SSCore:GetUsers()) do
 		if v.Identifier == identifier then
 			return v.Identifiers.PermID
 		end
 	end
-end
+end)
 
-SS.ServerCallbacks = {}
+local ServerCallbacks = {}
 
 RegisterServerEvent("SS:Server:Callback", function(name, requestId, ...)
 	local src = source
 
-	SS.TriggerServerCallback(name, requestId, src, function(...)
+	SSCore:TriggerServerCallback(name, requestId, src, function(...)
 		TriggerClientEvent("SS:Client:Callback", src, requestId, ...)
 	end, ...)
 end)
 
-SS.RegisterServerCallback = function(name, cb)
-	SS.ServerCallbacks[name] = cb
-end
+exports("RegisterServerCallback", function(name, cb)
+	ServerCallbacks[name] = cb
+end)
 
-SS.TriggerServerCallback = function(name, requestId, source, cb, ...)
-	if SS.ServerCallbacks[name] then
-		SS.ServerCallbacks[name](source, cb, ...)
+exports("TriggerServerCallback", function(name, requestId, source, cb, ...)
+	if ServerCallbacks[name] then
+		ServerCallbacks[name](source, cb, ...)
 	end
-end
+end)
 
-if SS.Config.ConsolePrint then
+if SSCore:GetConfigValue("ConsolePrint") then
 	RegisterNetEvent("SS:Console:Print", function(string)
 		print(string)
 	end)

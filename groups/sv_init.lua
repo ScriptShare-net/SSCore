@@ -1,10 +1,18 @@
-SS.Groups.List = {}
+local Groups = {}
 
-Citizen.CreateThread(function()
+exports("GetGroups", function()
+	return Groups
+end)
+
+exports("GetGroupFromName", function(name)
+	return Groups[Name]
+end)
+
+CreateThread(function()
     MySQL.query("SELECT * FROM Groups", {}, function(grouptable)
         if grouptable then
             for k,v in pairs(grouptable) do
-                SS.Groups.List[v.Name] = v
+                Groups[v.Name] = v
             end
         end
     end)
