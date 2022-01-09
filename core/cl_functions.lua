@@ -1,8 +1,10 @@
-SS.Alert = function(string)
-	print("[^2SSCore^0] " .. string)
-end
+local SSCore = exports["SSCore"]
 
-SS.ServerCallbacks = {}
+exports("Alert", function(string)
+	print("[^2SSCore^0] " .. string)
+end)
+
+local ServerCallbacks = {}
 
 local function nextFree(tbl)
 	local num = 1
@@ -15,17 +17,17 @@ local function nextFree(tbl)
 	return num
 end
 
-SS.TriggerServerCallback = function(name, cb, ...)
-	local requestId = nextFree(SS.ServerCallbacks)
-	SS.ServerCallbacks[requestId] = cb
+exports("TriggerServerCallback", function(name, cb, ...)
+	local requestId = nextFree(ServerCallbacks)
+	ServerCallbacks[requestId] = cb
 	TriggerServerEvent("SS:Server:Callback", name, requestId, ...)
-end
-
-RegisterNetEvent("SS:Client:Callback", function(requestId, ...)
-	SS.ServerCallbacks[requestId](...)
-	SS.ServerCallbacks[requestId] = nil
 end)
 
-RegisterNetEvent("SS:Client:PlayerLoaded", function(playerdata)
-	SS.player = playerdata
+RegisterNetEvent("SS:Client:Callback", function(requestId, ...)
+	ServerCallbacks[requestId](...)
+	ServerCallbacks[requestId] = nil
+end)
+
+RegisterNetEvent("SS:Client:CharacterLoaded", function(characterdata)
+	SSCore:SetCharacterData(characterdata)
 end)

@@ -80,7 +80,7 @@ end
 
 local function isIdentifiersBanned(identifiers)
 	local banList = {}
-	for identifier, player in pairs(SS.Bans.List) do
+	for identifier, player in pairs(SSCore:GetBans()) do
 		for type, idtable in pairs(identifiers) do
 			if findDuplicateIdentifiers(idtable, player) then
 				banList[identifier] = player
@@ -113,7 +113,7 @@ local function isBanned(identifier, cb)
 						["@reason"] = "Attempting to ban evade",
 						["@bannedBy"] = "Ban System"
 					})
-					SS.Bans.List[bannedIdentifier] = {
+					SSCore:GetBans()[bannedIdentifier] = {
 						identifier = bannedIdentifier,
 						identifiers = bannedIdentifiers,
 						time = 0,
@@ -124,14 +124,14 @@ local function isBanned(identifier, cb)
 			end
 			local unbanTime
 			local banLength
-			if SS.Bans.List[identifier].time == 0 then
+			if SSCore:GetBans()[identifier].time == 0 then
 				unbanTime = "Never"
 				banLength = "Forever"
 			else
-				unbanTime = os.date('%H:%M:%S %d-%m-%y', SS.Bans.List[identifier].time + (SS.TimeZone * 60 * 60))
-				banLength = SS.Bans.List[identifier].time - os.time()
+				unbanTime = os.date('%H:%M:%S %d-%m-%y', SSCore:GetBans()[identifier].time + (SS.TimeZone * 60 * 60))
+				banLength = SSCore:GetBans()[identifier].time - os.time()
 			end
-			cb(identifiersBanned, SS.Connection.Cards.Ban(SS.Bans.List[identifier].reason, unbanTime, banLength, SS.Bans.List[identifier].bannedBy, identifiers.PermID))
+			cb(identifiersBanned, SSCore:GetBanCard(SSCore:GetBans()[identifier].reason, unbanTime, banLength, SSCore:GetBans()[identifier].bannedBy, identifiers.PermID))
 			return
 		end
 	end)
@@ -144,11 +144,11 @@ local function getRank(identifier, cb)
 		["@identifier"] = identifier
 	}, function(groups)
 		for _, name in pairs(groups) do
-			for name2, groupdata in pairs(SS.Groups.List) do
+			for name2, groupdata in pairs(SSCore:GetGroups()) do
 				if name == name2 then
 					if highestRank then
-						if SS.Groups.List[highestRank] then
-							if SS.Groups.List[highestRank] > groupdata.Priority then
+						if SSCore:GetGroups()[highestRank] then
+							if SSCore:GetGroups()[highestRank] > groupdata.Priority then
 								highestRank = name2
 							end
 						end
@@ -202,10 +202,10 @@ end
 local function removeFromQueue(identifier)
 	local _, _, queue, pos = positionInQueue(identifier)
 	local rank
-	if not SS.Groups.List[queue] then
+	if not SSCore:GetGroups()[queue] then
 		rank = 10000
 	else
-		rank = SS.Groups.List[queue].Priority
+		rank = SSCore:GetGroups()[queue].Priority
 	end
 	for i = pos + 1, #Queue[rank], 1 do
 		Queue[rank][i - 1] = Queue[rank][i]
@@ -219,10 +219,10 @@ end
 
 local function addToQueue(identifier, rank, deferrals)
 	local queue
-	if not SS.Groups.List[rank] then
+	if not SSCore:GetGroups()[rank] then
 		queue = 10000
 	else
-		queue = SS.Groups.List[rank].Priority
+		queue = SSCore:GetGroups()[rank].Priority
 	end
 	Queue[queue] = Queue[queue] or {}
 	local position = #Queue[queue] + 1
@@ -240,12 +240,12 @@ local function connectPlayer(identifier, deferrals, noSlot)
 	if inQueue(identifier) then
 		removeFromQueue(identifier)
 	end
-	SS.Users.Create(identifier, srcs[identifier])
+	SSCore:CreateUser(identifier, srcs[identifier])
 end
 
 local function updateQueue(identifier)
 	local currentQueue, lengthQueue, _, _ = positionInQueue(identifier)
-	deferralsList[identifier].presentCard(SS.Connection.Cards.Queue(currentQueue, lengthQueue), function(data, rawData) end)
+	deferralsList[identifier].presentCard(SSCore:GetQueueCard(currentQueue, lengthQueue), function(data, rawData) end)
 end
 
 local function startConnection(identifiers, deferrals)
@@ -272,7 +272,7 @@ local function startConnection(identifiers, deferrals)
 					return
 				end
 
-				if SS.Groups.List[highestRank] == 0 then
+				if SSCore:GetGroups()[highestRank] == 0 then
 					deferrals.update("Connecting.")
 					connectPlayer(identifiers.Identifier, deferrals, true)
 					return
@@ -291,7 +291,7 @@ AddEventHandler('playerConnecting', function(name, setReason, deferrals)
     local src = source
 
 	deferrals.update("Checking Identifiers.")
-    SS.GetPlayerIdentifiers(src, function(identifiers)
+    SSCore:GetUserIdentifiers(src, function(identifiers)
 		srcs[identifiers.Identifier] = src
 		if identifiers.PermID then
 			deferrals.update("Found Identifiers. Starting Connection.")
@@ -321,7 +321,7 @@ CreateThread(function()
 	while true do
 		Wait(500)
 		if getFirstInQueue() then
-			if slotsFilled < SS.Config.Connection.Slots then
+			if slotsFilled < SSCore:GetConfigValue("ServerSlots") then
 				connectPlayer(getFirstInQueue(), deferralsList[getFirstInQueue()], false)
 			else
 				Wait(2000)
@@ -335,7 +335,7 @@ CreateThread(function()
 	end
 end)
 
-if SS.Config.Connection.Commands then
+if SSCore:GetConfigValue("ConnectionCommands") then
 	RegisterCommand("Skip_Player", function(r, args, s)
 		if args[1] then
 			connectPlayer(args[1], deferralsList[args[1]], false)
