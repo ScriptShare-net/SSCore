@@ -27,6 +27,7 @@ server_scripts {
     'gangs/sv_class.lua',
     'businesses/sv_init.lua',
     'businesses/sv_class.lua',
+	'modules/skin/sh_config.lua',
 	'modules/skin/sv_init.lua',
 	'modules/character_selector/sv_config.lua',
 	'modules/character_selector/sv_init.lua',
@@ -40,10 +41,12 @@ client_scripts {
 	'core/cl_functions.lua',
 	'users/cl_init.lua',
 	'characters/cl_init.lua',
+	'death/cl_init.lua',
+	'modules/skin/sh_config.lua',
 	'modules/skin/cl_init.lua',
 	'modules/character_selector/cl_config.lua',
 	'modules/character_selector/cl_init.lua',
-	'death/cl_init.lua',
+	'modules/teleport/cl_init.lua'
 }
 
 files {

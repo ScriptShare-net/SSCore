@@ -1,5 +1,5 @@
 if SS.Config.CharacterSelector then
-	SS.Alert("Character CharacterSelector - Enabled")
+	exports['SSCore']:Alert("Character CharacterSelector - Enabled")
 	
 	SS.CharacterSelector = {}
 	SS.CharacterSelector.Ranks = {}
@@ -180,7 +180,7 @@ if SS.Config.CharacterSelector then
 	end
 
 	RegisterNetEvent("SS:Server:ClientLoaded", function(src)
-		SS.Alert("Client Loaded: " .. src)
+		exports['SSCore']:Alert("Client Loaded: " .. src)
 		if not SS.GetCharacterFromSource(src) then
 			SS.GetPlayerIdentifiers(src, function(identifiers)
 				SS.CharacterSelector.Initiate(identifiers.Identifier, src)
@@ -207,7 +207,7 @@ if SS.Config.CharacterSelector then
 		end)
 	end)
 
-	SS.RegisterServerCallback("SS:Server:GetRandomFemale", function(source, cb)
+	exports['SSCore']:RegisterServerCallback("SS:Server:GetRandomFemale", function(source, cb)
 		local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
 		MySQL.query("SELECT MetaData FROM Characters WHERE LOCATE('mp_f_freemode_01', MetaData)", {}, function(result)
 			local characternum
@@ -224,7 +224,7 @@ if SS.Config.CharacterSelector then
 		end)
 	end)
 
-	SS.RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
+	exports['SSCore']:RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
 		local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
 		MySQL.query("SELECT * FROM characters WHERE LOCATE('mp_m_freemode_01', MetaData)", {}, function(result)
 			local characternum
@@ -254,7 +254,7 @@ if SS.Config.CharacterSelector then
 
 	RegisterNetEvent("SS:Server:SpawningPlayer", function()
 		local src = source
-		local xPlayer = SS.GetCharacterFromSource(src)
+		local xPlayer = exports['SSCore']:GetCharacterFromSource(src)
 		if not xPlayer.spawned then
 			xPlayer.spawned = true
 			TriggerEvent("SS:Server:CharacterSelected", src, charID)
@@ -266,7 +266,7 @@ if SS.Config.CharacterSelector then
 
 	RegisterNetEvent("SS:Server:SetSkin", function(skin)
 		local src = source
-		local xPlayer = SS.GetCharacterFromSource(src)
+		local xPlayer = exports['SSCore']:GetCharacterFromSource(src)
 		if not xPlayer.spawned then
 			xPlayer.MetaData.Skin = skin
 		else

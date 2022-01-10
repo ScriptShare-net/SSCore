@@ -29,7 +29,7 @@ exports("BanPlayer", function(source, time, reason, banner)
         reason = reason,
         bannedBy = banner
     }
-end
+end)
 
 CreateThread(function()
     MySQL.query("SELECT * FROM Bans", {}, function(bantable)
