@@ -9,23 +9,23 @@ AddEventHandler('playerDropped', function()
     SS.Player.Buckets[t.Identifier] = nil
 end
 
-function SS.setPlayerBucket(player, bucket)
+exports("setPlayerBucket", function(player, bucket)
     if not player or not source then return end
     local t = SS.GetPlayerIdentifiers(player)
     local identifier = t.Identifier
     SetPlayerRoutingBucket(player, bucket)
     SS.Player.Buckets[identifier] = {id = player, bucket = bucket}
     return true
-end
+end)
 
-function SS.setEntityBucket(entity, bucket)
+exports("setEntityBucket", function(entity, bucket)
     if not entity or not bucket then return end
     SetEntityRoutingBucket(entity, bucket)
     SS.Entity.Buckets[entity] = {id = entity, bucket = bucket}
     return true
-end
+end)
 
-function SS.getPlayersInBucket(bucket)
+exports("getPlayersInBucket", function(bucket)
     if not bucket or not SS.Player.Buckets then return false end 
     local returnValue = {}
 
@@ -35,9 +35,9 @@ function SS.getPlayersInBucket(bucket)
         end
     end
     return returnValue
-end
+end)
 
-function SS.getEntitiesInBucket(bucket) 
+exports("getEntitiesInBucket", function(bucket)
     if not bucket or not SS.Entity.Buckets then return false end 
     local returnValue = {}
 
@@ -47,9 +47,9 @@ function SS.getEntitiesInBucket(bucket)
         end
     end
     return returnValue
-end
+end)
 
-function SS.playerInBucket(player, bucket)
+exports("isPlayerInBucket", function(player, bucket)
     if not player or not bucket then return false end
     local currentBucket = GetPlayerRoutingBucket(player)
 
@@ -58,4 +58,4 @@ function SS.playerInBucket(player, bucket)
     else
         return false 
     end
-end
+end)
