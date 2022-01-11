@@ -10,7 +10,7 @@ exports("CreateUser", function(identifier, id)
 
     SSCore:GetUserIdentifiers(id, function(identifiers)
         self.Identifiers = identifiers
-		self.Identifiers.Source = #SSCore:GetUsers() + 1
+		self.Identifiers.Source = #Users + 1
 
         self.Name = GetPlayerName(id)
 
@@ -26,6 +26,10 @@ exports("CreateUser", function(identifier, id)
 			SSCore:Alert("User Created: " .. self.Identifiers.Source)
         end)
     end)
+end)
+
+exports("GetUsers", function()
+	return Users
 end)
 
 RegisterNetEvent("SS:Server:ClientLoad", function()
