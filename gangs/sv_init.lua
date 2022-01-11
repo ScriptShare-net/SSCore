@@ -23,6 +23,8 @@ exports("CreateGang", function(name, owner)
         self.Owner = owner
     end
 
+	self.MetaData = {}
+
     Gangs[self.Name] = self
 end)
 
