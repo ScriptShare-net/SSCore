@@ -10,7 +10,7 @@ exports("CreateUser", function(identifier, id)
 
     SSCore:GetUserIdentifiers(id, function(identifiers)
         self.Identifiers = identifiers
-		self.Identifiers.Source = #SS.Users.List + 1
+		self.Identifiers.Source = #SSCore:GetUsers() + 1
 
         self.Name = GetPlayerName(id)
 
