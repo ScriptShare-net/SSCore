@@ -1,4 +1,4 @@
-SS.Config.CharacterSelector = {}
+local SSCore = exports["SSCore"]
 
 --Character Limit
-SS.Config.CharacterSelector.Limit = 3
+SSCore:SetConfigValue(CharacterSelectorLimit, 3)

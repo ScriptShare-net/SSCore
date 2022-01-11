@@ -1,8 +1,7 @@
-if SS.Config.CharacterSelector then
-	exports['SSCore']:Alert("Character CharacterSelector - Enabled")
-	
-	SS.CharacterSelector = {}
-	SS.CharacterSelector.Ranks = {}
+local SSCore = exports["SSCore"]
+
+if SSCore:GetConfigValue("CharacterSelector") then
+	SSCore:Alert("Character CharacterSelector - Enabled")
 
 	local next = next
 
@@ -76,14 +75,14 @@ if SS.Config.CharacterSelector then
 		}
 	}
 
-	function SS.CharacterSelector.GetLimit(identifier, cb)
-		local characterLimit = SS.Config.CharacterSelector.Limit
+	exports("GetCharacterLimit", function(identifier, cb)
+		local characterLimit = SSCore:GetConfigValue(CharacterSelectorLimit)
 		MySQL.query("SELECT Groups FROM users WHERE Identifier = @identifier", {
 			["@identifier"] = identifier
 		}, function(result)
 			if result.groups then
 				for _, name in pairs(groups) do
-					for name2, limit in pairs(SS.CharacterSelector.Ranks) do
+					for name2, limit in pairs(SSCore:GetGroups()) do
 						if name == name2 then
 							if characterLimit then
 								if characterLimit < limit then
@@ -98,7 +97,7 @@ if SS.Config.CharacterSelector then
 			end
 			cb(characterLimit, 1)
 		end)
-	end
+	end)
 
 	local function getCharacters(identifier, limit, cb)
 		local characters = {}
@@ -126,8 +125,8 @@ if SS.Config.CharacterSelector then
 		end)
 	end
 
-	function SS.CharacterSelector.Initiate(identifier, src)
-		SS.CharacterSelector.GetLimit(identifier, function(characterLimit, favchar)
+	local function CharacterSelectorInitiate(identifier, src)
+		SSCore:GetCharacterLimit(identifier, function(characterLimit, favchar)
 			getCharacters(identifier, characterLimit, function(characters)
 				local characters = characters
 				characters.Favourite = favchar
@@ -163,7 +162,7 @@ if SS.Config.CharacterSelector then
 					}
 				}
 				MySQL.query("INSERT INTO Characters (PermID, Identifier, CharacterSlot, FirstName, LastName, MetaData) VALUES (@permid, @identifier, @characterSlot, @firstName, @lastName, @metadata)", {
-					["@permid"] = SS.GetPermIDFromIdentifier(identifier),
+					["@permid"] = SSCore:GetPermIDFromIdentifier(identifier),
 					['@identifier'] = identifier,
 					['@characterSlot'] = characterid,
 					['@firstName'] = data.FirstName,
@@ -180,10 +179,10 @@ if SS.Config.CharacterSelector then
 	end
 
 	RegisterNetEvent("SS:Server:ClientLoaded", function(src)
-		exports['SSCore']:Alert("Client Loaded: " .. src)
-		if not SS.GetCharacterFromSource(src) then
-			SS.GetPlayerIdentifiers(src, function(identifiers)
-				SS.CharacterSelector.Initiate(identifiers.Identifier, src)
+		SSCore:Alert("Client Loaded: " .. src)
+		if not SSCore:GetCharacterFromSource(src) then
+			SSCore:GetUserIdentifiers(src, function(identifiers)
+				CharacterSelectorInitiate(identifiers.Identifier, src)
 			end)
 		else
 			DropPlayer(src, "cheater")
@@ -193,21 +192,21 @@ if SS.Config.CharacterSelector then
 	RegisterNetEvent("SS:Server:RegisterIdentity", function(data, charid)
 		if data.FirstName == "Create" then return end
 		local src = source
-		SS.GetPlayerIdentifiers(src, function(identifiers)
+		SSCore:GetUserIdentifiers(src, function(identifiers)
 			CreateIdentity(identifiers.Identifier, charid, data, function(created)
 				if created then
 					TriggerClientEvent("SS:Client:CreateSkin", src)
-					if SS.Characters.List[src] then
+					if SSCore:GetCharacterFromSource(src) then
 						DropPlayer(src, "Cheater")
 					else
-						SS.Characters.Create(identifiers, src, charid)
+						SSCore:CreateCharacter(identifiers, src, charid)
 					end
 				end
 			end)
 		end)
 	end)
 
-	exports['SSCore']:RegisterServerCallback("SS:Server:GetRandomFemale", function(source, cb)
+	SSCore:RegisterServerCallback("SS:Server:GetRandomFemale", function(source, cb)
 		local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
 		MySQL.query("SELECT MetaData FROM Characters WHERE LOCATE('mp_f_freemode_01', MetaData)", {}, function(result)
 			local characternum
@@ -224,7 +223,7 @@ if SS.Config.CharacterSelector then
 		end)
 	end)
 
-	exports['SSCore']:RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
+	SSCore:RegisterServerCallback("SS:Server:GetRandomMale", function(source, cb)
 		local skin, cosmetics, clothing, tattoos = {}, {}, {}, {}
 		MySQL.query("SELECT * FROM characters WHERE LOCATE('mp_m_freemode_01', MetaData)", {}, function(result)
 			local characternum
@@ -243,18 +242,18 @@ if SS.Config.CharacterSelector then
 
 	RegisterNetEvent("SS:Server:CreatePlayer", function(charID)
 		local src = source
-		SS.GetPlayerIdentifiers(src, function(identifiers)
-			if SS.Characters.List[src] then
+		SSCore:GetUserIdentifiers(src, function(identifiers)
+			if SSCore:GetCharacterFromSource(src) then
 				DropPlayer(src, "Cheater")
 			else
-				SS.Characters.Create(identifiers, src, charID)
+				SSCore:CreateCharacter(identifiers, src, charID)
 			end
 		end)
 	end)
 
 	RegisterNetEvent("SS:Server:SpawningPlayer", function()
 		local src = source
-		local xPlayer = exports['SSCore']:GetCharacterFromSource(src)
+		local xPlayer = SSCore:GetCharacterFromSource(src)
 		if not xPlayer.spawned then
 			xPlayer.spawned = true
 			TriggerEvent("SS:Server:CharacterSelected", src, charID)
@@ -266,7 +265,7 @@ if SS.Config.CharacterSelector then
 
 	RegisterNetEvent("SS:Server:SetSkin", function(skin)
 		local src = source
-		local xPlayer = exports['SSCore']:GetCharacterFromSource(src)
+		local xPlayer = SSCore:GetCharacterFromSource(src)
 		if not xPlayer.spawned then
 			xPlayer.MetaData.Skin = skin
 		else

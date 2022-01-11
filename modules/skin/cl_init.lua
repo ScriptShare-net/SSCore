@@ -1,9 +1,10 @@
-if SS.Config.Skin then
-	SS.Skin = {}
-	SS.Skin.HiddenClothing = {}
-	SS.Skin.CurrentSkin = {}
-	SS.Skin.SavedSkin = {}
-	SS.Skin.ClothingToggles = {
+local SSCore = exports["SSCore"]
+
+if SSCore:GetConfigValue("Skin") then
+	local HiddenClothing = {}
+	local CurrentSkin = {}
+	local SavedSkin = {}
+	local ClothingToggles = {
 		[0] = {
 			helmet = -1,
 			ears = -1,
@@ -41,70 +42,70 @@ if SS.Config.Skin then
 		}
 	}
 
-	SS.Skin.DefaultModels = {
+	local DefaultModels = {
 		[0] = "mp_m_freemode_01",
 		[1] = "mp_f_freemode_01",
 	}
 
-	SS.Skin.GetCurrentSkin = function()
-		return SS.Skin.CurrentSkin
-	end
+	exports("GetCurrentSkin", function()
+		return CurrentSkin
+	end)
 
-	SS.Skin.Get = function()
+	exports("GetSkin", function()
 		local skin = {}
-		skin.model = SS.Skin.GetModel()
-		skin.skin = SS.Skin.GetSkin()
-		skin.tattoos = SS.Skin.GetTattoos()
-		skin.clothing = SS.Skin.GetClothing()
-		skin.cosmetics = SS.Skin.GetCosmetics()
+		skin.model = SSCore:GetModel()
+		skin.skin = SSCore:GetSkin()
+		skin.tattoos = SSCore:GetTattoos()
+		skin.clothing = SSCore:GetClothing()
+		skin.cosmetics = SSCore:GetCosmetics()
 		skin.sex = 0
 		if skin.model == "mp_m_freemode_01" then
 			skin.sex = 1
 		end
 		return skin
-	end
+	end)
 
-	SS.Skin.GetSavedSkin = function()
-		return SS.Skin.SavedSkin
-	end
+	exports("GetSavedSkin", function()
+		return SavedSkin
+	end)
 
-	SS.Skin.SaveCurrentSkin = function()
-		SS.Skin.SavedSkin = SS.Skin.CurrentSkin
-		TriggerServerEvent("SS:Server:SaveSkin", SS.Skin.SavedSkin)
-	end
+	exports("SaveCurrentSkin", function()
+		SavedSkin = CurrentSkin
+		TriggerServerEvent("SS:Server:SaveSkin", SavedSkin)
+	end)
 
-	SS.Skin.LoadSavedSkin = function()
-		SS.Skin.ApplyModel(SS.Skin.SavedSkin.model)
-		SS.Skin.ApplySkin(SS.Skin.SavedSkin.skin)
-		SS.Skin.ApplyTattoos(SS.Skin.SavedSkin.tattoos)
-		SS.Skin.ApplyClothing(SS.Skin.SavedSkin.clothing)
-		SS.Skin.ApplyCosmetics(SS.Skin.SavedSkin.cosmetics)
-	end
+	exports("LoadSavedSkin", function()
+		SSCore:ApplyModel(SavedSkin.model)
+		SSCore:ApplySkin(SavedSkin.skin)
+		SSCore:ApplyTattoos(SavedSkin.tattoos)
+		SSCore:ApplyClothing(SavedSkin.clothing)
+		SSCore:ApplyCosmetics(SavedSkin.cosmetics)
+	end)
 
-	SS.Skin.LoadSkin = function(skin, entity)
+	exports("LoadSkin", function(skin, entity)
 		if not skin then
-			skin = SS.Skin.SkinGetDefaults()
+			skin = SSCore:SkinGetDefaults()
 		end
-		SS.Skin.ApplyModel(skin.model, entity)
-		SS.Skin.ApplySkin(skin.skin, entity)
-		SS.Skin.ApplyTattoos(skin.tattoos, entity)
-		SS.Skin.ApplyClothing(skin.clothing, entity)
-		SS.Skin.ApplyCosmetics(skin.cosmetics, entity)
-	end
+		SSCore:ApplyModel(skin.model, entity)
+		SSCore:ApplySkin(skin.skin, entity)
+		SSCore:ApplyTattoos(skin.tattoos, entity)
+		SSCore:ApplyClothing(skin.clothing, entity)
+		SSCore:ApplyCosmetics(skin.cosmetics, entity)
+	end)
 
-	SS.Skin.SkinGetDefaults = function()
+	exports("SkinGetDefaults", function()
 		return {
 			model = "mp_m_freemode_01",
 			sex = 0,
 
-			skin = SS.Skin.GetDefaultSkin(),
-			cosmetics = SS.Skin.GetDefaultCosmetics(),
-			clothing = SS.Skin.GetDefaultClothing(0),
+			skin = SSCore:GetDefaultSkin(),
+			cosmetics = SSCore:GetDefaultCosmetics(),
+			clothing = SSCore:GetDefaultClothing(0),
 			tattoos = {}
 		}
-	end
+	end)
 
-	SS.Skin.GetDefaultSkin = function()
+	exports("GetDefaultSkin", function()
 		return {
 			shapeFirst = 0,
 			shapeSecond = 0,
@@ -128,9 +129,9 @@ if SS.Config.Skin then
 			jaw = {width = 0, length = 0},
 			chin = {lower = 0, length = 0, width = 0, tip = 0}
 		}
-	end
+	end)
 
-	SS.Skin.GetDefaultCosmetics = function()
+	exports("GetDefaultCosmetics", function()
 		return {
 			head = {style = 1, thickness = 100, colour = 0, highlights = 0},
 			beard = {style = 0, thickness = 0, colour = 0, highlights = 0},
@@ -140,9 +141,9 @@ if SS.Config.Skin then
 			makeup = {style = 0, thickness = 0, colour = 0, highlights = 0},
 			blush = {style = 0, thickness = 0, colour = 0, highlights = 0},
 		}
-	end
+	end)
 
-	SS.Skin.getDefaultClothing = function(gender)
+	exports("getDefaultClothing", function(gender)
 		if not gender then
 			return {
 				helmet = {model = -1, texture = 0},
@@ -180,9 +181,9 @@ if SS.Config.Skin then
 				bag = {model = 0, texture = 0},
 			}
 		end
-	end
+	end)
 
-	SS.Skin.ApplyModel = function(model, entity)
+	exports("ApplyModel", function(model, entity)
 		local ped = entity or PlayerPedId()
 		local modelHash = GetHashKey(model)
 
@@ -201,16 +202,16 @@ if SS.Config.Skin then
 		SetPedDefaultComponentVariation(ped)
 
 		if not entity then
-			SS.Skin.CurrentSkin.model = model
+			CurrentSkin.model = model
 			if model == "mp_f_freemode_01" then
-				SS.Skin.CurrentSkin.sex = 1
+				CurrentSkin.sex = 1
 			elseif model == "mp_m_freemode_01" then
-				SS.Skin.CurrentSkin.sex = 0
+				CurrentSkin.sex = 0
 			end
 		end
-	end
+	end)
 
-	SS.Skin.ApplySkin = function(skin, entity)
+	exports("ApplySkin", function(skin, entity)
 		local ped = entity or PlayerPedId()
 
 		-- Head Manipulation
@@ -272,22 +273,22 @@ if SS.Config.Skin then
 		SetPedHeadOverlay(ped, 9, skin.freckles.texture, (skin.freckles.opacity or 0.0)/100.0) -- Moles-Freckles
 		
 		if not entity then
-			SS.Skin.CurrentSkin.skin = skin
+			CurrentSkin.skin = skin
 		end
-	end
+	end)
 
-	SS.Skin.ApplyClothing = function(clothing, entity)
+	exports("ApplyClothing", function(clothing, entity)
 		local ped = entity or PlayerPedId()
 		local clothing = clothing
 
 		if not entity then
-			for k, state in pairs(SS.Skin.HiddenClothing) do
+			for k, state in pairs(HiddenClothing) do
 				if state then
-					clothing[k].model = SS.Skin.ClothingToggles[SS.Skin.CurrentSkin.sex][k]
+					clothing[k].model = ClothingToggles[CurrentSkin.sex][k]
 				end
 			end
 
-			SS.Skin.CurrentSkin.clothing = clothing
+			CurrentSkin.clothing = clothing
 		end
 
 		-- Clothing Props
@@ -328,9 +329,9 @@ if SS.Config.Skin then
 		SetPedComponentVariation(ped, 9,  clothing.bproof.model, clothing.bproof.texture, 2) -- bulletproof
 		SetPedComponentVariation(ped, 7,  clothing.chain.model,  clothing.chain.texture, 2)  -- chain
 		SetPedComponentVariation(ped, 5,  clothing.bag.model,    clothing.bag.texture, 2)   -- Bag
-	end
+	end)
 
-	SS.Skin.ApplyTattoos = function(tattoos, entity)
+	exports("ApplyTattoos", function(tattoos, entity)
 		local ped = entity or PlayerPedId()
 
 		ClearPedDecorations(ped)
@@ -340,11 +341,11 @@ if SS.Config.Skin then
 		end
 
 		if not entity then
-			SS.Skin.CurrentSkin.tattos = tattoos
+			CurrentSkin.tattos = tattoos
 		end
-	end
+	end)
 
-	SS.Skin.ApplyCosmetics = function(cosmetics, entity)
+	exports("ApplyCosmetics", function(cosmetics, entity)
 		local ped = entity or PlayerPedId()
 
 		if cosmetics.head then
@@ -389,22 +390,22 @@ if SS.Config.Skin then
 		end
 		
 		if not entity then
-			SS.Skin.CurrentSkin.cosmetics = cosmetics
+			CurrentSkin.cosmetics = cosmetics
 		end
-	end
+	end)
 
 	--Get skin
-	SS.Skin.GetModel = function(entity)
+	exports("GetModel", function(entity)
 		local ped = entity or PlayerPedId()
 
 		return GetEntityModel(ped)
-	end
+	end)
 
-	function GetHeadBlendData(ped)
+	local function GetHeadBlendData(ped)
 		return Citizen.InvokeNative(0x2746BD9D88C5C5D0, ped, Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueIntInitialized(0), Citizen.PointerValueFloatInitialized(0), Citizen.PointerValueFloatInitialized(0), Citizen.PointerValueFloatInitialized(0))
 	end
 
-	SS.Skin.GetSkin = function(entity)
+	exports("GetSkin", function(entity)
 		local ped = entity or PlayerPedId()
 
 		local skin = {}
@@ -487,9 +488,9 @@ if SS.Config.Skin then
 		skin.freckles.opacity = opacity
 		
 		return skin
-	end
+	end)
 
-	SS.Skin.GetClothing = function(entity)
+	exports("GetClothing", function(entity)
 		local ped = entity or PlayerPedId()
 		local clothing = {}
 
@@ -556,18 +557,18 @@ if SS.Config.Skin then
 		clothing.bag.texture = GetPedTextureVariation(ped, 5)
 
 		return clothing
-	end
+	end)
 
-	SS.Skin.GetTattoos = function(entity)
+	exports("GetTattoos", function(entity)
 		local ped = entity or PlayerPedId()
 		local tattoos = {}
 
 		-- no idea how to find this
 
 		return tattoos
-	end
+	end)
 
-	SS.Skin.GetCosmetics = function(cosmetics, entity)
+	exports("GetCosmetics", function(cosmetics, entity)
 		local ped = entity or PlayerPedId()
 		local cosmetics = {}
 
@@ -625,5 +626,5 @@ if SS.Config.Skin then
 		cosmetics.blush.highlights = highlights
 		
 		return cosmetics
-	end
+	end)
 end

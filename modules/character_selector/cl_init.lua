@@ -1,5 +1,8 @@
-if SS.Config.CharacterSelector then
-	exports["ui-wrapper"]:uiCreateCustom("CharacterSelector", "SSCore", "modules/character_selector/index.html")
+local UIWrapper = exports["ui-wrapper"]
+local SSCore = exports["SSCore"]
+
+if SSCore:GetConfigValue("CharacterSelector") then
+	UIWrapper:uiCreateCustom("CharacterSelector", "SSCore", "modules/character_selector/index.html")
 
 	local characters = {}
 	local camera
@@ -8,8 +11,8 @@ if SS.Config.CharacterSelector then
 	local spawnNumber = 1
 
 	local function loadSkin(skin, entity)
-		if SS.Config.Skin then
-			SS.Skin.LoadSkin(skin, entity)
+		if SSCore:GetConfigValue("Skin") then
+			SSCore:LoadSkin(skin, entity)
 		end
 	end
 
@@ -57,7 +60,7 @@ if SS.Config.CharacterSelector then
 		local sexMessage = "Male"
 		if characters[charID].FirstName ~= "Create" then spawnMessage = "Spawn" end
 		if characters[charID].Skin.sex == 1 then sexMessage = "Female" end
-		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
+		UIWrapper:uiSendMessage("CharacterSelector", {
 			show = true,
 			name = characters[charID].FirstName .. " " .. characters[charID].LastName,
 			job = characters[charID].Job.NameLabel .. " - " .. (characters[charID].Job.GradeLabel or "N/A"),
@@ -95,7 +98,7 @@ if SS.Config.CharacterSelector then
 		pedgoto(player, -83.538459777832, -835.75384521484, 221.9912109375)
 		turntohead(player, 340.15747070312, 1000)
 		FreezeEntityPosition(player, true)
-		exports["ui-wrapper"]:uiEnable("CharacterSelector")
+		UIWrapper:uiEnable("CharacterSelector")
 		loadPlayerData(characters.Favourite)
 	end
 
@@ -132,8 +135,8 @@ if SS.Config.CharacterSelector then
 	RegisterNetEvent("SS:Client:Initiate", function(characterData)
 		characters = characterData
 		Wait(2000)
-		exports["ui-wrapper"]:uiDisableAll()
-		exports["ui-wrapper"]:uiSetFocus("CharacterSelector", true, true)
+		UIWrapper:uiDisableAll()
+		UIWrapper:uiSetFocus("CharacterSelector", true, true)
 		firstSpawnPlayer()
 		loadFirstCharacter()
 	end)
@@ -152,27 +155,27 @@ if SS.Config.CharacterSelector then
 		ClearPedTasksImmediately(ped)
 		RemoveAllPedWeapons(ped)
 		ClearPlayerWantedLevel(ped)
-		exports["ui-wrapper"]:uiEnableAll()
+		UIWrapper:uiEnableAll()
 	end
 
-	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "nextchar", function(data, cb)
+	UIWrapper:uiRegisterCallback("CharacterSelector", "nextchar", function(data, cb)
 		characterNumber = characterNumber + 1
 		if characterNumber > characters.Max then characterNumber = 1 end
 		loadCharacter(characterNumber)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "prevchar", function(data, cb)
+	UIWrapper:uiRegisterCallback("CharacterSelector", "prevchar", function(data, cb)
 		characterNumber = characterNumber - 1
 		if characterNumber < 1 then characterNumber = characters.Max end
 		loadCharacter(characterNumber)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "spawnsel", function(data, cb)
+	UIWrapper:uiRegisterCallback("CharacterSelector", "spawnsel", function(data, cb)
 		if characters[characterNumber].FirstName ~= "Create" then
 			local spawnName, coords = getSpawn(spawnNumber)
 			SetCamCoord(camera, coords.x, coords.y, coords.z + 1321 - coords.z)
 			PointCamAtCoord(camera, coords.x, coords.y, coords.z)
-			exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
+			UIWrapper:uiSendMessage("CharacterSelector", {
 				map = true,
 				spawnname = spawnName,
 				x = coords.x,
@@ -182,17 +185,17 @@ if SS.Config.CharacterSelector then
 			SetWeatherTypeNow("CLEAR")
 			SetCloudHatOpacity(0)
 		else
-			exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
+			UIWrapper:uiSendMessage("CharacterSelector", {
 				create = true,
 			})
 		end
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "nextspawn", function(data, cb)
+	UIWrapper:uiRegisterCallback("CharacterSelector", "nextspawn", function(data, cb)
 		spawnNumber = spawnNumber + 1
 		if spawnNumber > spawnAmount() then spawnNumber = 1 end
 		local spawnName, coords = getSpawn(spawnNumber)
-		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
+		UIWrapper:uiSendMessage("CharacterSelector", {
 			map = true,
 			spawnname = spawnName,
 			x = coords.x,
@@ -203,11 +206,11 @@ if SS.Config.CharacterSelector then
 		PointCamAtCoord(camera, coords.x, coords.y, coords.z)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "prevspawn", function(data, cb)
+	UIWrapper:uiRegisterCallback("CharacterSelector", "prevspawn", function(data, cb)
 		spawnNumber = spawnNumber - 1
 		if spawnNumber < 1 then spawnNumber = spawnAmount() end
 		local spawnName, coords = getSpawn(spawnNumber)
-		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
+		UIWrapper:uiSendMessage("CharacterSelector", {
 			map = true,
 			spawnname = spawnName,
 			x = coords.x,
@@ -218,19 +221,19 @@ if SS.Config.CharacterSelector then
 		PointCamAtCoord(camera, coords.x, coords.y, coords.z)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "confirmspawn", function(data, cb)
+	UIWrapper:uiRegisterCallback("CharacterSelector", "confirmspawn", function(data, cb)
 		TriggerServerEvent("SS:Server:CreatePlayer", characterNumber)
 		spawnPlayer(SS.Config.CharacterSelectorSpawns[data.spawn])
-		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
+		UIWrapper:uiSendMessage("CharacterSelector", {
 			show = false,
 		})
-		exports["ui-wrapper"]:uiSetFocus("CharacterSelector", false, false)
+		UIWrapper:uiSetFocus("CharacterSelector", false, false)
 	end)
 
-	exports["ui-wrapper"]:uiRegisterCallback("CharacterSelector", "identity", function(data, cb)
+	UIWrapper:uiRegisterCallback("CharacterSelector", "identity", function(data, cb)
 		TriggerServerEvent("SS:Server:RegisterIdentity", data, characterNumber)
-		exports["ui-wrapper"]:uiSetFocus("CharacterSelector", false, false)
-		exports["ui-wrapper"]:uiSendMessage("CharacterSelector", {
+		UIWrapper:uiSetFocus("CharacterSelector", false, false)
+		UIWrapper:uiSendMessage("CharacterSelector", {
 			create = false,
 		})
 	end)
@@ -264,11 +267,11 @@ if SS.Config.CharacterSelector then
 				--female peds
 				SS.TriggerServerCallback("SS:Server:GetRandomFemale", function(skin, cosmetics, clothing, tattoos)
 					local femaletable = {}
-					femaletable.skin = skin or SS.Skin.GetDefaultSkin()
+					femaletable.skin = skin or SSCore:GetDefaultSkin()
 					femaletable.model = "mp_f_freemode_01"
 					femaletable.sex = 1
-					femaletable.cosmetics = cosmetics or SS.Skin.GetDefaultCosmetics()
-					femaletable.clothing = clothing or SS.Skin.GetDefaultClothing(femaletable.sex)
+					femaletable.cosmetics = cosmetics or SSCore:GetDefaultCosmetics()
+					femaletable.clothing = clothing or SSCore:GetDefaultClothing(femaletable.sex)
 					femaletable.tattoos = tattoos or {}
 					loadSkin(femaletable, otherped)
 				end)
@@ -276,11 +279,11 @@ if SS.Config.CharacterSelector then
 				--male peds
 				SS.TriggerServerCallback("SS:Server:GetRandomMale", function(skin, cosmetics, clothing, tattoos)
 					local maletable = {}
-					maletable.skin = skin or SS.Skin.GetDefaultSkin()
+					maletable.skin = skin or SSCore:GetDefaultSkin()
 					maletable.model = "mp_m_freemode_01"
 					maletable.sex = 0
-					maletable.cosmetics = cosmetics or SS.Skin.GetDefaultCosmetics()
-					maletable.clothing = clothing or SS.Skin.GetDefaultClothing(maletable.sex)
+					maletable.cosmetics = cosmetics or SSCore:GetDefaultCosmetics()
+					maletable.clothing = clothing or SSCore:GetDefaultClothing(maletable.sex)
 					maletable.tattoos = tattoos or {}
 					loadSkin(maletable, otherped)
 				end)
@@ -300,7 +303,7 @@ if SS.Config.CharacterSelector then
 		RenderScriptCams(false, true, 500, true, true)
 		SetCamActive(camera, false)
 		DoScreenFadeIn(1000)
-		exports["ui-wrapper"]:uiEnableAll()
+		UIWrapper:uiEnableAll()
 		TriggerServerEvent("SS:Server:SpawningPlayer")
 	end
 
@@ -316,8 +319,8 @@ if SS.Config.CharacterSelector then
 		
 		exports['fivem-appearance']:startPlayerCustomization(function(appearance)
 			if (appearance) then
-				characters[characterNumber].Skin = SS.Skin.Get()
-				TriggerServerEvent("SS:Server:SetSkin", SS.Skin.Get())
+				characters[characterNumber].Skin = SSCore:GetSkin()
+				TriggerServerEvent("SS:Server:SetSkin", SSCore:GetSkin())
 				loadCutScene()
 			else
 				Wait(10)
@@ -339,7 +342,7 @@ RegisterCommand('customization', function()
 
 	exports['fivem-appearance']:startPlayerCustomization(function (appearance)
 		if (appearance) then
-			TriggerServerEvent("SS:Console:Print", json.encode(SS.Skin.Get()))
+			TriggerServerEvent("SS:Console:Print", json.encode(SSCore:GetSkin()))
 		else
 			print('Canceled')
 		end

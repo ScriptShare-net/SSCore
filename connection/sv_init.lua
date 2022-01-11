@@ -128,7 +128,7 @@ local function isBanned(identifier, cb)
 				unbanTime = "Never"
 				banLength = "Forever"
 			else
-				unbanTime = os.date('%H:%M:%S %d-%m-%y', SSCore:GetBans()[identifier].time + (SS.TimeZone * 60 * 60))
+				unbanTime = os.date('%H:%M:%S %d-%m-%y', SSCore:GetBans()[identifier].time + (SSCore:GetConfigValue("TimeZone") * 60 * 60))
 				banLength = SSCore:GetBans()[identifier].time - os.time()
 			end
 			cb(identifiersBanned, SSCore:GetBanCard(SSCore:GetBans()[identifier].reason, unbanTime, banLength, SSCore:GetBans()[identifier].bannedBy, identifiers.PermID))
@@ -158,7 +158,7 @@ local function getRank(identifier, cb)
 				end
 			end
 		end
-		if not highestRank and not SS.Config.Connection.Whitelist then
+		if not highestRank and not SSCore:GetConfigValue("ServerWhitelist") then
 			highestRank = "none"
 		end
 		cb(highestRank)
@@ -266,7 +266,7 @@ local function startConnection(identifiers, deferrals)
 			deferrals.update("Not Banned. Checking Rank.")
 			getRank(identifiers.Identifier, function(highestRank)
 				if not highestRank then
-					deferrals.presentCard(SS.Connection.Cards.Whitelist, function(data, rawData) end)
+					deferrals.presentCard(SSCore:GetWhitelistCard(), function(data, rawData) end)
 					Wait(6000)
 					deferrals.done("whitelist")
 					return

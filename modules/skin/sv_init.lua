@@ -1,10 +1,9 @@
-if SS.Config.Skin then
-	SS.Skin = {}
-
+local SSCore = exports["SSCore"]
+if SSCore:GetConfigValue("Skin") then
 	RegisterNetEvent("SS:Server:SaveSkin", function(skin)
 		local src = source
 		if skin then
-			local xPlayer = SS.GetCharacterFromSource(src)
+			local xPlayer = SSCore:GetCharacterFromSource(src)
 			xPlayer.MetaData.Skin = skin
 		end
 	end)

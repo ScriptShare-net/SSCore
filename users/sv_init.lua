@@ -8,7 +8,7 @@ exports("CreateUser", function(identifier, id)
 	self.Identifier = identifier
 	self.Loaded = false
 
-    SSCore:GetPlayerIdentifiers(id, function(identifiers)
+    SSCore:GetUserIdentifiers(id, function(identifiers)
         self.Identifiers = identifiers
 		self.Identifiers.Source = #SS.Users.List + 1
 

@@ -18,6 +18,9 @@ SSCore:SetConfigValue("Alert", true)
 -- Server console printing from client
 SSCore:SetConfigValue("ConsolePrint", true)
 
+-- Timezone UTC +
+SSCore:SetConfigValue("TimeZone", 10)
+
 -- SSCore Modules
 SSCore:SetConfigValue("CharacterSelector", true)
 SSCore:SetConfigValue("Skin", true)
