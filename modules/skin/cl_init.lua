@@ -184,6 +184,7 @@ if SSCore:GetConfigValue("Skin") then
 	end)
 
 	exports("ApplyModel", function(model, entity)
+		local model = model or "mp_m_freemode_01"
 		local ped = entity or PlayerPedId()
 		local modelHash = GetHashKey(model)
 

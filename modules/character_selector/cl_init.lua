@@ -112,19 +112,11 @@ if SSCore:GetConfigValue("CharacterSelector") then
 		local pedModel = `mp_m_freemode_01`
 		local ped = PlayerPedId()
 		local spawn = vector4(-78.07911682129, -836.62414550782, 221.9912109375, 0.0)
-
-		RequestModel(pedModel)
-
-		while not HasModelLoaded(pedModel) do
-			RequestModel(pedModel)
-			Wait(0)
-		end
 		ShutdownLoadingScreen()
 		ShutdownLoadingScreenNui()
 		SetCanAttackFriendly(ped, true, false)
 		NetworkSetFriendlyFireOption(true)
-		SetPlayerModel(PlayerId(), pedModel)
-		SetModelAsNoLongerNeeded(pedModel)
+		SSCore:ApplyModel(pedModel)
 		RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
 		SetEntityCoordsNoOffset(ped, spawn.x, spawn.y, spawn.z, false, false, false, true)
 		NetworkResurrectLocalPlayer(spawn.x, spawn.y, spawn.z, spawn.w, true, true, false)
