@@ -1,3 +1,11 @@
+local function playerKilled(killedBy) 
+    local plyPed = PlayerPedId()
+    local plyCoords = GetEntityCoords(plyPed)
+
+    local table = {coords = plyCoords, killedBy = killedBy}
+    TriggerEvent('SSCore:Client:onPlayerDeath', table)
+end
+
 AddEventHandler('SSCore:Client:onPlayerDeath', function(data)
     if data == nil then return end
 end)
@@ -25,11 +33,3 @@ CreateThread(function()
         end
     end 
 end)
-
-local function playerKilled(killedBy) 
-    local plyPed = PlayerPedId()
-    local plyCoords = GetEntityCoords(plyPed)
-
-    local table = {coords = plyCoords, killedBy = killedBy}
-    TriggerEvent('SSCore:Client:onPlayerDeath', table)
-end
