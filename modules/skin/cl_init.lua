@@ -188,7 +188,7 @@ if SSCore:GetConfigValue("Skin") then
 		local modelHash = GetHashKey(model)
 
 		if not IsModelValid(modelHash) then
-			SS.Alert("[skin] Model didn't exist! Model: "..modelHash .. " for model " .. model)
+			SSCore:Alert("[skin] Model didn't exist! Model: "..modelHash .. " for model " .. model)
 			return false
 		end
 

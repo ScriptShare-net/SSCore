@@ -2,6 +2,7 @@ local UIWrapper = exports["ui-wrapper"]
 local SSCore = exports["SSCore"]
 
 if SSCore:GetConfigValue("CharacterSelector") then
+	SSCore:Alert("Loading Selector Module")
 	UIWrapper:uiCreateCustom("CharacterSelector", "SSCore", "modules/character_selector/index.html")
 
 	local characters = {}
@@ -33,7 +34,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 
 	local function spawnAmount()
 		local length = 0
-		for k,v in pairs(SS.Config.CharacterSelectorSpawns) do
+		for k,v in pairs(SSCore:GetConfigValue("CharacterSelectorSpawns")) do
 			length = length + 1
 		end
 		return length
@@ -41,7 +42,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 
 	local function getSpawn(spawnID)
 		local i = 1
-		for k,v in pairs(SS.Config.CharacterSelectorSpawns) do
+		for k,v in pairs(SSCore:GetConfigValue("CharacterSelectorSpawns")) do
 			if i == spawnID then
 				return k, v
 			end
@@ -223,7 +224,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 
 	UIWrapper:uiRegisterCallback("CharacterSelector", "confirmspawn", function(data, cb)
 		TriggerServerEvent("SS:Server:CreatePlayer", characterNumber)
-		spawnPlayer(SS.Config.CharacterSelectorSpawns[data.spawn])
+		spawnPlayer(SSCore:GetConfigValue("CharacterSelectorSpawns")[data.spawn])
 		UIWrapper:uiSendMessage("CharacterSelector", {
 			show = false,
 		})
@@ -265,7 +266,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 			local otherped = GetPedIndexFromEntityIndex(item)
 			if GetEntityModel(item) == GetHashKey("mp_f_freemode_01") then
 				--female peds
-				SS.TriggerServerCallback("SS:Server:GetRandomFemale", function(skin, cosmetics, clothing, tattoos)
+				SSCore:TriggerServerCallback("SS:Server:GetRandomFemale", function(skin, cosmetics, clothing, tattoos)
 					local femaletable = {}
 					femaletable.skin = skin or SSCore:GetDefaultSkin()
 					femaletable.model = "mp_f_freemode_01"
@@ -277,7 +278,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 				end)
 			else
 				--male peds
-				SS.TriggerServerCallback("SS:Server:GetRandomMale", function(skin, cosmetics, clothing, tattoos)
+				SSCore:TriggerServerCallback("SS:Server:GetRandomMale", function(skin, cosmetics, clothing, tattoos)
 					local maletable = {}
 					maletable.skin = skin or SSCore:GetDefaultSkin()
 					maletable.model = "mp_m_freemode_01"

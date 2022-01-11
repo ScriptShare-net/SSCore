@@ -5,6 +5,8 @@ exports("CreateBusiness", function(name)
 
     self.Name = name
 
+	self.MetaData = {}
+
     Businessess[self.Name] = self
 end)
 

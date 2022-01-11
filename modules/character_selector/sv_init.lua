@@ -76,7 +76,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 	}
 
 	exports("GetCharacterLimit", function(identifier, cb)
-		local characterLimit = SSCore:GetConfigValue(CharacterSelectorLimit)
+		local characterLimit = SSCore:GetConfigValue("CharacterSelectorLimit")
 		MySQL.query("SELECT Groups FROM users WHERE Identifier = @identifier", {
 			["@identifier"] = identifier
 		}, function(result)
