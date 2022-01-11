@@ -45,6 +45,7 @@ local function addIdentifiers(idtable, identifiers)
 	for type, idtbl in pairs(idtable) do
 		if type ~= "Identifier" and identifiers[string.sub(type, 1, -2)] then
 			if not string.match(json.encode(idtable), identifiers[string.sub(type, 1, -2)]) then
+				identifierstable[type] = identifierstable[type] or {}
 				table.insert(identifierstable[type], identifiers[string.sub(type, 1, -2)])
 			end
 		end

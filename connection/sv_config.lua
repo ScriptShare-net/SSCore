@@ -13,7 +13,7 @@ SSCore:SetConfigValue("BanAppealLink", "https://scriptshare.net/forums/banappeal
 SSCore:SetConfigValue("QueueMessage", "Thank you for choosing our server.")
 
 --Player slots (Minus reserved slots)
-SSCore:SetConfigValue("Slots", 1)
+SSCore:SetConfigValue("ServerSlots", 1)
 
 --Enable Connection Commands
 SSCore:SetConfigValue("ConnectionCommands", true)
