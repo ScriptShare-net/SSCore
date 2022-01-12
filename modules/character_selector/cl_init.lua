@@ -13,8 +13,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 
 	local function loadSkin(skin, entity)
 		if SSCore:GetConfigValue("Skin") then
-			SSCore:LoadSkin(skin, entity)
-		end
+			--SSCore:LoadSkin(skin, entity)
 	end
 
 	local function pedgoto(ped, x, y, z)
@@ -109,14 +108,14 @@ if SSCore:GetConfigValue("CharacterSelector") then
 	end
 
 	local function firstSpawnPlayer()
-		local pedModel = `mp_m_freemode_01`
+		local pedModel = "mp_m_freemode_01"
 		local ped = PlayerPedId()
 		local spawn = vector4(-78.07911682129, -836.62414550782, 221.9912109375, 0.0)
 		ShutdownLoadingScreen()
 		ShutdownLoadingScreenNui()
 		SetCanAttackFriendly(ped, true, false)
 		NetworkSetFriendlyFireOption(true)
-		SSCore:ApplyModel(pedModel)
+		--SSCore:ApplyModel(pedModel)
 		RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
 		SetEntityCoordsNoOffset(ped, spawn.x, spawn.y, spawn.z, false, false, false, true)
 		NetworkResurrectLocalPlayer(spawn.x, spawn.y, spawn.z, spawn.w, true, true, false)

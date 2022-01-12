@@ -86,7 +86,7 @@ if SSCore:GetConfigValue("Skin") then
 		if not skin then
 			skin = SSCore:SkinGetDefaults()
 		end
-		SSCore:ApplyModel(skin.model, entity)
+		--SSCore:ApplyModel(skin.model, entity)
 		SSCore:ApplySkin(skin.skin, entity)
 		SSCore:ApplyTattoos(skin.tattoos, entity)
 		SSCore:ApplyClothing(skin.clothing, entity)
@@ -184,6 +184,7 @@ if SSCore:GetConfigValue("Skin") then
 	end)
 
 	exports("ApplyModel", function(model, entity)
+		print(model)
 		local model = model or "mp_m_freemode_01"
 		local ped = entity or PlayerPedId()
 		local modelHash = GetHashKey(model)
@@ -199,8 +200,9 @@ if SSCore:GetConfigValue("Skin") then
 			Wait(1)
 		end
 
-		SetPlayerModel(ped, modelHash)
+		SetPlayerModel(ped, model)
 		SetPedDefaultComponentVariation(ped)
+		SetModelAsNoLongerNeeded(model)
 
 		if not entity then
 			CurrentSkin.model = model

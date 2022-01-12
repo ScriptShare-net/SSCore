@@ -6,18 +6,24 @@ Buckets.Entitys = {} -- Table for Entity buckets
 AddEventHandler('playerDropped', function()
     local src = source
     if not src then return end
-    local t = SSCore:GetUserIdentifiers(src)
-    local identifier = t.Identifier
-    Buckets.Players[t.Identifier] = nil
+    local t
+	SSCore:GetUserIdentifiers(src, function(identifiers)
+		t = identifiers
+		local identifier = t.Identifier
+		Buckets.Players[t.Identifier] = nil
+	end)
 end)
 
 exports("setPlayerBucket", function(player, bucket)
     if not player or not source then return end
-    local t = SSCore:GetUserIdentifiers(player)
-    local identifier = t.Identifier
-    SetPlayerRoutingBucket(player, bucket)
-    Buckets.Players[identifier] = {id = player, bucket = bucket}
-    return true
+    local t
+	SSCore:GetUserIdentifiers(src, function(identifiers)
+		t = identifiers
+		local identifier = t.Identifier
+		SetPlayerRoutingBucket(player, bucket)
+		Buckets.Players[identifier] = {id = player, bucket = bucket}
+		return true
+	end)
 end)
 
 exports("setEntityBucket", function(entity, bucket)
