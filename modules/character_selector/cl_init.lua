@@ -14,6 +14,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 	local function loadSkin(skin, entity)
 		if SSCore:GetConfigValue("Skin") then
 			--SSCore:LoadSkin(skin, entity)
+		end
 	end
 
 	local function pedgoto(ped, x, y, z)
