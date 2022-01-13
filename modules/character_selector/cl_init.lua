@@ -13,7 +13,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 
 	local function loadSkin(skin, entity)
 		if SSCore:GetConfigValue("Skin") then
-			--SSCore:LoadSkin(skin, entity)
+			SSCore:LoadSkin(skin, entity)
 		end
 	end
 
@@ -116,7 +116,17 @@ if SSCore:GetConfigValue("CharacterSelector") then
 		ShutdownLoadingScreenNui()
 		SetCanAttackFriendly(ped, true, false)
 		NetworkSetFriendlyFireOption(true)
-		--SSCore:ApplyModel(pedModel)
+
+		RequestModel(pedModel)
+
+		while not HasModelLoaded(pedModel) do
+			RequestModel(pedModel)
+			Wait(0)
+		end
+
+		SetPlayerModel(PlayerId(), pedModel)
+		SetModelAsNoLongerNeeded(pedModel)
+
 		RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
 		SetEntityCoordsNoOffset(ped, spawn.x, spawn.y, spawn.z, false, false, false, true)
 		NetworkResurrectLocalPlayer(spawn.x, spawn.y, spawn.z, spawn.w, true, true, false)
@@ -264,7 +274,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 					femaletable.model = "mp_f_freemode_01"
 					femaletable.sex = 1
 					femaletable.cosmetics = cosmetics or SSCore:GetDefaultCosmetics()
-					femaletable.clothing = clothing or SSCore:GetDefaultClothing(femaletable.sex)
+					femaletable.clothing = clothing or SSCore:getDefaultClothing(femaletable.sex)
 					femaletable.tattoos = tattoos or {}
 					loadSkin(femaletable, otherped)
 				end)
@@ -276,7 +286,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 					maletable.model = "mp_m_freemode_01"
 					maletable.sex = 0
 					maletable.cosmetics = cosmetics or SSCore:GetDefaultCosmetics()
-					maletable.clothing = clothing or SSCore:GetDefaultClothing(maletable.sex)
+					maletable.clothing = clothing or SSCore:getDefaultClothing(maletable.sex)
 					maletable.tattoos = tattoos or {}
 					loadSkin(maletable, otherped)
 				end)

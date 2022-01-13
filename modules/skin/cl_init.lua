@@ -100,7 +100,7 @@ if SSCore:GetConfigValue("Skin") then
 
 			skin = SSCore:GetDefaultSkin(),
 			cosmetics = SSCore:GetDefaultCosmetics(),
-			clothing = SSCore:GetDefaultClothing(0),
+			clothing = SSCore:getDefaultClothing(0),
 			tattoos = {}
 		}
 	end)
@@ -186,7 +186,7 @@ if SSCore:GetConfigValue("Skin") then
 	exports("ApplyModel", function(model, entity)
 		print(model)
 		local model = model or "mp_m_freemode_01"
-		local ped = entity or PlayerPedId()
+		local ped = entity or PlayerId()
 		local modelHash = GetHashKey(model)
 
 		if not IsModelValid(modelHash) then
@@ -200,7 +200,7 @@ if SSCore:GetConfigValue("Skin") then
 			Wait(1)
 		end
 
-		SetPlayerModel(ped, model)
+		SetPlayerModel(ped, modelHash)
 		SetPedDefaultComponentVariation(ped)
 		SetModelAsNoLongerNeeded(model)
 
@@ -216,6 +216,10 @@ if SSCore:GetConfigValue("Skin") then
 
 	exports("ApplySkin", function(skin, entity)
 		local ped = entity or PlayerPedId()
+
+		if not skin then
+			skin = SSCore:SkinGetDefaults()
+		end
 
 		-- Head Manipulation
 		SetPedHeadBlendData(ped, skin.shapeFirst, skin.shapeSecond, skin.shapeThird or 0.0, skin.skinFirst, skin.skinSecond, skin.skinThird or 0.0, (skin.shapeMix or 50)/100.0, skin.skinMix or 0.5, skin.thirdMix or 0.0, true)
