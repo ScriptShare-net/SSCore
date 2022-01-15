@@ -43,6 +43,7 @@ client_scripts {
 	'characters/cl_init.lua',
 	'death/cl_init.lua',
 	'modules/skin/sh_config.lua',
+	'modules/skin/cl_models.lua',
 	'modules/skin/cl_init.lua',
 	'modules/character_selector/cl_config.lua',
 	'modules/character_selector/cl_init.lua',

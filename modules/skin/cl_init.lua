@@ -166,7 +166,7 @@ if SSCore:GetConfigValue("Skin") then
 		else
 			return {
 				helmet = {model = -1, texture = 0},
-				glasses = {model = 5, texture = 0},
+				glasses = {model = 4, texture = 0},
 				ears = {model = -1, texture = 0},
 				mask = {model = 0, texture = 0},
 				torso = {model = 0, texture = 0},
@@ -188,13 +188,11 @@ if SSCore:GetConfigValue("Skin") then
 		if not model then return end
 		print(model)
 		local model = model
-		local ped = entity or PlayerPedId()
-		local modelHash
-		if IsModelValid(model) then
-			modelHash = model
-		else
-			modelHash = GetHashKey(model)
+		local ped = entity or PlayerId()
+		if ped == PlayerPedId() then
+			ped = PlayerId()
 		end
+		local modelHash = GetHashKey(model)
 
 		if not IsModelValid(modelHash) then
 			SSCore:Alert("[skin] Model didn't exist! Model: "..modelHash .. " for model " .. model)
@@ -427,8 +425,7 @@ if SSCore:GetConfigValue("Skin") then
 	--Get skin
 	exports("GetModel", function(entity)
 		local ped = entity or PlayerPedId()
-
-		return GetEntityModel(ped)
+		return SSCore:getModelFromHash(GetEntityModel(ped))
 	end)
 
 	local function GetHeadBlendData(ped)

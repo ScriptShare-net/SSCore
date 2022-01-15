@@ -143,7 +143,6 @@ if SSCore:GetConfigValue("CharacterSelector") then
 	function CreateIdentity(identifier, characterid, data, callback)
 		local skin = createCharacter.Skin
 		skin.sex = data.sex
-		if skin.sex then skin.model = "mp_f_freemode_01" end
 		MySQL.query("SELECT CharacterSlot FROM Characters WHERE Identifier = @identifier AND CharacterSlot = @characterSlot", {
 			["@identifier"] = identifier,
 			["@characterSlot"] = characterid,
@@ -263,13 +262,10 @@ if SSCore:GetConfigValue("CharacterSelector") then
 		end
 	end)
 
-	RegisterNetEvent("SS:Server:SetSkin", function(skin)
+	RegisterCommand("getdata", function(source)
 		local src = source
 		local xPlayer = SSCore:GetCharacterFromSource(src)
-		if not xPlayer.spawned then
-			xPlayer.MetaData.Skin = skin
-		else
-			DropPlayer(src, "cheating")
-		end
+		print(json.encode(xPlayer.MetaData))
 	end)
+
 end

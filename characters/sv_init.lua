@@ -79,12 +79,17 @@ exports("GetCharacterFromSource", function(source)
 	return Characters[source]
 end)
 
+exports("setCharacterMetaData", function(source, tblname, metadata)
+	Characters[source].MetaData[tblname] = metadata
+end)
+
 RegisterNetEvent("SS:Server:PlayerDisconnect", function(src)
 	if Characters[src] then
 		MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier", {
 			["@identifier"] = Characters[src].Identifier,
 			["@metadata"] = json.encode(Characters[src].MetaData)
 		}, function(rows)
+			print(Characters[src].MetaData.Skin.model)
 			Characters[src] = nil
 			print("Updated Character: ",src)
 		end)

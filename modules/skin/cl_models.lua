@@ -4015,7 +4015,7 @@ if SSCore:GetConfigValue("Skin") then
 	end)
 
 	exports("getModelFromHash", function(hash)
-		return models[hash]
+		return models[hash].model
 	end)
 
 	exports("getSexFromModel", function(model)
