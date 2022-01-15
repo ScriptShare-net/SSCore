@@ -77,6 +77,8 @@ if SSCore:GetConfigValue("CharacterSelector") then
 		characterNumber = characters.Favourite
 		local player = PlayerPedId()
 		DoScreenFadeOut(10)
+		print(characters[characters.Favourite].Skin.model == "mp_f_freemode_01")
+		--SSCore:ApplyModel("mp_m_freemode_01")
 		loadSkin(characters[characters.Favourite].Skin)
 		Wait(500)
 		SetEntityCoords(player, -78.07911682129, -836.62414550782, 221.9912109375)
@@ -109,23 +111,23 @@ if SSCore:GetConfigValue("CharacterSelector") then
 	end
 
 	local function firstSpawnPlayer()
-		local pedModel = "mp_m_freemode_01"
+		--local pedModel = "mp_m_freemode_01"
 		local ped = PlayerPedId()
 		local spawn = vector4(-78.07911682129, -836.62414550782, 221.9912109375, 0.0)
 		ShutdownLoadingScreen()
 		ShutdownLoadingScreenNui()
 		SetCanAttackFriendly(ped, true, false)
 		NetworkSetFriendlyFireOption(true)
+		SSCore:ApplyModel("mp_m_freemode_01", PlayerId())
+		--RequestModel(pedModel)
 
-		RequestModel(pedModel)
+		--while not HasModelLoaded(pedModel) do
+		--	RequestModel(pedModel)
+		--	Wait(0)
+		--end
 
-		while not HasModelLoaded(pedModel) do
-			RequestModel(pedModel)
-			Wait(0)
-		end
-
-		SetPlayerModel(PlayerId(), pedModel)
-		SetModelAsNoLongerNeeded(pedModel)
+		--SetPlayerModel(PlayerId(), pedModel)
+		--SetModelAsNoLongerNeeded(pedModel)
 
 		RequestCollisionAtCoord(spawn.x, spawn.y, spawn.z)
 		SetEntityCoordsNoOffset(ped, spawn.x, spawn.y, spawn.z, false, false, false, true)
@@ -262,6 +264,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 			SetEntityVisible(GetPedIndexFromEntityIndex(maleindex), false)
 			sceneped = GetPedIndexFromEntityIndex(femaleindex)
 		end
+		print("load player")
 		loadSkin(skintable, sceneped)
 		while i <= 9 do
 			local item = (GetEntityIndexOfCutsceneEntity("MP_Plane_Passenger_" .. i, (GetHashKey("mp_m_freemode_01") or GetHashKey("mp_f_freemode_01"))))
@@ -276,6 +279,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 					femaletable.cosmetics = cosmetics or SSCore:GetDefaultCosmetics()
 					femaletable.clothing = clothing or SSCore:getDefaultClothing(femaletable.sex)
 					femaletable.tattoos = tattoos or {}
+					print("loadf")
 					loadSkin(femaletable, otherped)
 				end)
 			else
@@ -288,6 +292,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 					maletable.cosmetics = cosmetics or SSCore:GetDefaultCosmetics()
 					maletable.clothing = clothing or SSCore:getDefaultClothing(maletable.sex)
 					maletable.tattoos = tattoos or {}
+					print("loadm")
 					loadSkin(maletable, otherped)
 				end)
 			end
@@ -322,8 +327,9 @@ if SSCore:GetConfigValue("CharacterSelector") then
 		
 		exports['fivem-appearance']:startPlayerCustomization(function(appearance)
 			if (appearance) then
-				characters[characterNumber].Skin = SSCore:GetSkin()
-				TriggerServerEvent("SS:Server:SetSkin", SSCore:GetSkin())
+				characters[characterNumber].Skin = SSCore:GetSkinTable()
+				TriggerServerEvent("SS:Server:SetSkin", characters[characterNumber].Skin)
+				TriggerServerEvent("SS:Console:Print", json.encode(characters[characterNumber].Skin))
 				loadCutScene()
 			else
 				Wait(10)
@@ -345,7 +351,7 @@ RegisterCommand('customization', function()
 
 	exports['fivem-appearance']:startPlayerCustomization(function (appearance)
 		if (appearance) then
-			TriggerServerEvent("SS:Console:Print", json.encode(SSCore:GetSkin()))
+			TriggerServerEvent("SS:Console:Print", json.encode(SSCore:GetSkinTable()))
 		else
 			print('Canceled')
 		end

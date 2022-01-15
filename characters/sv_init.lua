@@ -86,12 +86,14 @@ RegisterNetEvent("SS:Server:PlayerDisconnect", function(src)
 			["@metadata"] = json.encode(Characters[src].MetaData)
 		}, function(rows)
 			Characters[src] = nil
+			print("Updated Character: ",src)
 		end)
 	end
 end)
 
 RegisterNetEvent("onResourceStop", function()
 	TriggerEvent("SS:Server:Stop")
+	print("Update Characters")
 	for k,v in pairs(Characters) do
 		MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier", {
 			["@identifier"] = v.Identifier,
@@ -105,6 +107,7 @@ end)
 CreateThread(function()
 	while true do
 		Wait(600000)
+		print("Update Characters")
 		for k,v in pairs(Characters) do
 			MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier", {
 				["@identifier"] = v.Identifier,

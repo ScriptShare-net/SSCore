@@ -51,7 +51,7 @@ if SSCore:GetConfigValue("Skin") then
 		return CurrentSkin
 	end)
 
-	exports("GetSkin", function()
+	exports("GetSkinTable", function()
 		local skin = {}
 		skin.model = SSCore:GetModel()
 		skin.skin = SSCore:GetSkin()
@@ -83,6 +83,7 @@ if SSCore:GetConfigValue("Skin") then
 	end)
 
 	exports("LoadSkin", function(skin, entity)
+		local entity = entity or PlayerPedId()
 		if not skin then
 			skin = SSCore:SkinGetDefaults()
 		end
@@ -184,10 +185,16 @@ if SSCore:GetConfigValue("Skin") then
 	end)
 
 	exports("ApplyModel", function(model, entity)
+		if not model then return end
 		print(model)
-		local model = model or "mp_m_freemode_01"
-		local ped = entity or PlayerId()
-		local modelHash = GetHashKey(model)
+		local model = model
+		local ped = entity or PlayerPedId()
+		local modelHash
+		if IsModelValid(model) then
+			modelHash = model
+		else
+			modelHash = GetHashKey(model)
+		end
 
 		if not IsModelValid(modelHash) then
 			SSCore:Alert("[skin] Model didn't exist! Model: "..modelHash .. " for model " .. model)
@@ -215,6 +222,7 @@ if SSCore:GetConfigValue("Skin") then
 	end)
 
 	exports("ApplySkin", function(skin, entity)
+		if not skin then return end
 		local ped = entity or PlayerPedId()
 
 		if not skin then
@@ -274,17 +282,29 @@ if SSCore:GetConfigValue("Skin") then
 			SetPedHeadOverlay(ped, 0, skin.blemish.texture, (skin.blemish.opacity or 0.0)/100.0) -- Blemishes
 		end
 
-		SetPedHeadOverlay(ped, 3, skin.age.texture, (skin.age.opacity or 0.0)/100.0) -- Aging
-		SetPedHeadOverlay(ped, 6, skin.complexion.texture, (skin.complexion.opacity or 0.0)/100.0) -- Complexion
-		SetPedHeadOverlay(ped, 7, skin.damage.texture, (skin.damage.opacity or 0.0)/100.0) -- Sun Damage
-		SetPedHeadOverlay(ped, 9, skin.freckles.texture, (skin.freckles.opacity or 0.0)/100.0) -- Moles-Freckles
+		if skin.age then
+			SetPedHeadOverlay(ped, 3, skin.age.texture, (skin.age.opacity or 0.0)/100.0) -- Aging
+		end
 		
+		if skin.complexion then
+			SetPedHeadOverlay(ped, 6, skin.complexion.texture, (skin.complexion.opacity or 0.0)/100.0) -- Complexion
+		end
+		
+		if skin.damage then
+			SetPedHeadOverlay(ped, 7, skin.damage.texture, (skin.damage.opacity or 0.0)/100.0) -- Sun Damage
+		end
+		
+		if skin.freckles then
+			SetPedHeadOverlay(ped, 9, skin.freckles.texture, (skin.freckles.opacity or 0.0)/100.0) -- Moles-Freckles
+		end
+
 		if not entity then
 			CurrentSkin.skin = skin
 		end
 	end)
 
 	exports("ApplyClothing", function(clothing, entity)
+		if not clothing then return end
 		local ped = entity or PlayerPedId()
 		local clothing = clothing
 
@@ -343,8 +363,10 @@ if SSCore:GetConfigValue("Skin") then
 
 		ClearPedDecorations(ped)
 
-		for i, tattoo in ipairs(tattoos) do
-			AddPedDecorationFromHashes(ped, GetHashKey(tattoo.collection), GetHashKey(tattoo.hash))
+		if tattoos then
+			for i, tattoo in ipairs(tattoos) do
+				AddPedDecorationFromHashes(ped, GetHashKey(tattoo.collection), GetHashKey(tattoo.hash))
+			end
 		end
 
 		if not entity then
@@ -353,6 +375,7 @@ if SSCore:GetConfigValue("Skin") then
 	end)
 
 	exports("ApplyCosmetics", function(cosmetics, entity)
+		if not cosmetics then return end
 		local ped = entity or PlayerPedId()
 
 		if cosmetics.head then
