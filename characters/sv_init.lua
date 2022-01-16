@@ -85,11 +85,11 @@ end)
 
 RegisterNetEvent("SS:Server:PlayerDisconnect", function(src)
 	if Characters[src] then
-		MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier", {
+		MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier AND CharacterSlot = @charslot", {
 			["@identifier"] = Characters[src].Identifier,
+			["@charslot"] = Characters[src].CharID,
 			["@metadata"] = json.encode(Characters[src].MetaData)
 		}, function(rows)
-			print(Characters[src].MetaData.Skin.model)
 			Characters[src] = nil
 			print("Updated Character: ",src)
 		end)
@@ -100,8 +100,9 @@ RegisterNetEvent("onResourceStop", function()
 	TriggerEvent("SS:Server:Stop")
 	print("Update Characters")
 	for k,v in pairs(Characters) do
-		MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier", {
+		MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier AND CharacterSlot = @charslot", {
 			["@identifier"] = v.Identifier,
+			["@charslot"] = v.CharID,
 			["@metadata"] = json.encode(v.MetaData)
 		}, function(rows)
 			Characters[k] = nil
@@ -114,8 +115,9 @@ CreateThread(function()
 		Wait(600000)
 		print("Update Characters")
 		for k,v in pairs(Characters) do
-			MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier", {
+			MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier AND CharacterSlot = @charslot", {
 				["@identifier"] = v.Identifier,
+				["@charslot"] = v.CharID,
 				["@metadata"] = json.encode(v.MetaData)
 			}, function(rows)
 			end)

@@ -58,10 +58,7 @@ if SSCore:GetConfigValue("Skin") then
 		skin.tattoos = SSCore:GetTattoos()
 		skin.clothing = SSCore:GetClothing()
 		skin.cosmetics = SSCore:GetCosmetics()
-		skin.sex = 0
-		if skin.model == "mp_m_freemode_01" then
-			skin.sex = 1
-		end
+		skin.sex = SSCore:getSexFromModel(skin.model)
 		return skin
 	end)
 
@@ -87,7 +84,6 @@ if SSCore:GetConfigValue("Skin") then
 		if not skin then
 			skin = SSCore:SkinGetDefaults()
 		end
-		--SSCore:ApplyModel(skin.model, entity)
 		SSCore:ApplySkin(skin.skin, entity)
 		SSCore:ApplyTattoos(skin.tattoos, entity)
 		SSCore:ApplyClothing(skin.clothing, entity)
@@ -186,7 +182,6 @@ if SSCore:GetConfigValue("Skin") then
 
 	exports("ApplyModel", function(model, entity)
 		if not model then return end
-		print(model)
 		local model = model
 		local ped = entity or PlayerId()
 		if ped == PlayerPedId() then

@@ -252,6 +252,7 @@ if SSCore:GetConfigValue("CharacterSelector") then
 			SetEntityVisible(GetPedIndexFromEntityIndex(maleindex), false)
 			sceneped = GetPedIndexFromEntityIndex(femaleindex)
 		end
+		print("Scene Ped")
 		SSCore:ApplyModel(skintable.model, sceneped)
 		loadSkin(skintable, sceneped)
 		while i <= 9 do

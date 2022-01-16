@@ -5,7 +5,6 @@ if SSCore:GetConfigValue("Skin") then
 		if skin then
 			SSCore:setCharacterMetaData(src, "Skin", skin)
 			local xPlayer = SSCore:GetCharacterFromSource(src)
-			print(xPlayer.MetaData.Skin.model)
 		end
 	end)
 end
