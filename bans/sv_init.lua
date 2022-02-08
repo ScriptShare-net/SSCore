@@ -23,7 +23,7 @@ exports("BanPlayer", function(source, time, reason, banner)
         ["@bannedBy"] = banner
     })
     Bans[user.Identifier] = {
-        identifier = user.Identifierr,
+        identifier = user.Identifier,
         identifiers = user.AllIdentifiers,
         time = time,
         reason = reason,
