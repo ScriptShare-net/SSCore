@@ -32,6 +32,10 @@ exports("GetUsers", function()
 	return Users
 end)
 
+exports("getUserFromSource", function(src)
+	return Users[src]
+end)
+
 RegisterNetEvent("SS:Server:ClientLoad", function()
 	local src = source
 	if not Users[source].Loaded then
