@@ -1,4 +1,4 @@
-local Businessess = {}
+local Businesses = {}
 
 exports("CreateBusiness", function(name)
     self = {}
@@ -7,14 +7,14 @@ exports("CreateBusiness", function(name)
 
 	self.MetaData = {}
 
-    Businessess[self.Name] = self
+    Businesses[self.Name] = self
 end)
 
 CreateThread(function()
     MySQL.query("SELECT * FROM Businesses", {}, function(businesstable)
         if businesstable then
             for k,v in pairs(businesstable) do
-                Businessess[v.Name] = v
+                Businesses[v.Name] = v
             end
         end
     end)
