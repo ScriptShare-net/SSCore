@@ -41,3 +41,19 @@ exports("teleportPlayer", function(player, targetCoords)
         SetEntityCoords(player, targetCoords.x, targetCoords.y, targetCoords.z, 0, 0, 1)
     end
 end)
+
+--[[ local NetEvents = {}
+local TriggerNetEvents = {}
+
+exports("registerNetEvent", function(name, cb)
+	NetEvents[name] = cb
+	TriggerNetEvents[name] = {}
+end)
+
+exports("triggerNetEvent", function(name, ...)
+	NetEvents[name](...)
+end)
+
+exports("triggerServerNetEvent", function(name, ...)
+	TriggerServerEvent("SS:Server:NetEvent", name)
+end) ]]

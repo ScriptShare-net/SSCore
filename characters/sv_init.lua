@@ -68,6 +68,7 @@ exports("CreateCharacter", function(identifiers, source, characterID)
 		end
 		Characters[source] = self
 		SSCore:Alert("Created Character: "..source)
+		TriggerEvent("SS:Server:CharacterCreated", source)
 	end)
 end)
 
