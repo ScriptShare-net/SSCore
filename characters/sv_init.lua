@@ -93,22 +93,24 @@ RegisterNetEvent("SS:Server:PlayerDisconnect", function(src)
 			["@metadata"] = json.encode(Characters[src].MetaData)
 		}, function(rows)
 			Characters[src] = nil
-			print("Updated Character: ",src)
+			print("Player Left Updated Character: ", src)
 		end)
 	end
 end)
 
-RegisterNetEvent("onResourceStop", function()
-	TriggerEvent("SS:Server:Stop")
-	print("Update Characters")
-	for k,v in pairs(Characters) do
-		MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier AND CharacterSlot = @charslot", {
-			["@identifier"] = v.Identifier,
-			["@charslot"] = v.CharID,
-			["@metadata"] = json.encode(v.MetaData)
-		}, function(rows)
-			Characters[k] = nil
-		end)
+RegisterNetEvent("onResourceStop", function(resourceName)
+	if GetCurrentResourceName() == resourceName then
+		TriggerEvent("SS:Server:Stop")
+		print("Update Characters")
+		for k,v in pairs(Characters) do
+			MySQL.query("UPDATE Characters SET MetaData = @metadata WHERE Identifier = @identifier AND CharacterSlot = @charslot", {
+				["@identifier"] = v.Identifier,
+				["@charslot"] = v.CharID,
+				["@metadata"] = json.encode(v.MetaData)
+			}, function(rows)
+				Characters[k] = nil
+			end)
+		end
 	end
 end)
 
