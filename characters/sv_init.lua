@@ -77,6 +77,7 @@ exports("GetCharacters", function()
 end)
 
 exports("GetCharacterFromSource", function(source)
+	print("[SSCore]", "Getting Character from source " .. source, Characters[source])
 	return Characters[source]
 end)
 
