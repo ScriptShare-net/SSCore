@@ -4,7 +4,7 @@ if SSCore:GetConfigValue("Skin") then
 		local src = source
 		if skin then
 			SSCore:SetCharacterMetaData(src, "Skin", skin)
-			local xPlayer = SSCore:GetCharacterFromSource(src)
+			local character = SSCore:GetCharacterFromSource(src)
 		end
 	end)
 end
