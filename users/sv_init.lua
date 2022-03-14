@@ -48,7 +48,11 @@ exports("GetUserFromIdentifier", function(identifier) -- Get user from identifie
 			["@identifier"] = identifier, -- set the identifier of the user you want to get
 		}, function(result) -- set the result to result
 			if result[1] then -- check if we found a user
-				))
+				
+			end
+		end)
+	end
+end)
 
 RegisterNetEvent("SS:Server:ClientLoad", function()
 	local src = source

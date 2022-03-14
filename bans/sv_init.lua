@@ -24,6 +24,7 @@ exports("AddBan", function(identifier, identifiers, time, reason, by) -- Add ban
 				}
 			else -- If no rows where changed
 				SSCore:Alert("Error banning player identifier: " .. identifier) -- Alert the console that there was an error banning the player in sql
+			end
 		end)
 	end
 end)
