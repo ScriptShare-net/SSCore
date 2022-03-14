@@ -16,11 +16,11 @@ exports("AddBan", function(identifier, identifiers, time, reason, by) -- Add ban
 		}, function(rows) -- in insert sql it returns how many rows have been altered
 			if rows > 0 then -- check if at least 1 row has been altered which means our ban was added
 				Bans[identifier] = { -- setting the players identifier as the index
-					identifier = identifier, -- putting the players identifier in the table
-					identifiers = identifiers, -- putting all the players identifiers in the table
-					time = time, -- putting how long the ban is for
-					reason = reason, -- putting why the ban happened
-					bannedBy = by, -- putting who banned the player
+					Identifier = identifier, -- putting the players identifier in the table
+					Identifiers = identifiers, -- putting all the players identifiers in the table
+					Time = time, -- putting how long the ban is for
+					Reason = reason, -- putting why the ban happened
+					BannedBy = by, -- putting who banned the player
 				}
 			else -- If no rows where changed
 				SSCore:Alert("Error banning player identifier: " .. identifier) -- Alert the console that there was an error banning the player in sql
@@ -69,11 +69,11 @@ exports("BanPlayer", function(source, time, reason, banner) -- Ban player export
     }, function(rows) -- in insert sql it returns how many rows have been altered
 		if rows > 0 then -- check if any rows where changed
 			Bans[user.Identifier] = { -- setting the users identifier as the index
-				identifier = user.Identifier, -- putting the identifier into the table
-				identifiers = user.AllIdentifiers, -- putting the identifiers into the table
-				time = time, -- putting the time into the table
-				reason = reason, -- putting the reason into the table
-				bannedBy = banner -- putting the banner into the table
+				Identifier = user.Identifier, -- putting the identifier into the table
+				Identifiers = user.AllIdentifiers, -- putting the identifiers into the table
+				Time = time, -- putting the time into the table
+				Reason = reason, -- putting the reason into the table
+				BannedBy = banner -- putting the banner into the table
 			}
 		else -- If no rows where changed
 			SSCore:Alert("Error banning player source: " .. source) -- Alert the console that there was an issue updating the sql
