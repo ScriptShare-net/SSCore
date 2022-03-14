@@ -54,32 +54,26 @@ exports("EditBusinessRankMetaData", function(businessName, rankName, metadataNam
 	end
 end)
 
-exports("AddBusinessMember", function(name, rank, identifier, characerid) -- Add business member export. This allows addons to add new members to the business.
-	if Businesses[name] then -- check if the business exists
-		if Businesses[businessName].Ranks[rank] then -- check if rank exists
-			Businesses[name].Ranks.MetaData.Members = Businesses[name].Ranks.MetaData.Members or {} -- create the members metadata table if it doesnt exist
-			if not Businesses[name].Ranks.MetaData.Members[character.Identifier .. "-" .. character.CharID] then -- make sure no member is already in the list
-				Businesses[name].Ranks.MetaData.Members[character.Identifier .. "-" .. character.CharID] = { -- create a new member into the members table
+exports("AddBusinessMember", function(businessName, rankName, identifier, characterID) -- Add business member export. This allows addons to add new members to the business.
+	if Businesses[businessName] then -- check if the business exists
+		if Businesses[businessName].Ranks[rankName] then -- check if rank exists
+			Businesses[businessName].Ranks[rankName].MetaData.Members = Businesses[businessName].Ranks[rankName].MetaData.Members or {} -- create the members metadata table if it doesnt exist
+			if not Businesses[businessName].Ranks[rankName].MetaData.Members[identifier .. "-" .. characterID] then -- make sure no member is already in the list
+				Businesses[businessName].Ranks[rankName].MetaData.Members[identifier .. "-" .. characterID] = { -- create a new member into the members table
 					Identifier = identifier, -- set the identifier of the member
-					CharID = characerid, -- set the character id of the member
+					CharID = characterID, -- set the character id of the member
 				}
 			end
 		end
 	end
 end)
 
-exports("RemoveBusinessRank", function(businessName, rankName) -- Remove business rank export. This allows addons to remove a rank when needed
+exports("RemoveBusinessMember", function(businessName, rankName, identifier, characterID) -- Remove business member export. This allows addons to remove a member when needed
 	if Businesses[businessName] then -- check if the business exists
 		if Businesses[businessName].Ranks[rankName] then -- check if the rank exists
-			Businesses[businessName].Ranks[rankName] = nil -- remove the rank from the table
-		end
-	end
-end)
-
-exports("EditBusinessRankMetaData", function(businessName, rankName, metadataName, metadataTable) -- Edit business rank metatadata export. This allows addons to edit metadata of a rank
-	if Businesses[businessName] then -- check if the business exists
-		if Businesses[businessName].Ranks[rankName] then -- check if the rank exists
-			Businesses[businessName].Ranks[rankName].MetaData[metadataName] = metadataTable -- set the sub metadata table to the metadata table
+			if Businesses[businessName].Ranks[rankName].MetaData.Members[identifier .. "-" .. characterID] then -- check if the member exists
+				Businesses[businessName].Ranks[rankName].MetaData.Members[identifier .. "-" .. characterID] = nil
+			end
 		end
 	end
 end)
