@@ -106,14 +106,14 @@ end)
 
 exports("AddIdentifiers", function(idtable, identifiers)
 	local identifierstable = idtable
-	for type, idtbl in pairs(idtable) do
-		if type ~= "Identifier" and identifiers[string.sub(type, 1, -2)] then
-			if not string.match(json.encode(idtable), identifiers[string.sub(type, 1, -2)]) then
-				identifierstable[type] = identifierstable[type] or {}
-				if type(identifierstable[type]) == "string" then
-					identifierstable[type] = json.decode(identifierstable[type])
+	for idtype, idtbl in pairs(idtable) do
+		if idtype ~= "Identifier" and identifiers[string.sub(idtype, 1, -2)] then
+			if not string.match(json.encode(idtable), identifiers[string.sub(idtype, 1, -2)]) then
+				identifierstable[idtype] = identifierstable[idtype] or {}
+				if type(identifierstable[idtype]) == "string" then
+					identifierstable[idtype] = json.decode(identifierstable[idtype])
 				end
-				table.insert(identifierstable[type], identifiers[string.sub(type, 1, -2)])
+				table.insert(identifierstable[idtype], identifiers[string.sub(idtype, 1, -2)])
 			end
 		end
 	end

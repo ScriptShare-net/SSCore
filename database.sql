@@ -23,7 +23,7 @@ CREATE TABLE `sscore`.`gangs` ( `Name` VARCHAR(99) NOT NULL , `Owner` VARCHAR(99
 CREATE TABLE `sscore`.`vehicles` ( `ID` INT(99) NOT NULL AUTO_INCREMENT , `Type` VARCHAR(99) NOT NULL , `Owner` VARCHAR(99) NOT NULL , `MetaData` LONGTEXT NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;
 
 -- businesses - Name, Owner, Members, Ranks, MetaData
-CREATE TABLE `sscore`.`businesses` ( `Name` VARCHAR(99) NOT NULL , `Owner` VARCHAR(99) NOT NULL , `Members` LONGTEXT NOT NULL , `Ranks` LONGTEXT NOT NULL , `MetaData` LONGTEXT NOT NULL , PRIMARY KEY (`Name`)) ENGINE = InnoDB;
+CREATE TABLE `sscore`.`businesses` ( `Name` VARCHAR(99) NOT NULL , `Owner` VARCHAR(99) NOT NULL , `Ranks` LONGTEXT NOT NULL , `MetaData` LONGTEXT NOT NULL , PRIMARY KEY (`Name`)) ENGINE = InnoDB;
 
 -- entities - ID, Type, MetaData 
 CREATE TABLE `sscore`.`entities` ( `ID` INT(99) NOT NULL AUTO_INCREMENT , `Type` VARCHAR(99) NOT NULL , `MetaData` LONGTEXT NOT NULL , PRIMARY KEY (`ID`)) ENGINE = InnoDB;

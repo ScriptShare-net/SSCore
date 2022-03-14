@@ -36,6 +36,20 @@ exports("getUserFromSource", function(src)
 	return Users[src]
 end)
 
+exports("GetUserFromIdentifier", function(identifier) -- Get user from identifier. This allows people to get the user info from the identifier. Also works when the user is offline
+	if Users then -- check if there are any users on the server
+		for src, user in pairs(Users) do -- iterate through each user in the server
+			if user.Identifier == identifier then -- check if the user has the same identifier
+				return Users[src] -- send the requester the user information
+			end
+		end
+	else -- check offline users
+		MySQL.query("SELECT * FROM Users WHERE Identifier = @identifier", { -- mysql query to get the user with the same identifier
+			["@identifier"] = identifier, -- set the identifier of the user you want to get
+		}, function(result) -- set the result to result
+			if result[1] then -- check if we found a user
+				))
+
 RegisterNetEvent("SS:Server:ClientLoad", function()
 	local src = source
 	if not Users[source].Loaded then

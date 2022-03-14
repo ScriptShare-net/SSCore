@@ -7,14 +7,12 @@ exports("CreateBusiness", function(name) -- Create business export. This allows 
     self.Name = name -- store the name of our business
 	self.Owner = "" -- create the owner variable for later altering
 
-	self.Members = {} -- create the member table so we can update the members later
 	self.Ranks = {} -- create the ranks table so we can update the ranks later
 	self.MetaData = {} -- create the metadata table for the business so we can store data inside of it later
 
-	MySQL.query("INSERT INTO Businesses (Name, Owner, Members, Ranks, MetaData) VALUES(@name, @owner, @members, @ranks, @metadata)", { -- mysql query to create the business in the database
+	MySQL.query("INSERT INTO Businesses (Name, Owner, Ranks, MetaData) VALUES(@name, @owner, @ranks, @metadata)", { -- mysql query to create the business in the database
 		["@name"] = self.Name, -- set the business name
 		["@owner"] = self.Owner, -- set the business owner
-		["@members"] = json.encode(self.Members), -- set the encoded business members
 		["@ranks"] = json.encode(self.Ranks), -- set the encoded business ranks
 		["@metadata"] = json.encode(self.MetaData), -- set the encoded business meta data
 	}, function()
@@ -48,6 +46,44 @@ exports("RemoveBusinessRank", function(businessName, rankName) -- Remove busines
 	end
 end)
 
+exports("EditBusinessRankMetaData", function(businessName, rankName, metadataName, metadataTable) -- Edit business rank metatadata export. This allows addons to edit metadata of a rank
+	if Businesses[businessName] then -- check if the business exists
+		if Businesses[businessName].Ranks[rankName] then -- check if the rank exists
+			Businesses[businessName].Ranks[rankName].MetaData[metadataName] = metadataTable -- set the sub metadata table to the metadata table
+		end
+	end
+end)
+
+exports("AddBusinessMember", function(name, rank, identifier, characerid) -- Add business member export. This allows addons to add new members to the business.
+	if Businesses[name] then -- check if the business exists
+		if Businesses[businessName].Ranks[rank] then -- check if rank exists
+			Businesses[name].Ranks.MetaData.Members = Businesses[name].Ranks.MetaData.Members or {} -- create the members metadata table if it doesnt exist
+			if not Businesses[name].Ranks.MetaData.Members[character.Identifier .. "-" .. character.CharID] then -- make sure no member is already in the list
+				Businesses[name].Ranks.MetaData.Members[character.Identifier .. "-" .. character.CharID] = { -- create a new member into the members table
+					Identifier = identifier, -- set the identifier of the member
+					CharID = characerid, -- set the character id of the member
+				}
+			end
+		end
+	end
+end)
+
+exports("RemoveBusinessRank", function(businessName, rankName) -- Remove business rank export. This allows addons to remove a rank when needed
+	if Businesses[businessName] then -- check if the business exists
+		if Businesses[businessName].Ranks[rankName] then -- check if the rank exists
+			Businesses[businessName].Ranks[rankName] = nil -- remove the rank from the table
+		end
+	end
+end)
+
+exports("EditBusinessRankMetaData", function(businessName, rankName, metadataName, metadataTable) -- Edit business rank metatadata export. This allows addons to edit metadata of a rank
+	if Businesses[businessName] then -- check if the business exists
+		if Businesses[businessName].Ranks[rankName] then -- check if the rank exists
+			Businesses[businessName].Ranks[rankName].MetaData[metadataName] = metadataTable -- set the sub metadata table to the metadata table
+		end
+	end
+end)
+
 CreateThread(function() -- parallel function
     MySQL.query("SELECT * FROM Businesses", {}, function(businesstable) -- mysql query to get all the businesses and return the result as businesstable
         if businesstable then -- check if the businesstable has stuff in it
@@ -62,9 +98,8 @@ CreateThread(function() -- parallel function
 		if Businesses ~= {} then -- check if we have any businesses
 			for name, business in pairs(Businesses) do -- iterate through each business
 				Wait(600000 / #Businesses) -- Pause for 10 minutes divided by how many businesses we have. Basically just splits all the data to reduce stress on resources
-				MySQL.query("UPDATE Businesses SET Owner = @owner, Members = @members, Ranks = @ranks, MetaData = @metadata", { -- mysql query to update the owner, members, ranks and metadata of the business
+				MySQL.query("UPDATE Businesses SET Owner = @owner, Ranks = @ranks, MetaData = @metadata", { -- mysql query to update the owner, members, ranks and metadata of the business
 					["@owner"] = business.Owner, -- set the business owner
-					["@members"] = json.encode(business.Members), -- set the encoded business members
 					["@ranks"] = json.encode(business.Ranks), -- set the encoded business ranks
 					["@metadata"] = json.encode(business), -- set the encoded business meta data table
 				})
