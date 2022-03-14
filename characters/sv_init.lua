@@ -14,10 +14,19 @@ exports("CreateCharacter", function(identifiers, source, characterID) -- Our Cre
 	self.LastName = "" -- Empty Last Name variable so we can edit it later
     self.MetaData = {} -- The core data table for our players. This saves any addon data that other peoples scripts need
 	self.MetaData.name = self.FirstName .. " " .. self.LastName -- Defining a blank variable so we can edit it later
-
+	self.rank = "user" -- The characters permission level: user, admin, owner
 	self.job = "Unemployed" -- Defining a blank variable so we can edit it later
 	self.grade = 0 -- Job grade is 0 by default
 
+	-- Rank Functions -- 
+	self.SetRank = function(rank)
+		if not rank then return end 
+		self.rank = rank
+	end
+
+	self.GetRank = function()
+		return self.rank
+	end
 	-- Job Functions -- 
 	self.SetJob = function(job)
 		if not job then return end 
