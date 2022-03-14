@@ -36,7 +36,6 @@ exports("CreateCharacter", function(identifiers, source, characterID) -- Our Cre
 	end
 
 	self.GetGrade = function()
-		if not grade then return end 
 		return self.grade
 	end 
 
