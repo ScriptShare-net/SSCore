@@ -109,8 +109,17 @@ exports("GetCharacters", function() -- Our get characters export that gives us t
 	return Characters -- Sending the characters table to the function
 end)
 
+exports("GetPlayers", function()
+	local sources = {} -- Creating a temporary table to store player sources in
+
+	for k, v in pairs(Characters) do 
+		sources[#sources + 1] = k
+	end
+
+	return sources
+end)
+
 exports("GetCharacterFromSource", function(source) -- Our get character from source export that allows people to define which character they want to get the table of
-	print("[SSCore]", "Getting Character from source " .. source, Characters[source]) -- Debuging
 	return Characters[source] -- Sending the character to the fuction
 end)
 
