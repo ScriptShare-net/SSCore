@@ -15,6 +15,31 @@ exports("CreateCharacter", function(identifiers, source, characterID) -- Our Cre
     self.MetaData = {} -- The core data table for our players. This saves any addon data that other peoples scripts need
 	self.MetaData.name = self.FirstName .. " " .. self.LastName -- Defining a blank variable so we can edit it later
 
+	self.job = "Unemployed" -- Defining a blank variable so we can edit it later
+	self.grade = 0 -- Job grade is 0 by default
+
+	-- Job Functions -- 
+	self.SetJob = function(job)
+		if not job then return end 
+		self.job = job
+	end
+
+	self.GetJob = function(job)
+		if not job then return end 
+		return self.job
+	end
+
+	-- Grade Functions -- 
+	self.SetGrade = function(grade)
+		if not grade then return end 
+		self.grade = grade
+	end
+
+	self.GetGrade = function()
+		if not grade then return end 
+		return self.grade
+	end 
+
     -- Name Functions -- 
     self.GetName = function() -- This function is used so people can get our characters full name
         return self.MetaData.name -- Sending the function our full name variable
