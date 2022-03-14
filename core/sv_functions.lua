@@ -91,3 +91,31 @@ if SSCore:GetConfigValue("ConsolePrint") then
 		print(string)
 	end)
 end
+
+exports("FindDuplicateIdentifiers", function(identifiers1, identifiers2)
+	local encodeIdentifiers = json.encode(identifiers2)
+	for _, id in pairs(identifiers1) do
+		if id ~= "nil" then
+			if string.match(encodeIdentifiers, id) then
+				return true
+			end
+		end
+	end
+	return false
+end)
+
+exports("AddIdentifiers", function(idtable, identifiers)
+	local identifierstable = idtable
+	for type, idtbl in pairs(idtable) do
+		if type ~= "Identifier" and identifiers[string.sub(type, 1, -2)] then
+			if not string.match(json.encode(idtable), identifiers[string.sub(type, 1, -2)]) then
+				identifierstable[type] = identifierstable[type] or {}
+				if type(identifierstable[type]) == "string" then
+					identifierstable[type] = json.decode(identifierstable[type])
+				end
+				table.insert(identifierstable[type], identifiers[string.sub(type, 1, -2)])
+			end
+		end
+	end
+	return identifierstable
+end)

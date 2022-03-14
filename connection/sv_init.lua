@@ -28,32 +28,48 @@ local function createUser(identifiers, cb)
 	end)
 end
 
-local function findDuplicateIdentifiers(identifiers1, identifiers2)
-	local encodeIdentifiers = json.encode(identifiers2)
-	for _, id in pairs(identifiers1) do
-		if id ~= "nil" then
-			if string.match(encodeIdentifiers, id) then
-				return true
-			end
+local function isBanned(identifier, cb)
+	local banned = {}
+	local identifiers = {}
+	local bancard
+	MySQL.query("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
+		["@identifier"] = identifier
+	}, function(result)
+		if not result then return false end
+		for k,v in pairs(result) do
+			identifiers[k] = v
 		end
-	end
-	return false
-end
 
-local function addIdentifiers(idtable, identifiers)
-	local identifierstable = idtable
-	for type, idtbl in pairs(idtable) do
-		if type ~= "Identifier" and identifiers[string.sub(type, 1, -2)] then
-			if not string.match(json.encode(idtable), identifiers[string.sub(type, 1, -2)]) then
-				identifierstable[type] = identifierstable[type] or {}
-				if type(identifierstable[type]) == "string" then
-					identifierstable[type] = json.decode(identifierstable[type])
+		local Bans = SSCore:GetBans()
+
+		local identifiersBanned, banList = SSCore:IsIdentifiersBanned(identifiers)
+		if identifiersBanned then
+			if #banList > 1 then
+				for bannedIdentifier, bannedIdentifiers in pairs(banList) do
+					MySQL.query("UPDATE Bans SET Identifiers = @identifiers, Time = @time, Reason = @reason, Banner = @bannedBy WHERE Identifier = @identifier", {
+						["@identifier"] = bannedIdentifier,
+						["@identifiers"] = json.encode(SSCore:AddIdentifiers(bannedIdentifiers, identifiers)),
+						["@time"] = 0,
+						["@reason"] = "Attempting to ban evade",
+						["@bannedBy"] = "Ban System"
+					})
+					SSCore:AddBan(bannedIdentifier, bannedIdentifiers, 0, "Attempting to ban evade", "Ban System")
 				end
-				table.insert(identifierstable[type], identifiers[string.sub(type, 1, -2)])
 			end
+			local unbanTime
+			local banLength
+			if Bans[identifier].time == 0 then
+				unbanTime = "Never"
+				banLength = "Forever"
+			else
+				unbanTime = os.date('%H:%M:%S %d-%m-%y', Bans[identifier].time + (SSCore:GetConfigValue("TimeZone") * 60 * 60))
+				banLength = Bans[identifier].time - os.time()
+			end
+			cb(identifiersBanned, SSCore:GetBanCard(Bans[identifier].reason, unbanTime, banLength, Bans[identifier].bannedBy, identifiers.PermID))
+			return
 		end
-	end
-	return identifierstable
+	end)
+	cb(false)
 end
 
 local function updateIdentifiers(identifiers, cb)
@@ -61,7 +77,7 @@ local function updateIdentifiers(identifiers, cb)
 		["@identifier"] = identifiers.Identifier
 	}, function(result)
 		if result[1] then
-			local idtable = addIdentifiers(result[1], identifiers)
+			local idtable = SSCore:AddIdentifiers(result[1], identifiers)
 			MySQL.query("UPDATE Identifiers SET Discords = @discords, Steams = @steams, GTAs = @gtas, Tokens = @tokens, Lives = @lives, Xboxs = @xboxs, IPs = @ips, FiveMs = @fivems, GTA2s = @gta2s WHERE Identifier = @identifier", {
 				["@identifier"] = identifiers.Identifier,
 				["@discords"] = idtable.Discords,
@@ -80,66 +96,6 @@ local function updateIdentifiers(identifiers, cb)
 			cb(false)
 		end
 	end)
-end
-
-local function isIdentifiersBanned(identifiers)
-	local banList = {}
-	for identifier, player in pairs(SSCore:GetBans()) do
-		for type, idtable in pairs(identifiers) do
-			if findDuplicateIdentifiers(idtable, player) then
-				banList[identifier] = player
-			end
-		end
-	end
-	return (#banList >= 1), banList
-end
-
-local function isBanned(identifier, cb)
-	local banned = {}
-	local identifiers = {}
-	local bancard
-	MySQL.query("SELECT * FROM Identifiers WHERE Identifier = @identifier", {
-		["@identifier"] = identifier
-	}, function(result)
-		if not result then return false end
-		for k,v in pairs(result) do
-			identifiers[k] = v
-		end
-
-		local identifiersBanned, banList = isIdentifiersBanned(identifiers)
-		if identifiersBanned then
-			if #banList > 1 then
-				for bannedIdentifier, bannedIdentifiers in pairs(banList) do
-					MySQL.query("UPDATE Bans SET Identifiers = @identifiers, Time = @time, Reason = @reason, Banner = @bannedBy WHERE Identifier = @identifier", {
-						["@identifier"] = bannedIdentifier,
-						["@identifiers"] = json.encode(addIdentifiers(bannedIdentifiers, identifiers)),
-						["@time"] = 0,
-						["@reason"] = "Attempting to ban evade",
-						["@bannedBy"] = "Ban System"
-					})
-					SSCore:GetBans()[bannedIdentifier] = {
-						identifier = bannedIdentifier,
-						identifiers = bannedIdentifiers,
-						time = 0,
-						reason = "Attempting to ban evade",
-						bannedBy = "Ban System"
-					}
-				end
-			end
-			local unbanTime
-			local banLength
-			if SSCore:GetBans()[identifier].time == 0 then
-				unbanTime = "Never"
-				banLength = "Forever"
-			else
-				unbanTime = os.date('%H:%M:%S %d-%m-%y', SSCore:GetBans()[identifier].time + (SSCore:GetConfigValue("TimeZone") * 60 * 60))
-				banLength = SSCore:GetBans()[identifier].time - os.time()
-			end
-			cb(identifiersBanned, SSCore:GetBanCard(SSCore:GetBans()[identifier].reason, unbanTime, banLength, SSCore:GetBans()[identifier].bannedBy, identifiers.PermID))
-			return
-		end
-	end)
-	cb(false)
 end
 
 local function getRank(identifier, cb)
