@@ -26,13 +26,18 @@ exports("ChangeBusinessOwner", function(name, owner) -- Change business owner ex
 	end
 end)
 
-exports("AddBusinessRank", function(name, rankName, rankLabel, rankMetadata) -- Add business rank export. This allows addons to add new ranks to the business like ceo, trainiee etc.
+exports("ConvertBusinessLevelToRank", function(businessName, level) -- converts number for rank to name
+    if Businesses[businessName] then -- check if the business exists
+	    )
+
+exports("AddBusinessRank", function(name, rankLevel, rankName, rankLabel, rankMetadata) -- Add business rank export. This allows addons to add new ranks to the business like ceo, trainiee etc.
 	if Businesses[name] then -- check if the business exists
 		if not Businesses[name].Ranks[rankName] then -- make sure no rank has the same name
 			Businesses[name].Ranks[rankName] = { -- create a new rank into the ranks table
 				Name = rankName, -- set the name of the rank
 				Label = rankLabel, -- set the label of the rank
 				MetaData = rankMetadata, -- set the metadata of the rank
+				Level = rankLevel, -- set the rank level used to work out hierarchy
 			}
 		end
 	end

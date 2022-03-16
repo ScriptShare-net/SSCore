@@ -15,8 +15,6 @@ exports("CreateCharacter", function(identifiers, source, characterID) -- Our Cre
     self.MetaData = {} -- The core data table for our players. This saves any addon data that other peoples scripts need
 	self.MetaData.name = self.FirstName .. " " .. self.LastName -- Defining a blank variable so we can edit it later
 	self.rank = "user" -- The characters permission level: user, admin, owner
-	self.job = "Unemployed" -- Defining a blank variable so we can edit it later
-	self.grade = 0 -- Job grade is 0 by default
 
 	-- Rank Functions -- 
 	self.SetRank = function(rank)
@@ -104,6 +102,11 @@ exports("CreateCharacter", function(identifiers, source, characterID) -- Our Cre
 		TriggerEvent("SS:Server:CharacterCreated", source) -- Send a network event on the server to other scripts letting them know the character has been set
 	end)
 end)
+
+exports("SetCharacterJob", function(job, grade)
+    local grade = grade or 0
+	SSCore:
+)
 
 exports("GetCharacters", function() -- Our get characters export that gives us the table full of characters
 	return Characters -- Sending the characters table to the function
